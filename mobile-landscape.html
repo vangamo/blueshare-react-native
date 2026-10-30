@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlueShare - Prototipo Landscape</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+
+      body {
+        background-color: #f1f5f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      /* Marco del Teléfono en Horizontal (Landscape) */
+      .phone-frame-landscape {
+        width: 780px;
+        height: 380px;
+        background: #ffffff;
+        border-radius: 36px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
+        border: 8px solid #0f172a;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Header Compacto Landscape */
+      .header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 55px;
+        background-color: #ffffff;
+        border-bottom: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        z-index: 10;
+      }
+
+      .btn-menu {
+        background: #f0f7ff;
+        border: 2px solid #0084ff;
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #0084ff;
+      }
+
+      .search-title-box {
+        flex: 0 1 300px;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        height: 36px;
+        border: 2px solid #0f172a;
+        border-radius: 10px;
+        padding: 0 12px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+        background-color: #f8fafc;
+        text-align: center;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #0084ff;
+        background-color: #ffffff;
+        text-align: left;
+      }
+
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid #0f172a;
+        background-color: #fdf6f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+
+      /* Sub-barra de Navegación superior en Landscape (Sustituye al footer inferior para ganar espacio) */
+      .sub-nav-landscape {
+        position: absolute;
+        top: 55px;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background-color: #ffffff;
+        border-bottom: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        z-index: 9;
+        padding: 0 16px;
+      }
+
+      .nav-tab-mini {
+        background-color: #f8fafc;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 4px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #334155;
+        cursor: pointer;
+      }
+
+      .nav-tab-mini.active {
+        background-color: #0084ff;
+        border-color: #006fe6;
+        color: #ffffff;
+      }
+
+      /* Feed Container adaptado con ancho máximo centrado */
+      .feed-container {
+        flex: 1;
+        margin-top: 95px; /* Espacio para Header + Subnav */
+        margin-bottom: 10px;
+        overflow-y: auto;
+        padding: 12px 24px;
+        background-color: #faf9f6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* Ancho máximo de tarjeta para lectura cómoda en horizontal */
+      .card {
+        width: 100%;
+        max-width: 550px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 14px;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+      }
+
+      .card-event {
+        border: 2px solid #0f172a;
+        border-left: 6px solid #0084ff;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #0f172a;
+      }
+
+      .category-badge {
+        background-color: #e0f2fe;
+        color: #0369a1;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #bae6fd;
+      }
+
+      .carousel-container {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        margin-bottom: 10px;
+        scrollbar-width: thin;
+      }
+
+      .carousel-item {
+        min-width: 90px;
+        height: 75px;
+        background-color: #f1f5f9;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #475569;
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+
+      .card-text {
+        font-size: 14px;
+        color: #334155;
+        line-height: 1.4;
+        margin-bottom: 10px;
+      }
+
+      .card-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 8px;
+      }
+
+      .btn-action {
+        background-color: #f8fafc;
+        border: 1px solid #cbd5e1;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f172a;
+        cursor: pointer;
+      }
+
+      /* Botón Flotante adaptado a Landscape */
+      .fab-button {
+        position: absolute;
+        bottom: 15px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: #0084ff;
+        color: white;
+        border: 2.5px solid #ffffff;
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 132, 255, 0.35);
+        cursor: pointer;
+        z-index: 15;
+      }
+
+      /* Caja para Crear (Modal flotante en landscape) */
+      .creation-box {
+        width: 100%;
+        max-width: 550px;
+        border: 2px dashed #0084ff;
+        background-color: #f0f7ff;
+        border-radius: 14px;
+        padding: 12px;
+        margin-bottom: 14px;
+        display: none;
+      }
+      .creation-box.active {
+        display: block;
+      }
+      .select-type {
+        width: 100%;
+        height: 38px;
+        border: 2px solid #0f172a;
+        border-radius: 8px;
+        padding: 0 10px;
+        font-size: 14px;
+        font-weight: 600;
+        background: white;
+        color: #0f172a;
+        margin-bottom: 8px;
+      }
+      .btn-create-submit {
+        width: 100%;
+        height: 36px;
+        background-color: #0084ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-frame-landscape">
+      <!-- Header Fijo Compacto -->
+      <header class="header">
+        <button class="btn-menu" aria-label="Menú">≡</button>
+        <div class="search-title-box">
+          <input
+            type="text"
+            class="search-input"
+            value="BlueShare"
+            id="searchInput"
+            placeholder="Buscar..."
+          />
+        </div>
+        <div class="user-avatar" title="Perfil">👵</div>
+      </header>
+
+      <!-- Sub-barra de navegación superior en horizontal -->
+      <nav class="sub-nav-landscape">
+        <button class="nav-tab-mini active">Timeline</button>
+        <button class="nav-tab-mini">Circles</button>
+        <button class="nav-tab-mini">Events</button>
+      </nav>
+
+      <!-- Contenido Scrollable -->
+      <main class="feed-container">
+        <!-- Caja Desplegable de Creación -->
+        <div class="creation-box" id="creationBox">
+          <p
+            style="
+              font-size: 13px;
+              font-weight: bold;
+              margin-bottom: 6px;
+              color: #0f172a;
+            "
+          >
+            Crear nuevo elemento:
+          </p>
+          <select class="select-type">
+            <option value="event">📅 Evento</option>
+            <option value="text">📝 Texto</option>
+            <option value="image">📷 Imagen</option>
+          </select>
+          <button class="btn-create-submit" onclick="toggleCreationBox()">
+            Publicar
+          </button>
+        </div>
+
+        <!-- Item 1: Evento Destacado -->
+        <article class="card card-event">
+          <div class="card-header">
+            <h2 class="card-title">Tarde de juegos y café</h2>
+            <span class="category-badge">Encuentro</span>
+          </div>
+
+          <div class="carousel-container">
+            <div class="carousel-item">Foto 1 ☕</div>
+            <div class="carousel-item">Foto 2 🧩</div>
+            <div class="carousel-item">+ Ver más</div>
+          </div>
+
+          <p class="card-text">
+            Nos reuniremos en el salón principal este jueves a las 17:00 para
+            compartir un buen rato jugando al parchís.
+          </p>
+
+          <div class="card-actions">
+            <button class="btn-action">Editar</button>
+            <button class="btn-action">Compartir</button>
+          </div>
+        </article>
+      </main>
+
+      <!-- Botón Flotante -->
+      <button class="fab-button" onclick="toggleCreationBox()" title="Crear">
+        +
+      </button>
+    </div>
+
+    <script>
+      function toggleCreationBox() {
+        const box = document.getElementById("creationBox");
+        box.classList.toggle("active");
+      }
+    </script>
+  </body>
+</html>
