@@ -1,97 +1,72 @@
 /**
- * BlueShare design tokens (from sketches/design_system.json; the HTML sketch wins
- * where they disagree). Every color in the app comes from `Colors`, so light and
- * dark mode switch the whole UI. See openspec design D4/D5 for the dark choices.
+ * BlueShare design tokens, read from `design-system.json` (a corrected copy of
+ * sketches/design_system.json; see openspec design D4/D5). Every color in the app
+ * comes from `Colors`, so light and dark mode switch the whole UI.
  */
 
 import { DarkTheme, DefaultTheme, type Theme } from 'expo-router';
 
-const light = {
-  /** Strong ink: title-field and avatar borders. */
-  primaryDark: '#0f172a',
-  primaryBlue: '#0084ff',
-  /** Active tab background (darker than primaryBlue for 4.5:1 with white text). */
-  primaryBlueHover: '#006fe6',
-  /** Active tab border. */
-  primaryBlueDeep: '#0058b8',
-  primaryShadow: 'rgba(0, 132, 255, 0.3)',
-  /** Text and icons drawn on primary-blue fills. */
-  onPrimary: '#ffffff',
-  backgroundMain: '#faf9f6',
-  backgroundBody: '#f1f5f9',
-  cardBg: '#ffffff',
-  /** Title field at rest, inactive tabs. */
-  surfaceMuted: '#f8fafc',
-  avatarBg: '#fdf6f0',
-  creationBg: '#f0f7ff',
-  borderColor: '#e2e8f0',
-  borderDark: '#cbd5e1',
-  textMain: '#0f172a',
-  textSecondary: '#334155',
-  textMuted: '#475569',
-  badgeBg: '#e0f2fe',
-  badgeText: '#0369a1',
-};
+import designSystem from './design-system.json';
 
-const dark = {
-  primaryDark: '#e2e8f0',
-  primaryBlue: '#4da3ff',
-  primaryBlueHover: '#80bdff',
-  primaryBlueDeep: '#b3d7ff',
-  primaryShadow: 'rgba(77, 163, 255, 0.3)',
-  onPrimary: '#0f172a',
-  backgroundMain: '#0b1120',
-  backgroundBody: '#020617',
-  cardBg: '#0f172a',
-  surfaceMuted: '#1e293b',
-  avatarBg: '#3a2e25',
-  creationBg: '#0c2340',
-  borderColor: '#334155',
-  borderDark: '#64748b',
-  textMain: '#f1f5f9',
-  textSecondary: '#cbd5e1',
-  textMuted: '#94a3b8',
-  badgeBg: '#0c2a4a',
-  badgeText: '#7dd3fc',
-} satisfies Record<keyof typeof light, string>;
+const tokens = designSystem.design_tokens;
 
-export const Colors = { light, dark } as const;
+type CamelCase<S extends string> = S extends `${infer Head}_${infer Tail}`
+  ? `${Head}${Capitalize<CamelCase<Tail>>}`
+  : S;
+
+type CamelKeys<T> = { [K in keyof T as K extends string ? CamelCase<K> : never]: T[K] };
+
+function camelCase(key: string): string {
+  return key.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+}
+
+/** Maps each `snake_case` key to `camelCase` and each value through `convert`. */
+function mapTokens<T extends Record<string, string>, V>(
+  source: T,
+  convert: (value: string) => V,
+): { [K in keyof CamelKeys<T>]: V } {
+  return Object.fromEntries(
+    Object.entries(source).map(([key, value]) => [camelCase(key), convert(value)]),
+  ) as { [K in keyof CamelKeys<T>]: V };
+}
+
+const asIs = (value: string) => value;
+
+/** "12px" → 12. "50%" (a pill radius) → 9999, so any size stays fully rounded. */
+export function px(value: string): number {
+  if (value === '50%') return 9999;
+  const match = /^(\d+(?:\.\d+)?)px$/.exec(value);
+  if (!match) throw new Error(`Unsupported design token size: ${value}`);
+  return Number(match[1]);
+}
+
+const FONT_WEIGHTS = ['400', '600', '700', '800'] as const;
+type FontWeightValue = (typeof FONT_WEIGHTS)[number];
+
+function fontWeight(value: string): FontWeightValue {
+  if (!(FONT_WEIGHTS as readonly string[]).includes(value)) {
+    throw new Error(`Unsupported design token font weight: ${value}`);
+  }
+  return value as FontWeightValue;
+}
+
+const light = mapTokens(tokens.colors, asIs);
 
 export type ThemeColors = typeof light;
 export type ThemeColor = keyof ThemeColors;
 
-export const Spacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
-} as const;
+// Typed as ThemeColors so a key missing from `colors_dark` fails the typecheck.
+const dark: ThemeColors = mapTokens(tokens.colors_dark, asIs);
 
-export const Radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 18,
-  pill: 9999,
-} as const;
+export const Colors = { light, dark } as const;
 
-export const FontSize = {
-  caption: 12,
-  small: 14,
-  body: 15,
-  bodyLarge: 16,
-  titleCard: 18,
-  titleTablet: 20,
-} as const;
+export const Spacing = mapTokens(tokens.spacing, px);
 
-export const FontWeight = {
-  regular: '400',
-  medium: '600',
-  bold: '700',
-  extrabold: '800',
-} as const;
+export const Radius = mapTokens(tokens.border_radius, px);
+
+export const FontSize = mapTokens(tokens.typography.sizes, px);
+
+export const FontWeight = mapTokens(tokens.typography.weights, fontWeight);
 
 /** Fixed shell sizes from sketches/mobile-portrait.html. */
 export const Layout = {

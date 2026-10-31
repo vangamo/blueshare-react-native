@@ -15,7 +15,7 @@ See `proposal.md` for why. Current state, as checked in the repo:
   - SDK 58: "JavaScript tabs, … headless tabs, and native tabs now show only screens declared in the layout". Every route needs a `Tabs.Screen`.
   - Headless tabs (`expo-router/ui`) are documented as **experimental**.
   - `expo-status-bar` accepts `style: 'auto' | 'inverted' | 'light' | 'dark'`. `expo-splash-screen` exposes `preventAutoHideAsync()` and `hideAsync()`.
-  - Peer dependencies: expo-router lists `react-dom`, `react-native-web`, `expo-symbols` and `@expo/ui` as **optional** peers. `expo-glass-effect` is a direct dependency of expo-router, so it stays installed through expo-router. `expo`, `expo-image` and `expo-system-ui` list `react-native-web` as an optional peer. Nothing depends on `expo-web-browser` or `expo-device`.
+  - Peer dependencies: expo-router lists `react-dom`, `react-native-web`, `expo-symbols` and `@expo/ui` as **optional** peers. However, expo-router also depends on `@radix-ui/react-tabs`, `react-presence`, `react-primitive`, `react-roving-focus` and `react-collection`, and each of them lists `react-dom` as a **required** peer, so `react-dom` stays installed. `expo-glass-effect` is a direct dependency of expo-router, so it stays installed through expo-router. `expo`, `expo-image` and `expo-system-ui` list `react-native-web` as an optional peer. Nothing depends on `expo-web-browser` or `expo-device`.
   - Android: `expo-system-ui` is required, or `userInterfaceStyle` is ignored.
 
 ## Goals / Non-Goals
@@ -26,7 +26,7 @@ See `proposal.md` for why. Current state, as checked in the repo:
 - Keep the shell easy to replace piece by piece: header, tab bar and FAB are separate components.
 
 **Non-Goals:**
-- No end-to-end or automated screenshot tests (Maestro, Detox) in this change. Maestro needs Java 17+ and an emulator or a built app, which this machine does not have yet. It is a later change that uses the screenshots approved here (D11) as its references.
+- No device-level end-to-end or automated screenshot tests (Maestro, Detox) in this change. The `src/__tests__/e2e/` tests here are Jest user-journey tests that render the whole app through `renderRouter`. Maestro needs Java 17+ and an emulator or a built app, which this machine does not have yet. It is a later change that uses the screenshots approved here (D11), kept in `src/__tests__/e2e/screenshots/`, as its references.
 - No large snapshot tests (`toMatchSnapshot` of whole screens). The Expo docs advise against them for UI, and they break on every intended visual change.
 - No navigation stack above the tabs yet (no `(tabs)` group). It gets added when the first screen opens on top of the tabs.
 - No keyboard-avoidance tuning for the footer while the title field is focused, beyond what the platform does by default.
@@ -75,6 +75,13 @@ Routes stay at the top level: `src/app/index.tsx` (Timeline, so the app opens th
 
 ### D4. Theme module (`src/constants/theme.ts`)
 
+The tokens live in `src/constants/design-system.json`. It starts as a copy of `sketches/design_system.json`, which stays unchanged as the original mock. The copy is corrected to match the approved app:
+- `design_tokens.colors` adds the roles from the HTML sketch and D5: `surface_muted`, `avatar_bg`, `primary_blue_deep`, `primary_shadow` and `on_primary`.
+- A new `design_tokens.colors_dark` holds the D5 dark palette, with the same keys.
+- `components.footer.border_top` uses `#e2e8f0` (the HTML wins), and `tab_active` uses `#006fe6` with a `#0058b8` border (D5 contrast choice).
+
+`theme.ts` imports the JSON (`resolveJsonModule` is on in `expo/tsconfig.base`) and maps snake_case keys to camelCase: `colors` → `Colors.light`, `colors_dark` → `Colors.dark`, `spacing` → `Spacing`, `border_radius` → `Radius`, `typography.sizes` → `FontSize` and `typography.weights` → `FontWeight`. Pixel strings become numbers (`"12px"` → `12`), and `"50%"` (pill) becomes `9999`. `theme.ts` itself holds no color values. `Layout` stays in `theme.ts`; the JSON's `components` section is reference only. The exported names and values do not change, so components are not touched.
+
 It exports:
 - `Colors.light` / `Colors.dark`: the same keys in both, camelCase versions of the design-token names, plus a few roles taken from the HTML sketch. `ThemeColor = keyof typeof Colors.light`.
 - `Spacing` `{ xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24 }`, `Radius` `{ sm: 8, md: 12, lg: 16, xl: 18, pill: 9999 }`, `FontSize` `{ caption: 12, small: 14, body: 15, bodyLarge: 16, titleCard: 18, titleTablet: 20 }`, and `FontWeight` `{ regular: '400', medium: '600', bold: '700', extrabold: '800' }`.
@@ -83,11 +90,11 @@ It exports:
 
 Removed: `Fonts` (only the demo `code` style used it; the system font is the default), `BottomTabInset`, `MaxContentWidth`, the old `Spacing` keys, and the `@/global.css` import.
 
-`useTheme()` and `useColorScheme()` stay as they are. Both re-render on a system scheme change, which gives live switching with no restart. Styles use `StyleSheet.create` for layout, and colors are passed in inline style arrays (`[styles.tab, { backgroundColor: theme.surfaceMuted }]`). React Compiler handles memoization, so there is no `useMemo` style factory.
+`useTheme()` and `useColorScheme()` stay as they are, and `useTheme()` now returns palettes that come from the JSON. Reading the JSON inside a hook would not work for `Spacing`, `FontSize` or `Radius`, which `StyleSheet.create` uses at module level, outside any component. Both hooks re-render on a system scheme change, which gives live switching with no restart. Styles use `StyleSheet.create` for layout, and colors are passed in inline style arrays (`[styles.tab, { backgroundColor: theme.surfaceMuted }]`). React Compiler handles memoization, so there is no `useMemo` style factory.
 
 ### D5. Palettes
 
-Light values come from `design_system.json`, with the HTML winning where they disagree. The dark palette uses the same slate/blue family. Ratios were computed with the WCAG 2.x formula.
+Light values come from `design_system.json`, with the HTML winning where they disagree. This table is stored in `src/constants/design-system.json`: the light column in `colors`, the dark column in `colors_dark` (D4). The dark palette uses the same slate/blue family. Ratios were computed with the WCAG 2.x formula.
 
 | Role | Light | Dark | Used by |
 | --- | --- | --- | --- |
@@ -136,11 +143,12 @@ State: `query: string` (initially `''`) and `focused: boolean`.
 
 ### D8. Dependency and file cleanup
 
-Remove, after checking that nothing in `src/`, `app.json` or the config imports each one (`grep -rn "<pkg>" src app.json`) and that no kept package needs it as a required peer (`npm ls <pkg>`): `react-native-web`, `react-dom`, `expo-web-browser`, `expo-symbols`, `expo-glass-effect`, `@expo/ui`, `expo-device`. Use `npm uninstall`. The CLAUDE.md rule to use `npx expo install` is about adding packages.
+Remove, after checking that nothing in `src/`, `app.json` or the config imports each one (`grep -rn "<pkg>" src app.json`) and that no kept package needs it as a required peer (`npm ls <pkg>`): `react-native-web`, `expo-web-browser`, `expo-symbols`, `expo-glass-effect`, `@expo/ui`, `expo-device`. Use `npm uninstall`. The CLAUDE.md rule to use `npx expo install` is about adding packages.
 
 Kept, even though nothing in `src/` imports them after the cleanup:
 - `expo-system-ui` and `expo-status-bar` (required).
 - `expo-constants`, `expo-linking` and `expo-font` (required peers of expo-router or expo).
+- `react-dom`: a required peer of the `@radix-ui/*` packages that expo-router depends on. Nothing in `src/` or `app.json` imports it, and it is not used on native.
 - `react-native-reanimated`, `react-native-worklets`, `react-native-gesture-handler` and `expo-image`. They are navigation and animation infrastructure that ships in Expo Go, and the Phase 1 feed (image posts, carousels) is expected to use them. Removing and re-adding them would only churn the lockfile.
 
 ### D9. Linting is mandatory
@@ -162,7 +170,11 @@ Alternative: lint only once at the end (the earlier plan). Rejected, because pro
   - Jest config: `"preset": "jest-expo"`, plus a `moduleNameMapper` for the tsconfig aliases (`^@/assets/(.*)$` → `<rootDir>/assets/$1` first, then `^@/(.*)$` → `<rootDir>/src/$1`), unless the preset already resolves them. Add the npm `transformIgnorePatterns` variant from the Expo unit-testing guide only if a dependency fails to transform.
   - Scripts: `"test": "jest"` (one run, used by every task check) and `"test:watch": "jest --watchAll"`.
 - `tsconfig.json`: `"types": ["jest"]`, as the Expo guide says.
-- Location: `src/**/__tests__/<name>-test.ts(x)`. That is the file pattern `jest-expo` picks up. Tests sit inside `src/` so `expo lint` (D9) checks them too, but never inside `src/app/`, where every file is a route. If lint reports the Jest globals as undefined, add a test-file block with Jest globals to `eslint.config.js`. Declaring globals does not loosen any rule.
+- Location: two folders, both named `<name>-test.ts(x)`. Jest's default pattern runs every file under a `__tests__/` folder, so no `testMatch` is needed.
+  - `src/__tests__/unit/`: tests for a single module. Subfolders follow `src/` (`unit/components/`, `unit/constants/`, `unit/hooks/`). A component test may render through `renderRouter` to get real tab state and still counts as a unit test.
+  - `src/__tests__/e2e/`: user-journey tests through the whole app (start screen, deep links, unknown routes), plus the approved screenshots in `e2e/screenshots/` (D11).
+  - Shared helpers stay in `src/test-utils/`, never inside `__tests__/`, where Jest would run them as tests.
+- Lint: tests sit inside `src/` so `expo lint` (D9) checks them too, but never inside `src/app/`, where every file is a route. If lint reports the Jest globals as undefined, add a test-file block with Jest globals to `eslint.config.js`. Declaring globals does not loosen any rule.
 - Shared helpers in `src/test-utils/`:
   - safe-area insets from the library's Jest mock, with known values (for example top 24, bottom 20)
   - a way to force the color scheme by mocking `@/hooks/use-color-scheme` to return `'light'` or `'dark'`
@@ -171,13 +183,13 @@ Alternative: lint only once at the end (the earlier plan). Rejected, because pro
 
 | Test file | Checks (spec) |
 | --- | --- |
-| `src/constants/__tests__/theme-test.ts` | Both palettes have identical keys. Every D5 pair meets its WCAG ratio in light and dark: text ≥ 4.5, icons and boundaries ≥ 3 (app-theming: contrast). `NavigationThemes` uses `backgroundMain`, `cardBg`, `textMain` and `borderColor`. |
-| `src/hooks/__tests__/use-theme-test.tsx` | `useTheme()` returns the light or dark palette for the forced scheme, and re-renders with the other palette when the scheme changes (app-theming: live switching). |
-| `src/__tests__/navigation-test.tsx` | `renderRouter('./src/app')` opens on `/` with the Timeline placeholder. The `/circles` and `/events` deep links show their sections. `/explore` shows no starter content (app-shell: tabs; app-platform: no demo). |
-| `src/components/__tests__/footer-tab-bar-test.tsx` | Through `renderRouter`: three tabs, in order. Timeline is selected at start. Pressing Events → `toHavePathname('/events')` and Events selected. Pressing it again keeps `/events`. Tabs are at least 44 tall. Active and inactive tabs use the right colors (app-shell: footer, active tab, switching). |
-| `src/components/__tests__/title-search-field-test.tsx` | Rest value "BlueShare". Focus empties it. Blur when empty or only spaces restores it. Blur with "abuela" keeps it. Focus with other text keeps it. Submit does nothing. Alignment, border and background change between rest and focus (app-shell: title field). |
-| `src/components/__tests__/app-header-test.tsx` | Buttons "Menu" (at least 44×44, pressing it neither navigates nor throws), "Profile" label with no press handler, header height = 70 + top inset, dark-scheme colors (app-shell: header, menu, avatar). |
-| `src/components/__tests__/create-button-test.tsx` | Button "Create", 56×56, `right` 20, `bottom` = 75 + bottom inset + 10, pressing it does nothing (app-shell: create button). |
+| `src/__tests__/unit/constants/theme-test.ts` | Both palettes have identical keys. Every D5 pair meets its WCAG ratio in light and dark: text ≥ 4.5, icons and boundaries ≥ 3 (app-theming: contrast). `NavigationThemes` uses `backgroundMain`, `cardBg`, `textMain` and `borderColor`. |
+| `src/__tests__/unit/hooks/use-theme-test.tsx` | `useTheme()` returns the light or dark palette for the forced scheme, and re-renders with the other palette when the scheme changes (app-theming: live switching). |
+| `src/__tests__/e2e/navigation-test.tsx` | `renderRouter('./src/app')` opens on `/` with the Timeline placeholder. The `/circles` and `/events` deep links show their sections. `/explore` shows no starter content (app-shell: tabs; app-platform: no demo). |
+| `src/__tests__/unit/components/footer-tab-bar-test.tsx` | Through `renderRouter`: three tabs, in order. Timeline is selected at start. Pressing Events → `toHavePathname('/events')` and Events selected. Pressing it again keeps `/events`. Tabs are at least 44 tall. Active and inactive tabs use the right colors (app-shell: footer, active tab, switching). |
+| `src/__tests__/unit/components/title-search-field-test.tsx` | Rest value "BlueShare". Focus empties it. Blur when empty or only spaces restores it. Blur with "abuela" keeps it. Focus with other text keeps it. Submit does nothing. Alignment, border and background change between rest and focus (app-shell: title field). |
+| `src/__tests__/unit/components/app-header-test.tsx` | Buttons "Menu" (at least 44×44, pressing it neither navigates nor throws), "Profile" label with no press handler, header height = 70 + top inset, dark-scheme colors (app-shell: header, menu, avatar). |
+| `src/__tests__/unit/components/create-button-test.tsx` | Button "Create", 56×56, `right` 20, `bottom` = 75 + bottom inset + 10, pressing it does nothing (app-shell: create button). |
 
 Tests check behavior and the spec numbers with RNTL queries (`getByRole`, `getByLabelText`, `toHaveStyle`), not snapshots. The `toHaveStyle` checks use values from `Colors` and `Layout`, so changing a palette value does not break a test.
 
@@ -191,7 +203,7 @@ The sketches come from an HTML mock: a 380×780 frame with a phone border, brows
 
 - **Device:** an Android phone with USB debugging and Expo Go, reached through `adb`. Run `adb shell wm size` and `adb shell wm density` to get the scale (px per point = density / 160). Use the same device for all screenshots.
 - **Stable screenshots:** turn on Android system UI demo mode before capturing (`adb shell settings put global sysui_demo_allowed 1`, then `adb shell am broadcast -a com.android.systemui.demo -e command enter`, and fix the clock with `-e command clock -e hhmm 1200`). Turn it off afterwards with `-e command exit`. Close any Expo Go dev menu or toast first.
-- **Capture:** `adb exec-out screencap -p > openspec/changes/basic-app-layout/screenshots/<name>.png`. Set the scheme with `adb shell cmd uimode night yes|no`. Screenshot set:
+- **Capture:** `adb exec-out screencap -p > src/__tests__/e2e/screenshots/<name>.png`. Set the scheme with `adb shell cmd uimode night yes|no`. Screenshot set:
   - `timeline-light`, `circles-light`, `events-light`
   - `timeline-dark`, `circles-dark`, `events-dark`
   - `title-focused-light`, `title-focused-dark` (keyboard open, some text typed)
@@ -205,7 +217,7 @@ The sketches come from an HTML mock: a 380×780 frame with a phone border, brows
   - background colors
 - **Measurement:** check exact colors and sizes by sampling pixels with ImageMagick (`magick shot.png -format '%[pixel:p{X,Y}]' info:`) or Pillow, comparing against `Colors`. For dark mode there is no sketch: check that the structure matches the light screenshot and that the colors match the D5 dark palette.
 - **Loop:** list the differences, fix them, retake the affected screenshots, and repeat until the only differences left are the intentional ones (cards not built yet, darker active tab, platform fonts and emoji). The user approves the final set, and the review notes go in the PR.
-- **Afterwards:** the approved screenshots are the references a later Maestro `assertScreenshot` change will use.
+- **Afterwards:** the approved screenshots stay in `src/__tests__/e2e/screenshots/`, so they survive archiving the change, and are the references a later Maestro `assertScreenshot` change will use. Metro bundles only imported files, so they do not add to the app.
 
 ## Risks / Trade-offs
 

@@ -19,7 +19,7 @@ Material for the PR description (tasks 5.4, 8.5 and 8.6).
 | Keyboard open | The keyboard covers the footer and "+" button. Nothing is pushed up. The header field stays visible. Accepted for this skeleton (design: Risks). |
 | Rotation (forced landscape) | The app stays in portrait. |
 | Accessibility tree (`uiautomator`) | Menu and Create are Buttons with their labels. Search is an EditText. Profile is labeled. Each tab carries its label and `selected` state. |
-| TalkBack | Turned on. Tabs and buttons get focus and speech, but the spoken text could not be captured automatically, so it still needs a listen by ear (task 5.4). |
+| TalkBack | Tabs and buttons get focus and speech. The user listened and confirmed that each tab is announced as a tab with its selected state (task 5.4). |
 | iOS | Not checked: no iOS device or simulator on this Linux machine. |
 
 ### Fix found during the device check
@@ -28,7 +28,9 @@ On Android, dismissing the keyboard (back button or the keyboard arrow) did not 
 
 ## Screenshot review (task 8.5)
 
-Screenshots: `screenshots/{timeline,circles,events,title-focused}-{light,dark}.png`, all 1080×2400.
+Screenshots: `src/__tests__/e2e/screenshots/{timeline,circles,events,title-focused}-{light,dark}.png`, all 1080×2400.
+
+**Approved by the user.**
 
 **Structure (against `sketches/mobile-portrait.png`, `header-…` and `footer-…`):** the same header order (menu, centered title field, avatar), a footer with three equal tabs, and the "+" at the bottom right above the footer.
 
@@ -58,4 +60,4 @@ Screenshots: `screenshots/{timeline,circles,events,title-focused}-{light,dark}.p
 ## Deviations from the plan
 
 - **Tab bar API:** in expo-router 58, `BottomTabBarProps` has `emitter` and `navigateToTab(routeKey)` instead of `navigation`. `FooterTabBar` emits `tabPress` and calls `navigateToTab`, which matches the default bar.
-- **`react-dom` stays installed:** expo-router depends on `@radix-ui/react-tabs`, `react-presence`, `react-primitive`, `react-roving-focus` and `react-collection`, which all list `react-dom` as a required peer. So the 8.3 grep on `package.json` still finds it.
+- **`react-dom` stays installed:** expo-router depends on `@radix-ui/react-tabs`, `react-presence`, `react-primitive`, `react-roving-focus` and `react-collection`, which all list `react-dom` as a required peer. Design D8 and task 8.3 now record that it stays.
