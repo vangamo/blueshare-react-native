@@ -47,7 +47,7 @@ A task is finished only when **lint (0 warnings), typecheck and tests pass**, wi
 - **Expo Go only:** no native modules beyond those bundled in Expo Go. A library with other native code needs a development build (`npx expo run:android|ios` or `eas build --profile development`), so propose a spec change first. Prefer Expo modules, and check the available skills before adding dependencies.
 - **Continuous Native Generation:** never create or edit `ios/` or `android/`. Configure native behavior in `app.json` and config plugins.
 - **Never edit `sketches/`.** They are design references. The HTML mock wins over `sketches/design_system.json`.
-- **Specs first:** features go through OpenSpec (`/opsx:propose`, `/opsx:apply`, `/opsx:archive`). Current specs are in `openspec/specs/`.
+- **Specs first:** features go through OpenSpec (`/opsx:propose`, `/opsx:apply`, `/opsx:archive`). Current specs are in `openspec/specs/`. After a successful `/opsx:archive`, update `CLAUDE.md` and `docs/` to match what shipped. The rule is in `openspec/config.yaml` (`operations.archive.guidance`) and explained in [OpenSpec workflow](docs/development/openspec-workflow.md).
 
 ## When to read what
 
@@ -73,5 +73,6 @@ Read the listed files **before** starting that kind of work. Folders `src/app/`,
 | run or try the app on a device | skill `run-on-emulator` ([device testing](docs/development/device-testing.md) has the machine facts) |
 | make any visual change, or check the UI against the design | skill `visual-review` |
 | implement, propose or archive an OpenSpec change | `/opsx:apply`, `/opsx:propose`, `/opsx:archive` ([OpenSpec workflow](docs/development/openspec-workflow.md)) |
+| have just archived a change (or synced specs without `/opsx:archive`) | the "After archiving" checklist in [OpenSpec workflow](docs/development/openspec-workflow.md) |
 
 Full map of the knowledge base: [docs/index.md](docs/index.md). When you change code, behavior or decisions, update the matching `docs/` file and add an entry to [`docs/log.md`](docs/log.md).

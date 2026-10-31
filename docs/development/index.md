@@ -11,4 +11,4 @@
 * [Testing](testing.md) - Jest and RNTL setup, test layout, shared mocks and what each suite covers.
 * [Device testing](device-testing.md) - Running the app on the Android emulator with Expo Go, and the device checklist.
 * [Visual review](visual-review.md) - Capturing screenshots with adb and comparing them with the approved set and the sketches.
-* [OpenSpec workflow](openspec-workflow.md) - How changes are proposed, applied, synced and archived with the `/opsx:*` commands.
+* [OpenSpec workflow](openspec-workflow.md) - How changes are proposed, applied, synced and archived with the `/opsx:*` commands, and how the context is updated after an archive.

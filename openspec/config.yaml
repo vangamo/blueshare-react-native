@@ -30,3 +30,36 @@ schema: spec-driven
 #     archive:
 #       guidance:
 #         - Summarize the archive outcome before finishing
+
+operations:
+  archive:
+    guidance:
+      - >-
+        Only after the change directory has been moved into openspec/changes/archive/
+        (never when the archive stopped or failed), update the project context so it
+        matches what the archived change delivered, before showing the final summary.
+      - >-
+        docs/ (Open Knowledge Format v0.2, one topic per file): update docs/specs/
+        for every capability the change added, modified or removed (one summary page
+        each, pointing to openspec/specs/<capability>/spec.md); update the
+        architecture, design-system, components and development pages the change
+        affects; add a page in docs/decisions/ for each new decision in the change's
+        design.md; update docs/product/roadmap.md, docs/product/known-limitations.md
+        and the "Current state" section of docs/development/openspec-workflow.md.
+      - >-
+        Keep docs/ conformant: every concept file keeps YAML frontmatter with a
+        non-empty type and a refreshed generated.at; every new file is listed in its
+        folder's index.md as "* [Title](file.md) - description"; remove pages and
+        index entries for things the change removed; prefer pointing to code over
+        copying values that change often.
+      - >-
+        CLAUDE.md: keep it brief; refresh the "Current state" paragraph, change
+        "Key rules" only if the change introduced or removed a rule, and add or
+        update rows in "When to read what" for new or renamed docs pages and skills.
+        Also update the nested src/*/CLAUDE.md files and the project skills in
+        .claude/skills/ (run-on-emulator, visual-review, add-main-section) when
+        their rules or steps changed.
+      - >-
+        Add a dated "**Update**" entry at the top of docs/log.md naming the archived
+        change, check that every relative link in CLAUDE.md and docs/ resolves, and
+        list the context files you updated in the archive summary.
