@@ -1,14 +1,12 @@
 /**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
+ * Active BlueShare palette. Re-renders when the system color scheme changes.
+ * https://docs.expo.dev/develop/user-interface/color-themes/
  */
 
-import { Colors } from '@/constants/theme';
+import { Colors, type ThemeColors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export function useTheme() {
+export function useTheme(): ThemeColors {
   const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? 'dark' : 'light';
-
-  return Colors[theme];
+  return Colors[scheme === 'dark' ? 'dark' : 'light'];
 }

@@ -21,11 +21,13 @@ The app is still the default Expo starter: demo screens, an animated Expo splash
 ## Capabilities
 
 ### New Capabilities
+
 - `app-shell`: the persistent frame around every main screen: header with menu button, title/search field and avatar; footer tab navigation between Timeline, Circles and Events; floating create button; and how content scrolls between header and footer.
 - `app-theming`: the visual theme: the light and dark palettes from BlueShare design tokens, following the system color scheme live, contrast requirements, and theme-driven colors for the status bar and screen backgrounds.
 - `app-platform`: supported platforms and runtime: Android and iOS in portrait, runs in Expo Go with no extra native modules, no web target, native splash screen behavior, and no leftover starter content.
 
 ### Modified Capabilities
+
 <!-- None: there are no existing specs. -->
 
 ## Impact
