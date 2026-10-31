@@ -7,7 +7,7 @@ See `proposal.md` for why. Current state, as checked in the repo:
 - Expo SDK 58 (`expo ~58.0.22`, `expo-router 58.0.29`, React Native 0.88.1, React 19.3), TypeScript strict, `experiments.typedRoutes` and `experiments.reactCompiler` on. npm (`package-lock.json`).
 - `src/app/_layout.tsx` renders `ThemeProvider` (stock `DarkTheme`/`DefaultTheme`), `AnimatedSplashOverlay` and `AppTabs` (`NativeTabs` from `expo-router/native-tabs`, with Home and Explore).
 - `src/constants/theme.ts` holds starter colors (`text`, `background`, `backgroundElement`, …), `Fonts` (with a web variant that imports `global.css`), `Spacing` (`half`…`six`), `BottomTabInset` and `MaxContentWidth`.
-- There is no ESLint config and no test runner.
+- Linting is already set up: `eslint` 9 and `eslint-config-expo` ~58, with a flat config in `eslint.config.js`. It runs through `npm run lint` / `npx expo lint`, which checks `src/`. The Expo config includes the React Compiler `react-hooks` rules (for example `react-hooks/set-state-in-effect`). Lint passes on the current code. There is no test runner.
 - Facts about expo-router 58, from the installed package and the v58 docs:
   - React Navigation is bundled inside expo-router. `ThemeProvider`, `DefaultTheme` and `DarkTheme` are imported from `expo-router`. The navigation `Theme.colors` has `primary`, `background`, `card`, `text`, `border` and `notification`.
   - JavaScript tabs live at `expo-router/js-tabs`. The `Tabs` export from `expo-router` is marked `@deprecated` in the installed types, even though the docs page still shows it. The navigator accepts `tabBar?: (props: BottomTabBarProps) => ReactNode`, and `BottomTabBarProps` is exported from `expo-router/js-tabs`.
@@ -140,8 +140,16 @@ Kept, even though nothing in `src/` imports them after the cleanup:
 - `expo-system-ui` and `expo-status-bar` (required).
 - `expo-constants`, `expo-linking` and `expo-font` (required peers of expo-router or expo).
 - `react-native-reanimated`, `react-native-worklets`, `react-native-gesture-handler` and `expo-image`. They are navigation and animation infrastructure that ships in Expo Go, and the Phase 1 feed (image posts, carousels) is expected to use them. Removing and re-adding them would only churn the lockfile.
+### D9. Linting is mandatory
 
-Linting: the repo has no ESLint config. On first run, `npx expo lint` installs `eslint` and `eslint-config-expo` as dev dependencies and writes `eslint.config.js`. This is accepted: it is dev-only and does not affect Expo Go.
+Every TS/TSX file this change creates or edits SHALL pass `npx expo lint --max-warnings 0` (zero errors and zero warnings), using the existing `eslint.config.js` with no rules loosened. Lint runs at the end of every task that writes code, not only at the end, so each problem is fixed in the group that caused it.
+
+- No `eslint-disable` comments in new code. If one cannot be avoided, it covers a single line (`eslint-disable-next-line <rule>`) and gives its reason on the same line.
+- This affects D7: the title field changes its state only in the `onFocus`/`onBlur` handlers and works out the displayed value during render. It uses no `useEffect`, so `react-hooks/set-state-in-effect` never applies.
+- The final run uses `--no-cache`, because `expo lint` caches results in `.expo/cache/eslint/`.
+- The existing disable comment in `src/hooks/use-color-scheme.web.ts` goes away with that file (task 1.2). That is expected.
+
+Alternative: lint only once at the end (the earlier plan). Rejected, because problems would build up across groups and force rework late.
 
 ## Risks / Trade-offs
 

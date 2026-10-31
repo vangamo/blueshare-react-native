@@ -14,6 +14,7 @@ The app is still the default Expo starter: demo screens, an animated Expo splash
 - Add the app shell: a sticky header (menu button, title/search field, avatar), a custom footer tab bar (Timeline, Circles, Events) and a floating "+" button. Each is rendered once at layout level.
 - Add three tab routes with placeholder screens. Timeline is the default.
 - Interactive behavior in scope: switching tabs and the title field's focus/blur. Menu, search, avatar and "+" are visual only for now.
+- All TypeScript / React Native code added or changed in this change must pass the project's ESLint setup (`npx expo lint --max-warnings 0`: no errors, no warnings) with no new `eslint-disable` comments.
 
 ## Capabilities
 
@@ -30,5 +31,5 @@ The app is still the default Expo starter: demo screens, an animated Expo splash
 - **Code**: `src/app/` (root layout rewritten as the tab shell; `explore.tsx` removed; `index.tsx` becomes Timeline; new `circles.tsx` and `events.tsx`). New shell components in `src/components/`. `src/constants/theme.ts` rewritten. `src/hooks/use-color-scheme.web.ts` removed; `use-color-scheme.ts` and `use-theme.ts` kept.
 - **Routes**: `/explore` is removed. `/`, `/circles` and `/events` are added (typed routes regenerate).
 - **Config**: `app.json` (`web` block removed), `package.json` (scripts and dependencies), README.
-- **Dependencies**: removal candidates are `react-native-web`, `react-dom`, `expo-web-browser`, `expo-symbols`, `expo-glass-effect`, `@expo/ui` and `expo-device`. Kept: `expo-system-ui` and `expo-status-bar`, plus anything Expo Router needs as a required peer. Running `npx expo lint` for the first time may add ESLint as a dev dependency. This does not affect Expo Go.
+- **Dependencies**: removal candidates are `react-native-web`, `react-dom`, `expo-web-browser`, `expo-symbols`, `expo-glass-effect`, `@expo/ui` and `expo-device`. Kept: `expo-system-ui` and `expo-status-bar`, plus anything Expo Router needs as a required peer. ESLint is already set up (`eslint` 9, `eslint-config-expo` 58, `eslint.config.js`, `npm run lint`). This change adds no lint dependencies and keeps the `lint` script.
 - **Assets**: starter images deleted. App icons and splash images kept.
