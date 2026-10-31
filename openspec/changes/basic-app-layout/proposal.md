@@ -15,6 +15,8 @@ The app is still the default Expo starter: demo screens, an animated Expo splash
 - Add three tab routes with placeholder screens. Timeline is the default.
 - Interactive behavior in scope: switching tabs and the title field's focus/blur. Menu, search, avatar and "+" are visual only for now.
 - All TypeScript / React Native code added or changed in this change must pass the project's ESLint setup (`npx expo lint --max-warnings 0`: no errors, no warnings) with no new `eslint-disable` comments.
+- Add unit tests (Jest with the `jest-expo` preset and React Native Testing Library) that check the spec scenarios: title field behavior, tab switching, accessibility labels, shell sizes and palette contrast. Each task group writes the tests for its own code.
+- Review the result visually: take screenshots of the app on an Android device in light and dark mode, compare them with the sketches, and fix the differences. The approved screenshots are kept as references for future automated screenshot tests.
 
 ## Capabilities
 
@@ -30,6 +32,7 @@ The app is still the default Expo starter: demo screens, an animated Expo splash
 
 - **Code**: `src/app/` (root layout rewritten as the tab shell; `explore.tsx` removed; `index.tsx` becomes Timeline; new `circles.tsx` and `events.tsx`). New shell components in `src/components/`. `src/constants/theme.ts` rewritten. `src/hooks/use-color-scheme.web.ts` removed; `use-color-scheme.ts` and `use-theme.ts` kept.
 - **Routes**: `/explore` is removed. `/`, `/circles` and `/events` are added (typed routes regenerate).
-- **Config**: `app.json` (`web` block removed), `package.json` (scripts and dependencies), README.
-- **Dependencies**: removal candidates are `react-native-web`, `react-dom`, `expo-web-browser`, `expo-symbols`, `expo-glass-effect`, `@expo/ui` and `expo-device`. Kept: `expo-system-ui` and `expo-status-bar`, plus anything Expo Router needs as a required peer. ESLint is already set up (`eslint` 9, `eslint-config-expo` 58, `eslint.config.js`, `npm run lint`). This change adds no lint dependencies and keeps the `lint` script.
+- **Config**: `app.json` (`web` block removed), `package.json` (scripts, dependencies and Jest config), `tsconfig.json` (Jest types), README.
+- **Tests and evidence**: unit tests in `src/**/__tests__/`. Approved device screenshots in `openspec/changes/basic-app-layout/screenshots/`.
+- **Dependencies**: removal candidates are `react-native-web`, `react-dom`, `expo-web-browser`, `expo-symbols`, `expo-glass-effect`, `@expo/ui` and `expo-device`. Kept: `expo-system-ui` and `expo-status-bar`, plus anything Expo Router needs as a required peer. ESLint is already set up (`eslint` 9, `eslint-config-expo` 58, `eslint.config.js`, `npm run lint`). This change adds no lint dependencies and keeps the `lint` script. Adds dev-only test dependencies, installed with `npx expo install … --dev` so their versions match SDK 58: `jest-expo`, `jest`, `@types/jest` and `@testing-library/react-native`. They do not affect Expo Go.
 - **Assets**: starter images deleted. App icons and splash images kept.

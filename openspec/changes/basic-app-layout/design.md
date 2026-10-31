@@ -7,7 +7,8 @@ See `proposal.md` for why. Current state, as checked in the repo:
 - Expo SDK 58 (`expo ~58.0.22`, `expo-router 58.0.29`, React Native 0.88.1, React 19.3), TypeScript strict, `experiments.typedRoutes` and `experiments.reactCompiler` on. npm (`package-lock.json`).
 - `src/app/_layout.tsx` renders `ThemeProvider` (stock `DarkTheme`/`DefaultTheme`), `AnimatedSplashOverlay` and `AppTabs` (`NativeTabs` from `expo-router/native-tabs`, with Home and Explore).
 - `src/constants/theme.ts` holds starter colors (`text`, `background`, `backgroundElement`, …), `Fonts` (with a web variant that imports `global.css`), `Spacing` (`half`…`six`), `BottomTabInset` and `MaxContentWidth`.
-- Linting is already set up: `eslint` 9 and `eslint-config-expo` ~58, with a flat config in `eslint.config.js`. It runs through `npm run lint` / `npx expo lint`, which checks `src/`. The Expo config includes the React Compiler `react-hooks` rules (for example `react-hooks/set-state-in-effect`). Lint passes on the current code. There is no test runner.
+- Linting is already set up: `eslint` 9 and `eslint-config-expo` ~58, with a flat config in `eslint.config.js`. It runs through `npm run lint` / `npx expo lint`, which checks `src/`. The Expo config includes the React Compiler `react-hooks` rules (for example `react-hooks/set-state-in-effect`). Lint passes on the current code. There is no test runner yet (see D10).
+- Testing facts (Expo v58 docs and installed packages): SDK 58's `jest-expo` needs Jest 30. Expo Router tests need `@testing-library/react-native` 14 or newer. `react-test-renderer` is deprecated, because it does not support React 19. `expo-router/testing-library` exports an async `renderRouter` and the checks `toHavePathname` and `toHaveSegments`. `react-native-safe-area-context` ships a Jest mock (`react-native-safe-area-context/jest/mock`). On this machine, `adb` is installed (snap) and so are ImageMagick and Python Pillow. There is no Android emulator, Android SDK, Java or Maestro.
 - Facts about expo-router 58, from the installed package and the v58 docs:
   - React Navigation is bundled inside expo-router. `ThemeProvider`, `DefaultTheme` and `DarkTheme` are imported from `expo-router`. The navigation `Theme.colors` has `primary`, `background`, `card`, `text`, `border` and `notification`.
   - JavaScript tabs live at `expo-router/js-tabs`. The `Tabs` export from `expo-router` is marked `@deprecated` in the installed types, even though the docs page still shows it. The navigator accepts `tabBar?: (props: BottomTabBarProps) => ReactNode`, and `BottomTabBarProps` is exported from `expo-router/js-tabs`.
@@ -25,7 +26,8 @@ See `proposal.md` for why. Current state, as checked in the repo:
 - Keep the shell easy to replace piece by piece: header, tab bar and FAB are separate components.
 
 **Non-Goals:**
-- No automated test setup (Jest or similar). It would add dependencies and is not needed for a visual skeleton. Verification is lint, typecheck, expo-doctor and a manual check on device (see Risks).
+- No end-to-end or automated screenshot tests (Maestro, Detox) in this change. Maestro needs Java 17+ and an emulator or a built app, which this machine does not have yet. It is a later change that uses the screenshots approved here (D11) as its references.
+- No large snapshot tests (`toMatchSnapshot` of whole screens). The Expo docs advise against them for UI, and they break on every intended visual change.
 - No navigation stack above the tabs yet (no `(tabs)` group). It gets added when the first screen opens on top of the tabs.
 - No keyboard-avoidance tuning for the footer while the title field is focused, beyond what the platform does by default.
 
@@ -140,6 +142,7 @@ Kept, even though nothing in `src/` imports them after the cleanup:
 - `expo-system-ui` and `expo-status-bar` (required).
 - `expo-constants`, `expo-linking` and `expo-font` (required peers of expo-router or expo).
 - `react-native-reanimated`, `react-native-worklets`, `react-native-gesture-handler` and `expo-image`. They are navigation and animation infrastructure that ships in Expo Go, and the Phase 1 feed (image posts, carousels) is expected to use them. Removing and re-adding them would only churn the lockfile.
+
 ### D9. Linting is mandatory
 
 Every TS/TSX file this change creates or edits SHALL pass `npx expo lint --max-warnings 0` (zero errors and zero warnings), using the existing `eslint.config.js` with no rules loosened. Lint runs at the end of every task that writes code, not only at the end, so each problem is fixed in the group that caused it.
@@ -151,19 +154,75 @@ Every TS/TSX file this change creates or edits SHALL pass `npx expo lint --max-w
 
 Alternative: lint only once at the end (the earlier plan). Rejected, because problems would build up across groups and force rework late.
 
+### D10. Unit tests with Jest and React Native Testing Library
+
+**Setup:**
+- Dev dependencies: `jest-expo`, `jest`, `@types/jest` and `@testing-library/react-native`. Install them with `npx expo install <pkgs> -- --dev` (or `--dev` if the CLI accepts it directly), so Expo picks the SDK 58 versions: Jest 30 and RNTL ≥ 14.
+- `package.json`:
+  - Jest config: `"preset": "jest-expo"`, plus a `moduleNameMapper` for the tsconfig aliases (`^@/assets/(.*)$` → `<rootDir>/assets/$1` first, then `^@/(.*)$` → `<rootDir>/src/$1`), unless the preset already resolves them. Add the npm `transformIgnorePatterns` variant from the Expo unit-testing guide only if a dependency fails to transform.
+  - Scripts: `"test": "jest"` (one run, used by every task check) and `"test:watch": "jest --watchAll"`.
+- `tsconfig.json`: `"types": ["jest"]`, as the Expo guide says.
+- Location: `src/**/__tests__/<name>-test.ts(x)`. That is the file pattern `jest-expo` picks up. Tests sit inside `src/` so `expo lint` (D9) checks them too, but never inside `src/app/`, where every file is a route. If lint reports the Jest globals as undefined, add a test-file block with Jest globals to `eslint.config.js`. Declaring globals does not loosen any rule.
+- Shared helpers in `src/test-utils/`:
+  - safe-area insets from the library's Jest mock, with known values (for example top 24, bottom 20)
+  - a way to force the color scheme by mocking `@/hooks/use-color-scheme` to return `'light'` or `'dark'`
+
+**What is tested** (each row lands in the task group that builds the code):
+
+| Test file | Checks (spec) |
+| --- | --- |
+| `src/constants/__tests__/theme-test.ts` | Both palettes have identical keys. Every D5 pair meets its WCAG ratio in light and dark: text ≥ 4.5, icons and boundaries ≥ 3 (app-theming: contrast). `NavigationThemes` uses `backgroundMain`, `cardBg`, `textMain` and `borderColor`. |
+| `src/hooks/__tests__/use-theme-test.tsx` | `useTheme()` returns the light or dark palette for the forced scheme, and re-renders with the other palette when the scheme changes (app-theming: live switching). |
+| `src/__tests__/navigation-test.tsx` | `renderRouter('./src/app')` opens on `/` with the Timeline placeholder. The `/circles` and `/events` deep links show their sections. `/explore` shows no starter content (app-shell: tabs; app-platform: no demo). |
+| `src/components/__tests__/footer-tab-bar-test.tsx` | Through `renderRouter`: three tabs, in order. Timeline is selected at start. Pressing Events → `toHavePathname('/events')` and Events selected. Pressing it again keeps `/events`. Tabs are at least 44 tall. Active and inactive tabs use the right colors (app-shell: footer, active tab, switching). |
+| `src/components/__tests__/title-search-field-test.tsx` | Rest value "BlueShare". Focus empties it. Blur when empty or only spaces restores it. Blur with "abuela" keeps it. Focus with other text keeps it. Submit does nothing. Alignment, border and background change between rest and focus (app-shell: title field). |
+| `src/components/__tests__/app-header-test.tsx` | Buttons "Menu" (at least 44×44, pressing it neither navigates nor throws), "Profile" label with no press handler, header height = 70 + top inset, dark-scheme colors (app-shell: header, menu, avatar). |
+| `src/components/__tests__/create-button-test.tsx` | Button "Create", 56×56, `right` 20, `bottom` = 75 + bottom inset + 10, pressing it does nothing (app-shell: create button). |
+
+Tests check behavior and the spec numbers with RNTL queries (`getByRole`, `getByLabelText`, `toHaveStyle`), not snapshots. The `toHaveStyle` checks use values from `Colors` and `Layout`, so changing a palette value does not break a test.
+
+**The bar:** `npm test` passes, with no `.only` or `.skip` left in the code. Test files also pass D9 lint.
+
+Jest cannot see real rendering (shadows, safe areas on a real device, the keyboard, fonts, emoji). D11 covers those.
+
+### D11. Screenshot review against the sketches
+
+The sketches come from an HTML mock: a 380×780 frame with a phone border, browser fonts and browser emoji. A pixel diff against them would always fail, so the comparison is a structured review, not a pass/fail diff.
+
+- **Device:** an Android phone with USB debugging and Expo Go, reached through `adb`. Run `adb shell wm size` and `adb shell wm density` to get the scale (px per point = density / 160). Use the same device for all screenshots.
+- **Stable screenshots:** turn on Android system UI demo mode before capturing (`adb shell settings put global sysui_demo_allowed 1`, then `adb shell am broadcast -a com.android.systemui.demo -e command enter`, and fix the clock with `-e command clock -e hhmm 1200`). Turn it off afterwards with `-e command exit`. Close any Expo Go dev menu or toast first.
+- **Capture:** `adb exec-out screencap -p > openspec/changes/basic-app-layout/screenshots/<name>.png`. Set the scheme with `adb shell cmd uimode night yes|no`. Screenshot set:
+  - `timeline-light`, `circles-light`, `events-light`
+  - `timeline-dark`, `circles-dark`, `events-dark`
+  - `title-focused-light`, `title-focused-dark` (keyboard open, some text typed)
+- **Review:** Claude reads each screenshot next to `sketches/mobile-portrait.png`, `header-mobile-portrait.png` and `footer-mobile-portrait.png`, and checks:
+  - header order and alignment
+  - header and footer heights in px against (70 or 75 + inset) × scale
+  - border widths and colors
+  - tab sizes and spacing
+  - active tab color (intentionally `#006fe6` in light mode)
+  - FAB size and position
+  - background colors
+- **Measurement:** check exact colors and sizes by sampling pixels with ImageMagick (`magick shot.png -format '%[pixel:p{X,Y}]' info:`) or Pillow, comparing against `Colors`. For dark mode there is no sketch: check that the structure matches the light screenshot and that the colors match the D5 dark palette.
+- **Loop:** list the differences, fix them, retake the affected screenshots, and repeat until the only differences left are the intentional ones (cards not built yet, darker active tab, platform fonts and emoji). The user approves the final set, and the review notes go in the PR.
+- **Afterwards:** the approved screenshots are the references a later Maestro `assertScreenshot` change will use.
+
 ## Risks / Trade-offs
 
 - [`tabBar` is in the installed types but not on the v58 tabs docs page] → Check it in the first shell task (render the bar and switch tabs). If it does not work, switch to headless `expo-router/ui` (D1 fallback) without changing any spec.
 - [Typed routes are stale after removing `/explore` and adding `/circles` and `/events`, so `tsc` reports `Href` errors] → Start the dev server once (`npx expo start`, which regenerates `.expo/types`) before `npx tsc --noEmit`.
 - [The keyboard may push the footer and FAB up on Android while the title field is focused] → Acceptable for this skeleton. Note what happens during the device check. Hiding the bar while the keyboard is open is a follow-up.
 - [`boxShadow` rendering differs slightly between Android and iOS] → Purely visual. Compare with the sketch on Android, which is the reference device.
-- [No automated tests] → Each task group has a concrete manual check, and the last group runs a full device checklist mapped to the spec scenarios.
+- [Jest cannot see real rendering: shadows, device safe areas, keyboard, fonts] → The D11 screenshot review on a device covers these, and the device checks for keyboard and TalkBack stay in the tasks.
+- [The test tooling needs exact versions on SDK 58 (Jest 30, RNTL ≥ 14), and `renderRouter` with the real `src/app` may need native-module mocks (splash screen, safe area)] → Install through `npx expo install` and let `expo-doctor` check the versions. Add mocks in `src/test-utils/` as they are needed, never by changing app code just for tests.
+- [Screenshots vary with the device and its status bar] → Use one device for all screenshots, turn on demo mode, and compare with the sketches through a review instead of a pixel diff.
+- [`adb` comes from a snap, so file access may be confined] → The PNG is written by shell redirection (`adb exec-out … > file`), not by adb itself.
 - [The title field is 42 points tall, under the 44-point target] → Recorded as an exception in the `app-shell` spec. The field is wide, and the height comes from the design.
 - [Deleting `ThemedText`/`ThemedView` means the next feature needs its own text styles] → The tokens are in `theme.ts`, so a text component can be added when cards need one.
 
 ## Migration Plan
 
-All the work happens on the `01-layout` branch. There is no data or user migration. To roll back, revert the branch commits. Removed packages come back with `npx expo install <pkg>`.
+All the work happens on the `01-layout` branch. There is no data or user migration. To roll back, revert the branch commits. Removed packages come back with `npx expo install <pkg>`. To drop the test setup, remove the four dev dependencies, the Jest config and scripts, and the `__tests__` folders.
 
 ## Open Questions
 
