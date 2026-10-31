@@ -1,7 +1,7 @@
 ---
-type: Guide
+type: Reference
 title: Device testing
-description: How to boot the Android emulator on the development machine, open BlueShare in Expo Go through adb, and which behavior checks were run.
+description: What a machine needs to run BlueShare on an Android emulator, the reference device profile for screenshots, and the device checks already passed.
 tags: [device, android, emulator, expo-go, adb]
 status: stable
 generated:
@@ -11,28 +11,25 @@ generated:
 
 # Device testing
 
-## Development machine (Linux)
+**How to run:** the `run-on-emulator` project skill (`.claude/skills/run-on-emulator/SKILL.md`) has the boot, Metro, Expo Go and adb steps.
 
-- Android SDK: `/home/vangamo/Apps/Android-SDK` (`ANDROID_HOME` is not set by default, so pass it explicitly).
-- AVD: `Medium_Phone_API_37.0` (API 37, 1080×2400, density 420 = 2.625 px per point, gesture navigation), with Expo Go (`host.exp.exponent`) installed.
-- `adb` is installed (snap). ImageMagick and Pillow are available. There is no iOS simulator, no Java and no Maestro.
+## Requirements
 
-## Run the app on the emulator
+- The Android SDK, with `ANDROID_HOME` pointing to it. The emulator is `$ANDROID_HOME/emulator/emulator`. `adb` comes from `$ANDROID_HOME/platform-tools`, or from the `PATH`.
+- An Android Virtual Device (AVD) with the reference device profile below. List them with `$ANDROID_HOME/emulator/emulator -list-avds`.
+- Expo Go (`host.exp.exponent`) installed in that emulator.
+- ImageMagick (`convert`, `compare`, `magick`) for the [visual review](visual-review.md).
+- iOS checks need macOS with Xcode's simulator. None have been run yet.
 
-```bash
-ANDROID_HOME=/home/vangamo/Apps/Android-SDK \
-  /home/vangamo/Apps/Android-SDK/emulator/emulator -avd Medium_Phone_API_37.0 -no-snapshot-save -no-boot-anim &   # background
-adb shell getprop sys.boot_completed      # wait until it prints 1
-npx expo start --port 8081 &               # background
-adb reverse tcp:8081 tcp:8081
-adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8081" host.exp.exponent
-```
+## Reference device profile
 
-Useful commands:
-- `adb shell cmd uimode night yes|no`: switch dark or light mode.
-- `adb shell input tap X Y` and `adb shell input text abuela`: interact (pixel coordinates). The tab centers at 1080 wide, y≈2242: Timeline x≈197, Circles x≈540, Events x≈882. The title field is at about (540, 153).
-- `exp://127.0.0.1:8081/--/circles`: deep link inside Expo Go.
-- `adb shell uiautomator dump`: the accessibility tree.
+The approved screenshots were taken on Android Studio's **Medium Phone** profile:
+- 1080×2400 px, density 420 (2.625 px per point, 411 points wide)
+- Android API 37, gesture navigation
+
+Screenshot comparisons are only valid on this profile. Check it with `adb shell wm size` and `adb shell wm density`. Other AVDs are fine for behavior checks.
+
+Inside Expo Go, deep links use `exp://127.0.0.1:8081/--/<path>`. `blueshare://` does not resolve.
 
 ## Checks already passed (Android, Expo Go)
 
@@ -44,4 +41,4 @@ Useful commands:
 - **Accessibility:** TalkBack announces the tabs with their selected state.
 - **Accepted:** the keyboard covers the footer, see [Known limitations](../product/known-limitations.md).
 
-Screenshot capture and comparison: [Visual review](visual-review.md).
+Screenshot comparison: [Visual review](visual-review.md).

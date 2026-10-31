@@ -1,7 +1,7 @@
 ---
-type: Guide
+type: Reference
 title: Visual review
-description: Visual changes are checked by capturing emulator screenshots with adb and comparing them with the approved set in src/__tests__/e2e/screenshots and with the sketches.
+description: Why visual changes are reviewed with structured screenshot comparisons, where the approved references live, and which differences from the sketches are intentional.
 tags: [screenshots, visual, review, design]
 status: stable
 generated:
@@ -11,48 +11,23 @@ generated:
 
 # Visual review
 
-The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel diff against them always fails. The review is **structured**: structure, sizes and sampled colors.
+**How to run:** the `visual-review` project skill (`.claude/skills/visual-review/SKILL.md`) covers capture, masking, pixel comparison, the review against the sketches, and updating the references.
 
-## Approved reference set
+## Why a structured review
 
-`src/__tests__/e2e/screenshots/`: `timeline`, `circles`, `events` and `title-focused`, each in `-light` and `-dark` (1080×2400 from `Medium_Phone_API_37.0`). The user approved them. They are the references for future Maestro `assertScreenshot` flows. Metro does not bundle them.
+The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel diff against them always fails. New UI is reviewed for structure, sizes in px against points × 2.625, and colors sampled against the tokens. **Unchanged** UI is checked by a pixel diff against the approved references, after masking the status bar and Expo Go's "Tools" bubble.
 
-## Capture
+## Approved references
 
-```bash
-adb shell settings put global sysui_demo_allowed 1
-adb shell am broadcast -a com.android.systemui.demo -e command enter
-adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 1200
-adb shell am broadcast -a com.android.systemui.demo -e command network -e mobile hide
-adb shell cmd uimode night no            # or yes for dark
-adb exec-out screencap -p > shot.png     # shell redirection (adb is a snap)
-adb shell am broadcast -a com.android.systemui.demo -e command exit   # when done
-```
+`src/__tests__/e2e/screenshots/`: `timeline`, `circles`, `events` and `title-focused`, each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
 
-## Compare with the approved set
+## Intentional differences from the sketches
 
-Mask the status bar and Expo Go's floating "Tools" bubble, which are not part of the app, then count the differing pixels:
-
-```bash
-mask(){ convert "$1" -fill black -draw "rectangle 0,0 1079,80" -draw "rectangle 30,1740 190,1980" "$2"; }
-compare -metric AE -fuzz 2% ref-masked.png new-masked.png diff.png   # 0 = identical
-```
-
-On 2026-11-01, after the move to JSON tokens, all six tab screenshots matched with 0 differing pixels.
-
-## Compare with the sketches (new UI)
-
-Read the screenshot next to `sketches/mobile-portrait.png`, `header-…` and `footer-…`, and check:
-- order and alignment
-- heights in px against (70 or 75 + inset) × 2.625
-- border widths and colors, tab spacing, FAB position
-
-Sample colors with `magick shot.png -format '%[pixel:p{X,Y}]' info:` and compare with `Colors`. Dark mode has no sketch: it must match the light structure with the dark palette.
-
-**Intentional differences:**
 - no feed cards yet
 - the active tab is `#006fe6` ([Active tab contrast](../decisions/active-tab-contrast.md))
 - platform fonts and emoji
-- the device is 411 points wide while the mock is 360
+- the device is 411 points wide while the mock is 360, so elements look smaller relative to the screen
 
-When a UI change is approved, retake the affected screenshots and replace them in `src/__tests__/e2e/screenshots/`.
+Dark mode has no sketch: it must match the light structure with the [dark palette](../design-system/color-palettes.md).
+
+Device setup: [Device testing](device-testing.md).

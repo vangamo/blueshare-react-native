@@ -20,10 +20,7 @@ generated:
 
 ## Adding a main section
 
-1. Create `src/app/<name>.tsx` with a default-export screen.
-2. Add `<Tabs.Screen name="<name>" options={{ title: '<Label>' }} />` in `src/app/_layout.tsx`. The footer reads `options.title`.
-3. Start the dev server once (`npx expo start`) so typed routes regenerate in `.expo/types`. Then run `npx tsc --noEmit`.
-4. Extend `src/__tests__/e2e/navigation-test.tsx` and `footer-tab-bar-test.tsx`. Check the footer still fits: it uses equal-width tabs.
+Use the `add-main-section` project skill (`.claude/skills/add-main-section/SKILL.md`). In short: a route file plus a `Tabs.Screen`, regenerate typed routes, update the tests, the visual review and the docs. The app-shell spec names exactly three sections, so a new tab needs a spec change first.
 
 ## Deep links
 

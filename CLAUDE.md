@@ -49,39 +49,29 @@ A task is finished only when **lint (0 warnings), typecheck and tests pass**, wi
 - **Never edit `sketches/`.** They are design references. The HTML mock wins over `sketches/design_system.json`.
 - **Specs first:** features go through OpenSpec (`/opsx:propose`, `/opsx:apply`, `/opsx:archive`). Current specs are in `openspec/specs/`.
 
-## Knowledge index (`docs/`)
+## When to read what
 
-**Product**
-- [Product overview](docs/product/overview.md): purpose, audience, planned features
-- [Roadmap](docs/product/roadmap.md): phases, what is done, what is next
-- [Design sources](docs/product/design-sources.md): the `sketches/` files and their precedence
-- [Known limitations](docs/product/known-limitations.md): accepted gaps and open questions
+Read the listed files **before** starting that kind of work. Folders `src/app/`, `src/components/`, `src/constants/` and `src/__tests__/` have their own `CLAUDE.md` with local rules.
 
-**Architecture**
-- [Tech stack](docs/architecture/tech-stack.md): versions and experiments
-- [Project structure](docs/architecture/project-structure.md): folders and placement rules
-- [Shell layout](docs/architecture/shell-layout.md): how `_layout.tsx` composes header, tabs, footer and FAB
-- [Routing](docs/architecture/routing.md): JS tabs, typed routes, deep links, adding a section
+| When you… | Read or use |
+| --- | --- |
+| need product context or plan a feature | [overview](docs/product/overview.md), [roadmap](docs/product/roadmap.md), [known limitations](docs/product/known-limitations.md) |
+| implement anything from the sketches | [design sources](docs/product/design-sources.md) |
+| place a new file or wonder where code lives | [project structure](docs/architecture/project-structure.md) |
+| touch `_layout.tsx`, the header, footer or create button | [shell layout](docs/architecture/shell-layout.md), the page in [docs/components/](docs/components/index.md) |
+| add or change a route, link or deep link | [routing](docs/architecture/routing.md) |
+| add a tab or main section | skill `add-main-section` |
+| style a component or use colors and sizes | [theme module](docs/design-system/theme-module.md), [sizes and typography](docs/design-system/layout-sizes.md) |
+| add or change a color or token | [design tokens](docs/design-system/design-tokens.md), [color palettes](docs/design-system/color-palettes.md) |
+| add a control or change text and background colors | [accessibility](docs/development/accessibility.md) |
+| want to undo or rework an existing choice (tabs, splash, tokens, contrast, packages) | [decisions](docs/decisions/index.md) first: they record what was rejected and why |
+| change behavior covered by a spec | [specs](docs/specs/index.md) (full text in `openspec/specs/`), [OpenSpec workflow](docs/development/openspec-workflow.md) |
+| add, remove or upgrade a package | [dependencies](docs/development/dependencies.md), [kept and removed dependencies](docs/decisions/kept-dependencies.md) |
+| touch `app.json`, icons, splash or builds | [native config and EAS](docs/development/native-config-and-eas.md) |
+| write or fix tests | [testing](docs/development/testing.md) |
+| hit a lint error | [linting](docs/development/linting.md), [coding conventions](docs/development/coding-conventions.md) |
+| run or try the app on a device | skill `run-on-emulator` ([device testing](docs/development/device-testing.md) has the machine facts) |
+| make any visual change, or check the UI against the design | skill `visual-review` |
+| implement, propose or archive an OpenSpec change | `/opsx:apply`, `/opsx:propose`, `/opsx:archive` ([OpenSpec workflow](docs/development/openspec-workflow.md)) |
 
-**Design system**
-- [Design tokens](docs/design-system/design-tokens.md): `design-system.json` and how to add a token
-- [Theme module](docs/design-system/theme-module.md): `theme.ts` exports, `useTheme()`, the styling pattern
-- [Color palettes](docs/design-system/color-palettes.md): light and dark roles, contrast ratios
-- [Sizes and typography](docs/design-system/layout-sizes.md): `Layout` and the token scales
-
-**Components**
-- [App header](docs/components/app-header.md), [Title search field](docs/components/title-search-field.md), [Footer tab bar](docs/components/footer-tab-bar.md), [Create button](docs/components/create-button.md), [Placeholder screen](docs/components/placeholder-screen.md)
-
-**Decisions**
-- [Decisions index](docs/decisions/index.md): JS tabs with a custom tab bar, shell at the root layout, no themed wrappers, tokens in JSON, active tab contrast, splash on first layout, title field state, dependencies, mobile only
-
-**Implemented specs**
-- [app-shell](docs/specs/app-shell.md), [app-theming](docs/specs/app-theming.md), [app-platform](docs/specs/app-platform.md)
-
-**Development**
-- [Commands](docs/development/commands.md), [Dependencies](docs/development/dependencies.md), [Native config and EAS](docs/development/native-config-and-eas.md)
-- [Coding conventions](docs/development/coding-conventions.md), [Accessibility](docs/development/accessibility.md), [Linting](docs/development/linting.md)
-- [Testing](docs/development/testing.md), [Device testing](docs/development/device-testing.md), [Visual review](docs/development/visual-review.md)
-- [OpenSpec workflow](docs/development/openspec-workflow.md)
-
-When you change code, behavior or decisions, update the matching `docs/` file and add an entry to [`docs/log.md`](docs/log.md).
+Full map of the knowledge base: [docs/index.md](docs/index.md). When you change code, behavior or decisions, update the matching `docs/` file and add an entry to [`docs/log.md`](docs/log.md).

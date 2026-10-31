@@ -18,7 +18,7 @@ Before you call any code task finished:
 3. `npm test` passes, with no `.only` or `.skip` left. New behavior comes with tests. See [Testing](testing.md).
 4. No hard-coded colors in components (`grep -rnE "#[0-9a-fA-F]{3,8}\b|rgba?\(" src --include=*.tsx` finds nothing). See [Theme module](../design-system/theme-module.md).
 5. After a dependency change, `npx expo-doctor` and `npx expo install --check` pass.
-6. After a **visual change**, check it on the emulator in light and dark, and compare with the approved screenshots. See [Visual review](visual-review.md).
+6. After a **visual change**, run the `visual-review` skill: emulator, light and dark, compared with the approved screenshots. See [Visual review](visual-review.md).
 7. If the change touches specified behavior, update the OpenSpec artifacts first. See [OpenSpec workflow](openspec-workflow.md).
 
 Report failures and skipped checks honestly.
