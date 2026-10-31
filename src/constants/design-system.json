@@ -1,0 +1,201 @@
+{
+  "project": "BlueShare",
+  "version": "1.0.0",
+  "design_tokens": {
+    "colors": {
+      "primary_dark": "#0f172a",
+      "primary_blue": "#0084ff",
+      "primary_blue_hover": "#006fe6",
+      "background_main": "#faf9f6",
+      "background_body": "#f1f5f9",
+      "card_bg": "#ffffff",
+      "border_color": "#e2e8f0",
+      "border_dark": "#cbd5e1",
+      "text_main": "#0f172a",
+      "text_secondary": "#334155",
+      "text_muted": "#475569",
+      "badge_bg": "#e0f2fe",
+      "badge_text": "#0369a1",
+      "creation_bg": "#f0f7ff",
+      "primary_blue_deep": "#0058b8",
+      "primary_shadow": "rgba(0, 132, 255, 0.3)",
+      "on_primary": "#ffffff",
+      "surface_muted": "#f8fafc",
+      "avatar_bg": "#fdf6f0"
+    },
+    "colors_dark": {
+      "primary_dark": "#e2e8f0",
+      "primary_blue": "#4da3ff",
+      "primary_blue_hover": "#80bdff",
+      "background_main": "#0b1120",
+      "background_body": "#020617",
+      "card_bg": "#0f172a",
+      "border_color": "#334155",
+      "border_dark": "#64748b",
+      "text_main": "#f1f5f9",
+      "text_secondary": "#cbd5e1",
+      "text_muted": "#94a3b8",
+      "badge_bg": "#0c2a4a",
+      "badge_text": "#7dd3fc",
+      "creation_bg": "#0c2340",
+      "primary_blue_deep": "#b3d7ff",
+      "primary_shadow": "rgba(77, 163, 255, 0.3)",
+      "on_primary": "#0f172a",
+      "surface_muted": "#1e293b",
+      "avatar_bg": "#3a2e25"
+    },
+    "typography": {
+      "font_family": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "weights": {
+        "regular": "400",
+        "medium": "600",
+        "bold": "700",
+        "extrabold": "800"
+      },
+      "sizes": {
+        "caption": "12px",
+        "small": "14px",
+        "body": "15px",
+        "body_large": "16px",
+        "title_card": "18px",
+        "title_tablet": "20px"
+      }
+    },
+    "spacing": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "20px",
+      "xxl": "24px"
+    },
+    "border_radius": {
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "18px",
+      "pill": "50%"
+    }
+  },
+  "device_sizes": {
+    "mobile_portrait": {
+      "width": "380px",
+      "height": "780px"
+    },
+    "mobile_landscape": {
+      "width": "780px",
+      "height": "380px"
+    },
+    "tablet_portrait": {
+      "width": "600px",
+      "height": "850px"
+    }
+  },
+  "components": {
+    "header": {
+      "height_portrait": "70px",
+      "height_landscape": "55px",
+      "background": "#ffffff",
+      "border_bottom": "2px solid #e2e8f0",
+      "menu_button": {
+        "background": "#f0f7ff",
+        "border": "2px solid #0084ff",
+        "color": "#0084ff",
+        "radius": "10px"
+      },
+      "search_input": {
+        "height": "42px",
+        "border": "2px solid #0f172a",
+        "focus_border": "#0084ff",
+        "background": "#f8fafc",
+        "radius": "12px",
+        "default_text": "BlueShare"
+      },
+      "user_avatar": {
+        "size": "42px",
+        "border": "2px solid #0f172a",
+        "background": "#fdf6f0",
+        "radius": "50%"
+      }
+    },
+    "footer": {
+      "height_portrait": "75px",
+      "height_tablet": "80px",
+      "background": "#ffffff",
+      "border_top": "2px solid #e2e8f0",
+      "tabs": ["Timeline", "Circles", "Events"],
+      "tab_inactive": {
+        "background": "#f8fafc",
+        "border": "2px solid #cbd5e1",
+        "color": "#334155",
+        "radius": "10px"
+      },
+      "tab_active": {
+        "background": "#006fe6",
+        "border": "2px solid #0058b8",
+        "color": "#ffffff"
+      }
+    },
+    "floating_action_button": {
+      "size": "56px",
+      "background": "#0084ff",
+      "color": "#ffffff",
+      "border": "3px solid #ffffff",
+      "radius": "50%",
+      "icon": "+"
+    },
+    "creation_box": {
+      "border": "2px dashed #0084ff",
+      "background": "#f0f7ff",
+      "radius": "16px",
+      "options": ["Evento", "Texto", "Imagen"],
+      "submit_button": {
+        "height": "42px",
+        "background": "#0084ff",
+        "color": "#ffffff",
+        "radius": "10px"
+      }
+    },
+    "feed_cards": {
+      "common_styles": {
+        "background": "#ffffff",
+        "border": "2px solid #e2e8f0",
+        "radius": "16px",
+        "padding": "16px",
+        "box_shadow": "0 2px 6px rgba(15, 23, 42, 0.04)"
+      },
+      "event_card": {
+        "highlight_border": "2px solid #0f172a",
+        "left_accent_bar": "6px solid #0084ff",
+        "category_badge": {
+          "background": "#e0f2fe",
+          "color": "#0369a1",
+          "border": "1px solid #bae6fd"
+        },
+        "carousel": {
+          "item_min_width": "110px",
+          "item_height": "90px",
+          "background": "#f1f5f9"
+        }
+      },
+      "text_card": {
+        "font_size": "15px",
+        "line_height": "1.5"
+      },
+      "image_card": {
+        "image_box_height": "170px",
+        "caption_style": "italic",
+        "caption_color": "#475569"
+      },
+      "card_actions": {
+        "buttons": ["Editar", "Compartir"],
+        "button_style": {
+          "background": "#f8fafc",
+          "border": "1px solid #cbd5e1",
+          "color": "#0f172a",
+          "radius": "8px"
+        }
+      }
+    }
+  }
+}

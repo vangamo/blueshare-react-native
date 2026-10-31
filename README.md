@@ -31,3 +31,38 @@
 - **Framework:** React Native
 - **Language:** TypeScript
 - **Target Platforms:** Android & iOS
+
+## Get started
+
+1. Install dependencies
+
+   ```bash
+   npm install
+   ```
+
+2. Start the app
+
+   ```bash
+   npx expo start
+   ```
+
+BlueShare runs on Android and iOS (portrait only). From the dev server output you can open it in:
+
+- [Expo Go](https://expo.dev/go) on a phone (scan the QR code)
+- an [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/) or [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- a [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+
+Screens live in **src/app** ([file-based routing](https://docs.expo.dev/router/introduction)); shared components, hooks and the theme live in **src/components**, **src/hooks** and **src/constants**.
+
+## Checks
+
+```bash
+npm run lint        # ESLint (must pass with no warnings)
+npx tsc --noEmit    # type check
+npm test            # unit tests (Jest + React Native Testing Library)
+```
+
+## Learn more
+
+- [Expo documentation](https://docs.expo.dev/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
