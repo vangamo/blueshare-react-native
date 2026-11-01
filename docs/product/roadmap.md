@@ -6,7 +6,7 @@ tags: [product, roadmap, planning]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T14:00:00Z
 ---
 
 # Roadmap
@@ -20,7 +20,7 @@ generated:
 
 ## Delivered in Phase 1
 
-The OpenSpec change `basic-app-layout` (branch `01-layout`):
+The OpenSpec change `basic-app-layout` (branch `01-layout`, archived 2026-11-01 in `openspec/changes/archive/2026-11-01-basic-app-layout/`):
 - removed the Expo starter and web support
 - built the theme from JSON tokens
 - built the header, footer tabs and create button
@@ -36,6 +36,5 @@ Specs: [app-shell](../specs/app-shell.md), [app-theming](../specs/app-theming.md
 
 ## Workflow follow-ups
 
-- Archive `basic-app-layout` with `/opsx:archive`. See [OpenSpec workflow](../development/openspec-workflow.md).
 - Add Maestro flows with `assertScreenshot`, using the approved screenshots as references. See [Visual review](../development/visual-review.md).
 - Choose one UI language and set up i18n. See [Known limitations](known-limitations.md).

@@ -6,7 +6,7 @@ tags: [openspec, workflow, specs, process]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T14:00:00Z
 ---
 
 # OpenSpec workflow
@@ -58,4 +58,4 @@ Limits:
 
 ## Current state
 
-The change `basic-app-layout` (created 2026-10-31, branch `01-layout`) has all 51 of its tasks done. Its specs are synced into `openspec/specs/`. It is **not archived yet**: run `/opsx:archive` after review.
+No change is active. The first change, `basic-app-layout` (created 2026-10-31, branch `01-layout`, 51/51 tasks), was archived on 2026-11-01 to `openspec/changes/archive/2026-11-01-basic-app-layout/`. Its specs live in `openspec/specs/` (app-shell, app-theming, app-platform). The next change is the feed, see the [roadmap](../product/roadmap.md).
