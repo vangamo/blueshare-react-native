@@ -21,7 +21,10 @@
       "primary_shadow": "rgba(0, 132, 255, 0.3)",
       "on_primary": "#ffffff",
       "surface_muted": "#f8fafc",
-      "avatar_bg": "#fdf6f0"
+      "avatar_bg": "#fdf6f0",
+      "card_shadow": "rgba(15, 23, 42, 0.04)",
+      "divider": "#f1f5f9",
+      "overlay": "rgba(15, 23, 42, 0.5)"
     },
     "colors_dark": {
       "primary_dark": "#e2e8f0",
@@ -42,7 +45,10 @@
       "primary_shadow": "rgba(77, 163, 255, 0.3)",
       "on_primary": "#0f172a",
       "surface_muted": "#1e293b",
-      "avatar_bg": "#3a2e25"
+      "avatar_bg": "#3a2e25",
+      "card_shadow": "rgba(2, 6, 23, 0.5)",
+      "divider": "#1e293b",
+      "overlay": "rgba(2, 6, 23, 0.7)"
     },
     "typography": {
       "font_family": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",

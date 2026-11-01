@@ -6,7 +6,7 @@ tags: [screenshots, visual, review, design]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T18:00:00Z
 ---
 
 # Visual review
@@ -19,11 +19,14 @@ The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel di
 
 ## Approved references
 
-`src/__tests__/e2e/screenshots/`: `timeline`, `circles`, `events` and `title-focused`, each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
+`src/__tests__/e2e/screenshots/`: `timeline` (empty timeline), `circles`, `events`, `title-focused`, and for the creation box and feed `box-choose` (placeholder, Guardar disabled), `box-list` (type list open), `box-texto` (Texto chosen), `box-write` (text step with two lines, keyboard closed) and `timeline-cards` (two text cards), each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
 
 ## Intentional differences from the sketches
 
-- no feed cards yet
+- the creation box adds a Cancelar button next to Guardar and Crear (the sketches show only the main button)
+- Guardar and Crear use `#006fe6` instead of the mock's `#0084ff`, for contrast
+- text cards show Editar as well as Compartir
+- the type select is a custom field with a `▾` glyph, and its list is a sheet over a dimmed backdrop, not a native dropdown
 - the active tab is `#006fe6` ([Active tab contrast](../decisions/active-tab-contrast.md))
 - platform fonts and emoji
 - the device is 411 points wide while the mock is 360, so elements look smaller relative to the screen
@@ -31,3 +34,9 @@ The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel di
 Dark mode has no sketch: it must match the light structure with the [dark palette](../design-system/color-palettes.md).
 
 Device setup: [Device testing](device-testing.md).
+
+## Capture notes
+
+- The empty-timeline shots need an empty database. It lives inside Expo Go's data, so clear it with `adb shell pm clear host.exp.exponent`. After that, Expo Go shows its developer menu on first launch: close it before capturing, or taps land in the menu (they can open other apps or move the "Tools" bubble out of the masked area).
+- Capture the creation box and cards after the empty-state shots, because creating items makes the timeline non-empty.
+- Type ASCII only with `adb shell input text`: it can't send accented characters.

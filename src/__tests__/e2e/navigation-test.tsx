@@ -1,10 +1,12 @@
 import { renderRouter, screen } from 'expo-router/testing-library';
 
+import { EMPTY_TIMELINE_MESSAGE } from '@/components/timeline-feed';
+
 const SECTIONS = ['Timeline', 'Circles', 'Events'];
 
 /**
- * Each tab label is always on screen, so the shown section is the one whose
- * name appears twice: once in the tab bar and once as the placeholder title.
+ * Each tab label is always on screen. Circles and Events show a placeholder, so
+ * the shown one is the name that appears twice: in the tab bar and as its title.
  */
 function expectSectionShown(section: string) {
   for (const name of SECTIONS) {
@@ -14,10 +16,14 @@ function expectSectionShown(section: string) {
 }
 
 describe('app routes', () => {
-  test('opens on Timeline', async () => {
+  test('opens on Timeline, which shows the feed and no placeholder', async () => {
     await renderRouter('./src/app');
     expect(screen).toHavePathname('/');
-    expectSectionShown('Timeline');
+    expect(screen.getByRole('tab', { name: 'Timeline' })).toBeSelected();
+    expect(screen.getByTestId('timeline-feed')).toBeOnTheScreen();
+    expect(await screen.findByText(EMPTY_TIMELINE_MESSAGE)).toBeOnTheScreen();
+    expect(screen.queryByText('Coming soon.')).toBeNull();
+    expect(screen.getAllByText('Timeline')).toHaveLength(1);
   });
 
   test.each([

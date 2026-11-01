@@ -7,7 +7,7 @@ resource: ../../src/constants/design-system.json
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:30:00Z
 ---
 
 # Design tokens
@@ -25,6 +25,7 @@ generated:
 
 The sketch file stays untouched. The copy adds:
 - the color roles `surface_muted`, `avatar_bg`, `primary_blue_deep`, `primary_shadow` and `on_primary`
+- the color roles `card_shadow` and `divider` (light values from the mock's cards) and `overlay` (the type list backdrop)
 - the full `colors_dark` block
 - `components.footer.border_top` set to `2px solid #e2e8f0` (the HTML wins)
 - `components.footer.tab_active` set to `#006fe6` with a `#0058b8` border (see [Active tab contrast](../decisions/active-tab-contrast.md))

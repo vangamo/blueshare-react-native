@@ -6,11 +6,13 @@
     "eslint": "^10.14.0",
     "expo": "~58.0.22",
     "expo-constants": "~58.0.14",
+    "expo-crypto": "~58.0.7",
     "expo-font": "~58.0.11",
     "expo-image": "~58.0.18",
     "expo-linking": "~58.0.15",
     "expo-router": "~58.0.29",
     "expo-splash-screen": "~58.0.12",
+    "expo-sqlite": "~58.0.15",
     "expo-status-bar": "~58.0.4",
     "expo-system-ui": "~58.0.7",
     "react": "19.3.0",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
+    "@types/node": "^26.6.6",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
@@ -41,6 +44,9 @@
     "test:watch": "jest --watchAll"
   },
   "private": true,
+  "engines": {
+    "node": ">=22.13"
+  },
   "jest": {
     "preset": "jest-expo",
     "moduleNameMapper": {

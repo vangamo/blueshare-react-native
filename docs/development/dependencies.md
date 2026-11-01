@@ -6,7 +6,7 @@ tags: [dependencies, packages, expo-go]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:30:00Z
 ---
 
 # Dependencies
@@ -26,8 +26,21 @@ generated:
 
 The current kept and removed list, with reasons: [Kept and removed dependencies](../decisions/kept-dependencies.md).
 
+## Runtime dependencies added for items
+
+- `expo-sqlite`: the local database for items (`blueshare.db`). Included in Expo Go. `npx expo install` also added its config plugin to `app.json`.
+- `expo-crypto`: `randomUUID()` for item IDs (UUID v4). Included in Expo Go.
+
+Only `src/items/infrastructure/expo-sql-database.ts` and `app-adapters.ts` import them. See [Items module](../architecture/items-module.md).
+
 ## Dev dependencies
 
-`jest`, `jest-expo`, `@types/jest`, `@testing-library/react-native`, `eslint`, `eslint-config-expo`, `typescript` and `@types/react`. They do not affect Expo Go.
+`jest`, `jest-expo`, `@types/jest`, `@testing-library/react-native`, `eslint`, `eslint-config-expo`, `typescript`, `@types/react` and `@types/node`. They do not affect Expo Go.
+
+`@types/node` is a direct dev dependency (it used to come only through Jest) because the test SQLite driver uses `node:sqlite`. Only `src/test-utils/node-sql-database.ts` references it, with `/// <reference types="node" />`. `tsconfig.json` keeps `"types": ["jest"]`, so Node globals don't leak into app code.
+
+## Node version
+
+Tests need **Node 22.13 or later**, the first release where `node:sqlite` works without a flag. `package.json` declares it in `engines`. No extra test package is needed: the same SQL runs on `node:sqlite` in Jest and on `expo-sqlite` on the phone.
 
 Known issue: `eslint` is listed in both `dependencies` and `devDependencies`. See [Known limitations](../product/known-limitations.md).
