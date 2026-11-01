@@ -1,6 +1,6 @@
 # Decisions
 
-The technical decisions taken in the `basic-app-layout` change (its `design.md`, D1 to D11). Each page gives the decision, why it was taken and the rejected alternatives. The decisions about tooling are in [Development](../development/index.md): mandatory lint (D9), the Jest setup (D10) and the screenshot review (D11).
+The technical decisions taken in the `basic-app-layout` change (its `design.md`, D1 to D11, now in `openspec/changes/archive/2026-11-01-basic-app-layout/`). Each page gives the decision, why it was taken and the rejected alternatives. The decisions about tooling are in [Development](../development/index.md): mandatory lint (D9), the Jest setup (D10) and the screenshot review (D11).
 
 * [JS tabs with a custom tab bar](js-tabs-custom-tab-bar.md) - D1: `expo-router/js-tabs` with a `tabBar` prop, instead of native or headless tabs.
 * [Shell at the root layout](shell-at-root-layout.md) - D2: header, footer and FAB are rendered once around the navigator, not per screen.
