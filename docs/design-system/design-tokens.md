@@ -7,7 +7,7 @@ resource: ../../src/constants/design-system.json
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-02T12:00:00Z
 ---
 
 # Design tokens

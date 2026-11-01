@@ -7,7 +7,7 @@ Defines what the Timeline section shows: the user's items, newest first, how a t
 ## Requirements
 
 ### Requirement: Items newest first
-The Timeline SHALL list every stored item that is not deleted, ordered by creation time with the newest first. The list SHALL scroll vertically between the header and the footer, with 16 points of padding. When the creation box is open, it SHALL be shown above the first item.
+The Timeline SHALL list every stored item that is not deleted, ordered by creation time with the newest first. Editing an item SHALL NOT change its position. The list SHALL scroll vertically between the header and the footer, with 16 points of padding. When the creation box is open, it SHALL be shown above the first item.
 
 #### Scenario: Order of two texts
 - **WHEN** the user creates the text "Primero" and then the text "Segundo"
@@ -16,6 +16,10 @@ The Timeline SHALL list every stored item that is not deleted, ordered by creati
 #### Scenario: Deleted items are hidden
 - **WHEN** a stored item is marked as deleted
 - **THEN** the Timeline does not show it
+
+#### Scenario: An edited item keeps its place
+- **WHEN** the Timeline shows "Segundo" and then "Primero", and the user edits "Primero" to "Primero editado"
+- **THEN** the Timeline shows "Segundo" first and "Primero editado" second, also after the app restarts
 
 ### Requirement: New items appear right away
 An item created from the creation box SHALL appear at the top of the Timeline as soon as it is saved, with no restart, reload or pull-to-refresh.
@@ -46,17 +50,6 @@ Below its text, each text card SHALL show an action row separated by a 1-point d
 - **WHEN** a screen reader focuses the card's action buttons
 - **THEN** they are announced as buttons named "Editar" and "Compartir"
 
-### Requirement: Card actions do nothing yet
-Pressing "Editar" or "Compartir" on a text card SHALL show press feedback and have no other effect: the text is not changed, nothing is shared, and no error occurs.
-
-#### Scenario: Pressing Editar
-- **WHEN** the user taps "Editar" on a text card
-- **THEN** the button shows press feedback, the card stays the same, and nothing else happens
-
-#### Scenario: Pressing Compartir
-- **WHEN** the user taps "Compartir" on a text card
-- **THEN** the button shows press feedback and nothing else happens
-
 ### Requirement: Empty timeline message
 When there are no items to show and the creation box is closed, the Timeline SHALL show the message "Sin publicaciones todavía. Pulsa en el botón + para crear una." in the secondary text color. The message SHALL be hidden while the creation box is open.
 
@@ -81,3 +74,21 @@ If the stored items cannot be read, the Timeline SHALL show the message "⚠️ 
 #### Scenario: Storage cannot be read
 - **WHEN** reading the stored items fails at launch
 - **THEN** the Timeline shows "⚠️ No se pudieron cargar las publicaciones." and the user can still switch to Circles and Events
+
+### Requirement: Compartir does nothing yet
+Pressing "Compartir" on a text card SHALL show press feedback and have no other effect: nothing is shared, and no error occurs.
+
+#### Scenario: Pressing Compartir
+- **WHEN** the user taps "Compartir" on a text card
+- **THEN** the button shows press feedback and nothing else happens
+
+### Requirement: Edits and deletions appear right away
+A text saved or an item deleted from the edit dialog SHALL be reflected in the Timeline as soon as the dialog closes, with no restart, reload or pull-to-refresh.
+
+#### Scenario: Card after editing
+- **WHEN** the user saves a new text for a card
+- **THEN** the card shows the new text immediately after the dialog closes
+
+#### Scenario: Card after deleting
+- **WHEN** the user deletes an item
+- **THEN** its card is gone immediately after the dialog closes, and the other cards keep their order

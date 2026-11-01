@@ -33,6 +33,6 @@ From the `add-text-items` change (its `design.md`, now in `openspec/changes/arch
 
 ## edit-text-items
 
-From the `edit-text-items` change (its `design.md`, in `openspec/changes/edit-text-items/` until archived). Its D1 and D2 (live and history tables) are in [Items schema](items-schema.md).
+From the `edit-text-items` change (its `design.md`, now in `openspec/changes/archive/2026-11-02-edit-text-items/`). Its D1 and D2 (live and history tables) are in [Items schema](items-schema.md).
 
 * [Edit dialog](edit-dialog.md) - D5 to D7: local state, an RN `Modal` instead of a route, in-dialog deletion confirmation, and the `danger` colors.

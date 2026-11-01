@@ -1,15 +1,15 @@
 ---
 type: Decision
 title: Items schema
-description: A base items table plus one table per item type, integer UTC-millisecond times, UUID v4 ids made on the phone and soft deletion.
+description: A base items table plus one table per item type, integer UTC-millisecond times, UUID v4 ids made on the phone, soft deletion, and append-only history tables for earlier versions.
 tags: [decision, storage, sqlite, schema]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:55:28Z
+  at: 2026-11-02T12:00:00Z
 ---
 
-# Items schema (add-text-items D2)
+# Items schema (add-text-items D2, edit-text-items D1 and D2)
 
 **Decision:** a base `items` table (`id`, `type`, `created_at`, `updated_at`, `deleted_at`) plus one table per type (`text_items` now). The timeline query `LEFT JOIN`s each type table. The current SQL is in `src/items/infrastructure/migrations.ts`.
 

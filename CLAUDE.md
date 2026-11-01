@@ -2,7 +2,7 @@
 
 BlueShare is an accessible, intergenerational social app that connects older adults with young people. Users share events, short texts and photos with their family and close circles. It is an **Expo / React Native** app for **Android and iOS phones, portrait only, running in Expo Go** (no web). The audience includes seniors, so high contrast and large touch targets are requirements, not extras.
 
-**Current state:** Phase 1 has delivered the app shell (a fixed header with menu, a title that doubles as search and avatar; footer tabs Timeline, Circles, Events; a floating `+` button; light and dark themes from JSON design tokens) and text items. On Timeline, `+` opens a creation box to write a text, saved in a local SQLite database and listed newest first as cards. Circles and Events show placeholders. Image and event items and "Editar" are next.
+**Current state:** Phase 1 has delivered the app shell (a fixed header with menu, a title that doubles as search and avatar; footer tabs Timeline, Circles, Events; a floating `+` button; light and dark themes from JSON design tokens) and text items. On Timeline, `+` opens a creation box to write a text, saved in a local SQLite database and listed newest first as cards, and "Editar" on a card opens a dialog to change or delete it (every earlier version goes to history tables). Circles and Events show placeholders. Image and event items are next.
 
 Detailed knowledge lives in [`docs/`](docs/index.md) (Open Knowledge Format, one topic per file). Open only the files the task needs, using the index below.
 
@@ -62,8 +62,8 @@ Read the listed files **before** starting that kind of work. Folders `src/app/`,
 | touch `_layout.tsx`, the header, footer or create button | [shell layout](docs/architecture/shell-layout.md), the page in [docs/components/](docs/components/index.md) |
 | add or change a route, link or deep link | [routing](docs/architecture/routing.md) |
 | add a tab or main section | skill `add-main-section` |
-| store, read or migrate items, or add an item type | [items module](docs/architecture/items-module.md), [items schema](docs/decisions/items-schema.md) |
-| touch the creation box, the timeline feed or cards | the pages in [docs/components/](docs/components/index.md), [specs](docs/specs/index.md) (item-creation, timeline-feed) |
+| store, read or migrate items, or add an item type | [items module](docs/architecture/items-module.md), [items schema](docs/decisions/items-schema.md) (live and history tables) |
+| touch the creation box, the edit dialog, the timeline feed or cards | the pages in [docs/components/](docs/components/index.md), [specs](docs/specs/index.md) (item-creation, item-editing, timeline-feed) |
 | style a component or use colors and sizes | [theme module](docs/design-system/theme-module.md), [sizes and typography](docs/design-system/layout-sizes.md) |
 | add or change a color or token | [design tokens](docs/design-system/design-tokens.md), [color palettes](docs/design-system/color-palettes.md) |
 | add a control or change text and background colors | [accessibility](docs/development/accessibility.md) |

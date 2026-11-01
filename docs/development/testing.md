@@ -6,7 +6,7 @@ tags: [testing, jest, rntl]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-02T12:00:00Z
 ---
 
 # Testing
@@ -16,12 +16,12 @@ generated:
 - `package.json` `jest`: `preset: "jest-expo"`, `moduleNameMapper` for `^@/assets/(.*)$` (the preset already resolves `@/`), `setupFilesAfterEnv: ["<rootDir>/src/test-utils/jest-setup.ts"]`.
 - `tsconfig.json`: `"types": ["jest"]`. Only `src/test-utils/node-sql-database.ts` adds Node types, with `/// <reference types="node" />`.
 - **Node ≥ 22.13** (`engines` in `package.json`): the test SQLite driver uses the built-in `node:sqlite`.
-- Run `npm test`. It currently runs **26 suites and 189 tests**.
+- Run `npm test`. It currently runs **28 suites and 262 tests**.
 
 ## Layout
 
 - `src/__tests__/unit/{components,constants,hooks,items}/<name>-test.ts(x)`: one module per file. `unit/items/` mirrors `src/items/` (`domain/`, `application/`, `infrastructure/`). A component test may render through `renderRouter` and still counts as a unit test.
-- `src/__tests__/e2e/`: journeys through the whole app (`navigation-test.tsx`, `create-text-item-test.tsx`), plus `screenshots/` (the approved device screenshots, see [Visual review](visual-review.md)).
+- `src/__tests__/e2e/`: journeys through the whole app (`navigation-test.tsx`, `create-text-item-test.tsx`, `edit-text-item-test.tsx`), plus `screenshots/` (the approved device screenshots, see [Visual review](visual-review.md)).
 - Helpers live in `src/test-utils/`, **never** inside `__tests__/`, where Jest would run them as tests. **Never** put tests in `src/app/`, where every file is a route.
 
 ## Shared mocks (`src/test-utils/jest-setup.ts`)
@@ -57,18 +57,19 @@ generated:
 | `unit/constants/limits-test.ts` | `TEXT_MAX_LENGTH` default |
 | `unit/items/domain/text-item-test.ts` | Trimming, blank and too-long text |
 | `unit/items/infrastructure/node-sql-database-test.ts` | Test driver: queries, commit, rollback, foreign keys |
-| `unit/items/infrastructure/migrations-test.ts` | Fresh install, up to date, extra step, failing step |
-| `unit/items/infrastructure/sqlite-item-repository-test.ts` | Newest first with tie-break, soft-deleted rows hidden, all-or-nothing save |
+| `unit/items/infrastructure/migrations-test.ts` | Fresh install (v2), up to date, v1 upgraded once, extra step, failing step, history foreign key |
+| `unit/items/infrastructure/sqlite-item-repository-test.ts` | Newest first with tie-break, all-or-nothing save, `findText`, edits with history versions and counter, deletion into the history, not-found errors, rollback on failure |
 | `unit/items/infrastructure/app-adapters-test.ts` | The Jest swap: working fresh database, UUID v4 |
-| `unit/items/application/use-cases-test.ts` | Common item record, rejected text stores nothing, newest first |
-| `unit/items/application/timeline-store-test.ts` | loading → ready, error states, `createText` waits and prepends, failed save, stable snapshot |
-| `unit/items/application/items-module-test.ts` | Items survive a restart (two modules, one database) |
+| `unit/items/application/use-cases-test.ts` | Common item record, rejected text stores nothing, newest first, `updateTextItem` (unchanged text writes nothing), `deleteItem` |
+| `unit/items/application/timeline-store-test.ts` | loading → ready, error states, `createText` waits and prepends, `updateText` in place, `deleteItem`, failed save, stable snapshot |
+| `unit/items/application/items-module-test.ts` | Items survive a restart, also after an edit and a deletion (two modules, one database) |
 | `unit/hooks/use-timeline-test.tsx` | `useSyncExternalStore` reading: loading → ready, created items first |
 | `unit/components/creation-box-provider-test.ts` | Every reducer transition and `openCount` |
-| `unit/components/{box-button,type-select,creation-box,text-item-card,timeline-feed,timeline-back-button}-test.tsx` | See each [component page](../components/index.md) |
+| `unit/components/{box-button,type-select,creation-box,edit-text-dialog,text-item-card,timeline-feed,timeline-back-button}-test.tsx` | See each [component page](../components/index.md) |
 | `e2e/navigation-test.tsx` | Opens on Timeline (the feed, no placeholder). `/circles` and `/events` deep links work. `/explore` shows no starter content. |
 | `e2e/create-text-item-test.tsx` | Create a text, Cancelar, a tab switch keeping the draft, Evento doing nothing |
+| `e2e/edit-text-item-test.tsx` | Edit keeping the place, Cancelar, No, volver then Guardar, delete, a creation draft surviving an edit |
 
-Helpers for Timeline tests: `journey` (`src/test-utils/timeline-journey.ts`) drives the box through the whole app; `CreationBoxHarness` renders the box outside the router; `spyOnBackHandler()` simulates Android back.
+Helpers for Timeline tests: `journey` (`src/test-utils/timeline-journey.ts`) drives the box through the whole app; `CreationBoxHarness` renders the box outside the router; `spyOnBackHandler()` simulates Android back. `EditDialogHarness` and `seededAdapters` (`src/test-utils/edit-dialog-harness.tsx`) render the edit dialog over a database holding given texts.
 
 Jest cannot see real rendering (shadows, device insets, keyboard, focus, fonts). The [visual review](visual-review.md) covers those.

@@ -1,18 +1,18 @@
 ---
 type: Reference
 title: Items module
-description: How timeline items are stored and read. A hexagonal module in src/items with domain, application and infrastructure layers, an injected SQLite driver (expo-sqlite in the app, node:sqlite in Jest) and append-only migrations.
+description: How timeline items are stored and read. A hexagonal module in src/items with domain, application and infrastructure layers, an injected SQLite driver (expo-sqlite in the app, node:sqlite in Jest), live and history tables (schema v2) and append-only migrations.
 tags: [items, architecture, sqlite, hexagonal, persistence]
 resource: ../../src/items/
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:55:28Z
+  at: 2026-11-02T12:00:00Z
 ---
 
 # Items module
 
-Items (texts now, images and events later) are kept in a local SQLite database on the phone. There is no server: items will later travel between phones over Bluetooth. Requirements: [item-storage](../specs/item-storage.md). Why it is built this way: [Local SQLite storage](../decisions/local-sqlite-storage.md), [Items schema](../decisions/items-schema.md), [Hexagonal items module](../decisions/hexagonal-items-module.md), [Injected SQL driver](../decisions/injected-sql-driver.md) and [UI state without effects](../decisions/ui-state-without-effects.md). Local rules: [`src/items/CLAUDE.md`](../../src/items/CLAUDE.md).
+Items (texts now, images and events later) are kept in a local SQLite database on the phone. There is no server: items will later travel between phones over Bluetooth. Requirements: [item-storage](../specs/item-storage.md). Why it is built this way: [Local SQLite storage](../decisions/local-sqlite-storage.md), [Items schema](../decisions/items-schema.md), [Hexagonal items module](../decisions/hexagonal-items-module.md), [Injected SQL driver](../decisions/injected-sql-driver.md) and [UI state without effects](../decisions/ui-state-without-effects.md). Editing and deletion: [item-editing](../specs/item-editing.md). Local rules: [`src/items/CLAUDE.md`](../../src/items/CLAUDE.md).
 
 ## Layout and dependency rule
 

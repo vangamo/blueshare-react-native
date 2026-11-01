@@ -2,6 +2,11 @@
 
 ## 2026-11-02
 
+* **Update** Archived the OpenSpec change `edit-text-items` to `openspec/changes/archive/2026-11-02-edit-text-items/` with `/opsx:archive`, after syncing its delta specs: new main spec `item-editing` (16 requirements), and changed requirements in `item-storage` (soft deletion into the history, editing, history, atomic edits), `timeline-feed` (an edited card keeps its place, Editar opens the dialog, edits shown at once) and `app-theming` (contrast and theme coverage for the edit dialog and the danger colors). Context updated to match:
+  * New spec page `specs/item-editing.md`; updated `specs/item-storage.md`, `timeline-feed.md`, `app-theming.md` and `specs/index.md`.
+  * New decision page `decisions/edit-dialog.md` (D5 to D7); D1 and D2 (live and history tables) went into `decisions/items-schema.md`. D3, D4 and D8 are described in `architecture/items-module.md` and the component pages. `decisions/index.md` lists the new change.
+  * Updated `product/roadmap.md`, `product/known-limitations.md` (the history is write-only, and Phase 4 must read it for deletions), `product/overview.md`, the "Current state" in `development/openspec-workflow.md`, `development/testing.md` (28 suites, 262 tests, new helpers) and `architecture/index.md`.
+  * `CLAUDE.md`: new "Current state", and updated rows for the items schema and the edit dialog. `src/items/CLAUDE.md` got a rule about archiving into the history tables. The skills needed no change.
 * **Update** Implementing the OpenSpec change `edit-text-items` (`/opsx:apply`):
   * Added the color roles `danger` and `on_danger` (both palettes) and four contrast pairs (`onDanger` on `danger` 6.47 / 6.45, `danger` on `surfaceMuted` 6.18 / 5.29, `danger` on `creationBg` 5.99 / 5.71, light / dark). Updated `design-system/color-palettes.md` and `design-tokens.md`.
   * Added migration step 2 (`items_history` and `text_items_history`), `ItemNotFoundError`, and `findText`, `updateText` and `deleteItem` on `ItemRepository`, each edit or deletion archiving the previous version in one transaction. Updated `architecture/items-module.md` and `decisions/items-schema.md`.

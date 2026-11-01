@@ -19,4 +19,4 @@ generated:
 - **New roles** `danger` (`#b91c1c` / `#f87171`) and `on_danger` (`#ffffff` / `#0f172a`), AA in both palettes. See [Color palettes](../design-system/color-palettes.md).
 - **No `autoFocus`** on the text area, so the keyboard doesn't hide the dialog's other actions. The box sits near the top of the screen for the same reason.
 
-See [Edit text dialog](../components/edit-text-dialog.md) and [Items schema](items-schema.md).
+See [Edit text dialog](../components/edit-text-dialog.md) and [Items schema](items-schema.md) and the [item-editing spec](../specs/item-editing.md).
