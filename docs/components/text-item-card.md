@@ -7,7 +7,7 @@ resource: ../../src/components/text-item-card.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Text item card
@@ -30,4 +30,4 @@ generated:
 
 `src/__tests__/unit/components/text-item-card-test.tsx`: the text with line breaks, the card, text and action colors in both palettes, action sizes and order, and that pressing either action changes nothing.
 
-Spec: `timeline-feed` (OpenSpec change `add-text-items`).
+Spec: [timeline-feed](../specs/timeline-feed.md).

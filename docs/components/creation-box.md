@@ -7,7 +7,7 @@ resource: ../../src/components/creation-box.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Creation box
@@ -35,4 +35,4 @@ generated:
 
 `src/__tests__/unit/components/creation-box-test.tsx`, through `CreationBoxHarness` (`src/test-utils/creation-box-harness.tsx`): Guardar enabled per type, Evento and Imagen staying, Texto moving on, the box style in both palettes, Crear disabled for blank text, `maxLength`, saving and closing, a double tap creating one item (with `GatedSqlDatabase`), a failing save keeping the text and retrying (with `FailingSqlDatabase`), and Cancelar discarding.
 
-Spec: `item-creation` (OpenSpec change `add-text-items`).
+Spec: [item-creation](../specs/item-creation.md). Decisions: [Text limit](../decisions/text-limit.md), [Spanish copy and labels](../decisions/spanish-copy-labels.md).

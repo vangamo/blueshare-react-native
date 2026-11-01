@@ -6,7 +6,7 @@ tags: [conventions, style, typescript, react]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Coding conventions
@@ -21,4 +21,4 @@ generated:
 - **Placeholders:** a control whose feature does not exist yet gets an explicit no-op handler and a short comment saying so.
 - **Comments:** short and useful. Explain *why*, for example a platform workaround such as `includeFontPadding: false` or `paddingVertical: 0` on Android. Use a JSDoc line on each exported component.
 - **Platform differences:** handle them inline with a comment. No `.web.*` files. Add `.ios.*` or `.android.*` files only when inline handling gets messy.
-- **UI copy:** tab and accessibility labels are in English, and the search placeholder is "Buscar..." (an open language question, see [Known limitations](../product/known-limitations.md)).
+- **UI copy:** the shell's tab and accessibility labels are in English, and the search placeholder is "Buscar...". New visible text (creation box, cards, messages) is Spanish, and each new control's accessibility label equals its visible text. See [Spanish copy and labels](../decisions/spanish-copy-labels.md); the language question is open in [Known limitations](../product/known-limitations.md).

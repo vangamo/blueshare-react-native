@@ -7,7 +7,7 @@ resource: ../../src/components/box-button.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Box button
@@ -34,4 +34,4 @@ generated:
 
 `src/__tests__/unit/components/box-button-test.tsx`: height and label, colors per variant in both palettes, and the disabled state (opacity, announced, `onPress` not called).
 
-Spec: `item-creation` (creation box buttons) and `app-theming` (OpenSpec change `add-text-items`).
+Spec: [item-creation](../specs/item-creation.md) (creation box buttons) and [app-theming](../specs/app-theming.md). Decision: [Creation box buttons](../decisions/creation-box-buttons.md).

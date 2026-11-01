@@ -6,7 +6,7 @@ tags: [product, audience, accessibility]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Product overview
@@ -22,9 +22,9 @@ BlueShare is a React Native (Expo) mobile app that connects **older adults and y
 
 - **Fixed header:** menu button, a title that doubles as a search field, and a profile avatar. Built: [App header](../components/app-header.md).
 - **Fixed footer navigation:** text tabs for Timeline, Circles and Events. Built: [Footer tab bar](../components/footer-tab-bar.md).
-- **Floating create button (`+`):** opens an inline creation menu (Evento, Texto, Imagen). The button is built, the menu is not: [Create button](../components/create-button.md).
-- **Mixed feed:** event cards (photo carousel, title, category badge, Edit and Share actions), text cards and image cards with captions. Not built yet.
+- **Floating create button (`+`):** opens an inline creation menu (Evento, Texto, Imagen). On Timeline it opens the [creation box](../components/creation-box.md). Only Texto creates an item so far: [Create button](../components/create-button.md).
+- **Mixed feed:** event cards (photo carousel, title, category badge, Edit and Share actions), text cards and image cards with captions. Text cards are built ([Text item card](../components/text-item-card.md)); event and image cards are not.
 
 ## Current state
 
-Only the app shell exists. The three sections show placeholder content. See [Roadmap](roadmap.md) and [Known limitations](known-limitations.md).
+The app shell and text items exist. Timeline lists text items saved on the phone, newest first. Circles and Events show placeholder content. See [Roadmap](roadmap.md) and [Known limitations](known-limitations.md).

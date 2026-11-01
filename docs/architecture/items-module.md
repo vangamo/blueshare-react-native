@@ -7,12 +7,12 @@ resource: ../../src/items/
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Items module
 
-Items (texts now, images and events later) are kept in a local SQLite database on the phone. There is no server: items will later travel between phones over Bluetooth. Requirements: the `item-storage` spec of the OpenSpec change `add-text-items`. Local rules: [`src/items/CLAUDE.md`](../../src/items/CLAUDE.md).
+Items (texts now, images and events later) are kept in a local SQLite database on the phone. There is no server: items will later travel between phones over Bluetooth. Requirements: [item-storage](../specs/item-storage.md). Why it is built this way: [Local SQLite storage](../decisions/local-sqlite-storage.md), [Items schema](../decisions/items-schema.md), [Hexagonal items module](../decisions/hexagonal-items-module.md), [Injected SQL driver](../decisions/injected-sql-driver.md) and [UI state without effects](../decisions/ui-state-without-effects.md). Local rules: [`src/items/CLAUDE.md`](../../src/items/CLAUDE.md).
 
 ## Layout and dependency rule
 

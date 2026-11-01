@@ -7,7 +7,7 @@ resource: ../../src/components/type-select.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Type select
@@ -30,4 +30,4 @@ generated:
 
 `src/__tests__/unit/components/type-select-test.tsx`: the placeholder value, the field style, the three options in order, picking, checked states, and closing by backdrop and by `onRequestClose` (found through `testID="type-select-list"`).
 
-Spec: `item-creation` (OpenSpec change `add-text-items`).
+Spec: [item-creation](../specs/item-creation.md). Decision: [Custom type select](../decisions/custom-type-select.md).

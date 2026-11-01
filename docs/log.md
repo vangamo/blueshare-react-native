@@ -2,6 +2,11 @@
 
 ## 2026-11-01
 
+* **Update** Archived the OpenSpec change `add-text-items` to `openspec/changes/archive/2026-11-01-add-text-items/` with `/opsx:archive`, after syncing its delta specs: new main specs `item-creation`, `item-storage` and `timeline-feed`, and changed requirements in `app-shell` (Timeline feed, `+` action per section, `+` hidden while creating) and `app-theming` (contrast and theme coverage for the creation box and timeline). Context updated to match:
+  * New spec pages `specs/item-creation.md`, `item-storage.md` and `timeline-feed.md`; updated `specs/app-shell.md`, `app-theming.md` and `specs/index.md`.
+  * New decision pages for the change's D1 to D11 (D7 and D12 stay in the component and shell pages): `local-sqlite-storage`, `items-schema`, `hexagonal-items-module`, `injected-sql-driver`, `ui-state-without-effects`, `create-action-per-route`, `custom-type-select`, `text-limit`, `creation-box-buttons` and `spanish-copy-labels`. `decisions/index.md` now groups decisions by change.
+  * Updated `product/roadmap.md`, `product/known-limitations.md`, `product/overview.md`, the "Current state" in `development/openspec-workflow.md`, `development/coding-conventions.md` (UI copy), `architecture/items-module.md`, `docs/index.md`, and the spec and decision links in the component pages.
+  * `CLAUDE.md`: new "Current state", the storage stack, a new "Items module" key rule, `src/items/` in the list of nested `CLAUDE.md` folders, and two "When to read what" rows. The nested `CLAUDE.md` files and the project skills needed no change.
 * **Update** Implementing the OpenSpec change `add-text-items` (`/opsx:apply`):
   * Added `expo-sqlite` and `expo-crypto` (both in Expo Go) and `@types/node` (dev), and `engines.node >= 22.13` for `node:sqlite` in tests. Updated `development/dependencies.md` and `decisions/kept-dependencies.md`. `npx expo install` also added the `expo-sqlite` config plugin to `app.json`.
   * Added the color roles `card_shadow`, `divider` and `overlay` (both palettes), the creation box and card `Layout` sizes, `src/constants/limits.ts` (`TEXT_MAX_LENGTH = 8192`) and eight contrast pairs. Updated `design-system/color-palettes.md`, `layout-sizes.md` and `design-tokens.md`.

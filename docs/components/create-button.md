@@ -7,7 +7,7 @@ resource: ../../src/components/create-button.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Create button
@@ -40,4 +40,4 @@ generated:
 
 `src/__tests__/unit/components/create-button-test.tsx` checks the label, the 56×56 size, `right` 20, `bottom` 75 + inset + 10, the palette, that pressing it on Timeline hides it, that pressing it on Circles or Events changes nothing, and that with the box open it shows on Events and hides again on Timeline.
 
-Spec: [app-shell](../specs/app-shell.md) (floating create button, action per section, hidden while creating).
+Spec: [app-shell](../specs/app-shell.md) (floating create button, action per section, hidden while creating). Decision: [Create action per route](../decisions/create-action-per-route.md).

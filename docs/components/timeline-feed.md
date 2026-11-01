@@ -7,7 +7,7 @@ resource: ../../src/components/timeline-feed.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:30:00Z
+  at: 2026-11-01T16:55:28Z
 ---
 
 # Timeline feed
@@ -41,4 +41,4 @@ generated:
 - `src/__tests__/unit/components/timeline-back-button-test.tsx`: uses `spyOnBackHandler()` (`src/test-utils/back-handler.ts`), because React Native 0.88 ships no BackHandler mock.
 - `src/__tests__/e2e/create-text-item-test.tsx`: the full journeys.
 
-Spec: `timeline-feed` and `item-creation` (OpenSpec change `add-text-items`).
+Spec: [timeline-feed](../specs/timeline-feed.md) and [item-creation](../specs/item-creation.md).
