@@ -7,7 +7,7 @@ resource: ../../src/constants/theme.ts
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:30:00Z
 ---
 
 # Sizes and typography
@@ -27,6 +27,14 @@ generated:
 | `fabOffsetRight` / `fabOffsetBottom` | 20 / 10 | create button position |
 | `controlRadius` | 10 | menu button and tabs |
 | `borderWidth` / `fabBorderWidth` | 2 / 3 | control borders, FAB ring |
+| `creationGap` | 10 | space between creation box controls and between its two buttons |
+| `textAreaMinHeight` / `textAreaMaxHeight` | 96 / 200 | text area: about three lines, then grows to the max and scrolls |
+| `cardTextLineHeight` | 22.5 | text card body (15 × 1.5) |
+| `hairlineWidth` | 1 | card divider, card action border |
+| `optionRowHeight` | 56 | type list rows |
+| `disabledOpacity` | 0.45 | disabled Guardar and Crear (a faded primary, not gray) |
+
+The creation box values are starting points, tuned in the visual review.
 
 A value from the HTML that is not a design token belongs in `Layout`, never inline.
 

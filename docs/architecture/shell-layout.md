@@ -7,7 +7,7 @@ resource: ../../src/app/_layout.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:30:00Z
 ---
 
 # Shell layout
@@ -16,20 +16,23 @@ generated:
 
 ```
 ThemeProvider value={NavigationThemes[scheme]}
-└─ View  flex:1, bg=backgroundMain, onLayout → SplashScreen.hideAsync()
-   ├─ StatusBar style="auto"
-   ├─ AppHeader                      fixed, height 70 + insets.top
-   ├─ Tabs (expo-router/js-tabs)     scenes + tabBar=FooterTabBar (75 + insets.bottom)
-   │    screenOptions={{ headerShown: false }}
-   │    Tabs.Screen index "Timeline" | circles "Circles" | events "Events"
-   └─ CreateButton                   position:absolute, right 20, bottom 75 + insets.bottom + 10
+└─ ItemsProvider                           items module (timeline store), created once
+   └─ CreationBoxProvider                  creation box state (step, draft, openCount)
+      └─ View  flex:1, bg=backgroundMain, onLayout → SplashScreen.hideAsync()
+         ├─ StatusBar style="auto"
+         ├─ AppHeader                      fixed, height 70 + insets.top
+         ├─ Tabs (expo-router/js-tabs)     scenes + tabBar=FooterTabBar (75 + insets.bottom)
+         │    screenOptions={{ headerShown: false }}
+         │    Tabs.Screen index "Timeline" | circles "Circles" | events "Events"
+         └─ CreateButton                   position:absolute, right 20, bottom 75 + insets.bottom + 10
 ```
 
 ## How it works
 
 - The **header sits outside the navigator**, above it in the column. It mounts once, and content can never scroll under it. Why: [Shell at the root layout](../decisions/shell-at-root-layout.md).
 - The **footer is the navigator's `tabBar`**, so it is drawn below the scenes. See [Footer tab bar](../components/footer-tab-bar.md) and [JS tabs with a custom tab bar](../decisions/js-tabs-custom-tab-bar.md).
-- The **create button is drawn last**, so it floats over the content on every tab and is never re-mounted.
+- The **create button is drawn last**, so it floats over the content on every tab and is never re-mounted. It hides only while the creation box is open on Timeline.
+- **Providers above the tabs:** [ItemsProvider](../components/items-provider.md) and [CreationBoxProvider](../components/creation-box-provider.md) wrap the whole shell, so the Timeline feed, the creation box and the `+` button share one store and one draft, and a tab switch keeps the draft.
 - **Theme:** `ThemeProvider` gets the BlueShare navigation theme, so scene backgrounds are `backgroundMain` and there is no white flash in dark mode. See [Theme module](../design-system/theme-module.md).
 - **Safe areas:** components read `useSafeAreaInsets()`. Expo Router provides the provider at the root. If insets come back as 0 on a notched device, wrap the shell in `SafeAreaProvider`.
 - **Splash:** `SplashScreen.preventAutoHideAsync()` runs at module scope, and the root `View`'s `onLayout` hides it. See [Splash hidden on first layout](../decisions/splash-hidden-on-layout.md).
