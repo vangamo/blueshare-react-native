@@ -19,7 +19,7 @@ generated:
 - Box: 2-point **dashed** `primaryBlue` border, `creationBg`, `Radius.lg` (16), `Spacing.lg` padding and bottom margin, `Layout.creationGap` (10) between children.
 - Title: 14-point bold `textMain` ("Crear nuevo elemento:" or "Crear nuevo elemento de texto:").
 - Buttons: a row of two [box buttons](box-button.md), each `flex: 1`, `Layout.creationGap` apart. Cancelar on the left.
-- Text area: multi-line, `Layout.textAreaMinHeight` (96) to `Layout.textAreaMaxHeight` (200), then it scrolls inside. 2-point `primaryDark` border, `Layout.controlRadius`, `cardBg`, 16-point `textMain`, `textAlignVertical="top"`.
+- Text area: the shared `BoxTextArea` (`src/components/box-text-area.tsx`, also used by the [edit dialog](edit-text-dialog.md)): multi-line, `Layout.textAreaMinHeight` (96) to `Layout.textAreaMaxHeight` (200), then it scrolls inside. 2-point `primaryDark` border, `Layout.controlRadius`, `cardBg`, 16-point `textMain`, `textAlignVertical="top"`, `maxLength={TEXT_MAX_LENGTH}`.
 - Save error: 14-point bold `textMain` on `creationBg`.
 
 ## Behavior

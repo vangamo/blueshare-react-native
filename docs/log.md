@@ -1,5 +1,21 @@
 # Log
 
+## 2026-11-02
+
+* **Update** Implementing the OpenSpec change `edit-text-items` (`/opsx:apply`):
+  * Added the color roles `danger` and `on_danger` (both palettes) and four contrast pairs (`onDanger` on `danger` 6.47 / 6.45, `danger` on `surfaceMuted` 6.18 / 5.29, `danger` on `creationBg` 5.99 / 5.71, light / dark). Updated `design-system/color-palettes.md` and `design-tokens.md`.
+  * Added migration step 2 (`items_history` and `text_items_history`), `ItemNotFoundError`, and `findText`, `updateText` and `deleteItem` on `ItemRepository`, each edit or deletion archiving the previous version in one transaction. Updated `architecture/items-module.md` and `decisions/items-schema.md`.
+  * Added `withNewText`, the use cases `updateTextItem` and `deleteItem`, the store methods `updateText` and `deleteItem`, and the same two on `useTimeline()`. Documented in `architecture/items-module.md`.
+  * Added the `danger` and `dangerOutline` variants to `BoxButton`, and extracted the shared `BoxTextArea` (creation box and edit dialog). Updated `components/box-button.md` and `creation-box.md`.
+  * Added `EditTextDialog` (edit and confirm steps) with `EditDialogHarness` and `seededAdapters` test helpers. New pages `components/edit-text-dialog.md` and `decisions/edit-dialog.md`.
+  * `TextItemCard` got the `onEdit` prop and `TimelineFeed` renders the dialog, so Editar now works. New e2e journeys in `edit-text-item-test.tsx`. Updated `components/text-item-card.md` and `timeline-feed.md`.
+  * Device check on the Android emulator (Expo Go, SQLite 3.53.3): the app upgraded an existing v1 database to v2 on launch and kept its items. Editar opened the dialog, tapping outside did nothing, Guardar kept the card's position, back closed the edit step and returned from the confirm step to the edit step, Sí, borrar removed the card, and after a force-stop the edit was kept and the deleted item stayed gone. The dialog stayed fully visible above the keyboard, and the accessibility tree showed only the dialog's controls with the expected labels.
+  * Back button with the creation box open underneath: the dialog takes both presses (confirm step to edit step, then closed), and the box keeps its draft.
+  * Visual review: all 26 approved references match (0 px; `box-write-dark` differs only by a 255 px blinking cursor), so the shared `BoxTextArea` changed nothing. The dialog's sampled colors match the tokens in both palettes. Final integration check passed (lint, typecheck, 262 tests, no color literals, no native folders, `openspec validate --strict`).
+  * Added the user-approved references `edit-open`, `edit-changed`, `edit-confirm` and `timeline-edited` (light and dark) to `src/__tests__/e2e/screenshots/`, taken over the `timeline-cards` data. Listed in `development/visual-review.md`.
+  * The user checked on the device that, with the text area at its maximum height, Cancelar and Guardar stay above the keyboard and Guardar works on the first tap (8.2), and the dialog with TalkBack (8.4). Both passed.
+  * At the user's request, the deletion button now reads "Borrar este texto" (was "Borrar texto") in the specs, design, code, tests and docs. Replaced the `edit-open` and `edit-changed` references (light and dark) after a device capture: only the button label differs.
+
 ## 2026-11-01
 
 * **Update** Archived the OpenSpec change `add-text-items` to `openspec/changes/archive/2026-11-01-add-text-items/` with `/opsx:archive`, after syncing its delta specs: new main specs `item-creation`, `item-storage` and `timeline-feed`, and changed requirements in `app-shell` (Timeline feed, `+` action per section, `+` hidden while creating) and `app-theming` (contrast and theme coverage for the creation box and timeline). Context updated to match:

@@ -16,7 +16,7 @@ const ITEM: TimelineItem = {
 
 describe('TextItemCard', () => {
   test('shows the full text with its line breaks', async () => {
-    await render(<TextItemCard item={ITEM} />);
+    await render(<TextItemCard item={ITEM} onEdit={() => {}} />);
     expect(screen.getByText('Hoy hemos jugado al parchís.\nMañana hay bingo.')).toBeOnTheScreen();
     expect(screen.getByTestId('text-item-body')).not.toHaveProp('numberOfLines');
   });
@@ -26,7 +26,7 @@ describe('TextItemCard', () => {
 
     test('card and text colors', async () => {
       const colors = Colors[scheme];
-      await render(<TextItemCard item={ITEM} />);
+      await render(<TextItemCard item={ITEM} onEdit={() => {}} />);
       expect(screen.getByTestId('text-item-card')).toHaveStyle({
         backgroundColor: colors.cardBg,
         borderColor: colors.borderColor,
@@ -54,7 +54,7 @@ describe('TextItemCard', () => {
   });
 
   test('Editar and Compartir are at least 44 tall, in that order, on the right', async () => {
-    await render(<TextItemCard item={ITEM} />);
+    await render(<TextItemCard item={ITEM} onEdit={() => {}} />);
     const buttons = screen.getAllByRole('button');
     expect(buttons.map((b) => b.props.accessibilityLabel)).toEqual(['Editar', 'Compartir']);
     for (const button of buttons) {
@@ -71,9 +71,18 @@ describe('TextItemCard', () => {
     });
   });
 
-  test.each(['Editar', 'Compartir'])('pressing %s changes nothing', async (name) => {
-    await render(<TextItemCard item={ITEM} />);
-    await fireEvent.press(screen.getByRole('button', { name }));
+  test('Editar calls onEdit once', async () => {
+    const onEdit = jest.fn();
+    await render(<TextItemCard item={ITEM} onEdit={onEdit} />);
+    await fireEvent.press(screen.getByRole('button', { name: 'Editar' }));
+    expect(onEdit).toHaveBeenCalledTimes(1);
+  });
+
+  test('pressing Compartir changes nothing', async () => {
+    const onEdit = jest.fn();
+    await render(<TextItemCard item={ITEM} onEdit={onEdit} />);
+    await fireEvent.press(screen.getByRole('button', { name: 'Compartir' }));
+    expect(onEdit).not.toHaveBeenCalled();
     expect(screen.getByText(ITEM.body)).toBeOnTheScreen();
     expect(screen.getAllByRole('button')).toHaveLength(2);
   });

@@ -29,11 +29,11 @@ The dialog SHALL be a box with the creation background, a 2-point solid primary-
 - **THEN** the title, the text area, "Cancelar" and "Guardar" are still visible above the keyboard
 
 ### Requirement: Edit step contents
-The edit step SHALL show, from top to bottom: the title with a close button at its right; the text area; "Cancelar" on the left and "Guardar" on the right; a 1-point divider line; and a full-width "Borrar texto" button.
+The edit step SHALL show, from top to bottom: the title with a close button at its right; the text area; "Cancelar" on the left and "Guardar" on the right; a 1-point divider line; and a full-width "Borrar este texto" button.
 
 #### Scenario: Layout of the edit step
 - **WHEN** the edit dialog opens
-- **THEN** it shows the title and the close button, the text area, "Cancelar" and "Guardar" side by side, a divider and "Borrar texto" below them
+- **THEN** it shows the title and the close button, the text area, "Cancelar" and "Guardar" side by side, a divider and "Borrar este texto" below them
 
 ### Requirement: Edit text area
 The text area SHALL start with the item's current text and SHALL NOT open the keyboard by itself. It SHALL look and behave like the creation box text area: card background, a 2-point strong-ink border, a 10-point corner radius, 16-point main-color text, at least three lines tall, growing up to a maximum height and then scrolling inside, keeping line breaks. It SHALL accept at most the configured maximum text length.
@@ -107,17 +107,17 @@ The close button and "Cancelar" SHALL close the dialog and the keyboard, discard
 - **THEN** the text area shows the stored text, not the discarded edit
 
 ### Requirement: Borrar asks for confirmation
-Pressing "Borrar texto" SHALL NOT delete anything. It SHALL replace the dialog's content with the confirmation step: the title "¿Borrar este texto?", the message "Desaparecerá de tu línea de tiempo." in the main text color, the close button, and "No, volver" on the left and "Sí, borrar" on the right. The keyboard SHALL close.
+Pressing "Borrar este texto" SHALL NOT delete anything. It SHALL replace the dialog's content with the confirmation step: the title "¿Borrar este texto?", the message "Desaparecerá de tu línea de tiempo." in the main text color, the close button, and "No, volver" on the left and "Sí, borrar" on the right. The keyboard SHALL close.
 
 #### Scenario: Asking before deleting
-- **WHEN** the user taps "Borrar texto"
+- **WHEN** the user taps "Borrar este texto"
 - **THEN** the dialog shows "¿Borrar este texto?", "Desaparecerá de tu línea de tiempo.", "No, volver" and "Sí, borrar", and the card is still on the Timeline
 
 ### Requirement: Going back from the confirmation
 "No, volver" and the Android back button SHALL return from the confirmation step to the edit step, with the text area holding the same text as before, including unsaved edits. The close button SHALL close the dialog without changes.
 
 #### Scenario: No, volver keeps the edit
-- **WHEN** the user has changed the text, taps "Borrar texto" and then "No, volver"
+- **WHEN** the user has changed the text, taps "Borrar este texto" and then "No, volver"
 - **THEN** the edit step is shown with the changed text, and nothing is deleted
 
 #### Scenario: Android back in the confirmation step
@@ -132,7 +132,7 @@ Pressing "Borrar texto" SHALL NOT delete anything. It SHALL replace the dialog's
 Pressing "Sí, borrar" SHALL delete the item, close the dialog and remove its card from the Timeline right away. Unsaved edits are discarded. "Sí, borrar" SHALL NOT be pressable again while the deletion is in progress. When the deleted item was the only one, the Timeline SHALL show its empty message.
 
 #### Scenario: Deleting a text
-- **WHEN** the Timeline shows "Dos" and "Uno", and the user deletes "Dos" with "Borrar texto" and "Sí, borrar"
+- **WHEN** the Timeline shows "Dos" and "Uno", and the user deletes "Dos" with "Borrar este texto" and "Sí, borrar"
 - **THEN** the dialog closes and the Timeline shows only "Uno"
 
 #### Scenario: Deleting the last item
@@ -151,14 +151,14 @@ Paired buttons ("Cancelar" with "Guardar", "No, volver" with "Sí, borrar") SHAL
 
 #### Scenario: Sizes and order
 - **WHEN** the edit step is shown
-- **THEN** "Cancelar" is on the left and "Guardar" on the right, each half the width minus the gap and at least 44 points tall, and "Borrar texto" spans the full width below them
+- **THEN** "Cancelar" is on the left and "Guardar" on the right, each half the width minus the gap and at least 44 points tall, and "Borrar este texto" spans the full width below them
 
 ### Requirement: Deletion button styles
-"Borrar texto" SHALL use the muted surface background, a 2-point danger border and a danger-colored label. "Sí, borrar" SHALL use the danger background and the on-danger label color.
+"Borrar este texto" SHALL use the muted surface background, a 2-point danger border and a danger-colored label. "Sí, borrar" SHALL use the danger background and the on-danger label color.
 
 #### Scenario: Deletion buttons stand out
 - **WHEN** the edit step or the confirmation step is shown in either mode
-- **THEN** "Borrar texto" has a danger border and label, and "Sí, borrar" has a danger background, each at least 44 points tall
+- **THEN** "Borrar este texto" has a danger border and label, and "Sí, borrar" has a danger background, each at least 44 points tall
 
 ### Requirement: Close button
 The close button SHALL show "✕" in the main text color, with a touch target of at least 44×44 points, and SHALL be announced as a button named "Cerrar".
@@ -172,7 +172,7 @@ Every control in the dialog SHALL be announced as a button or field named by its
 
 #### Scenario: Screen reader names
 - **WHEN** a screen reader moves through the edit step
-- **THEN** it announces "Cerrar", the text field "Editar elemento de texto", and the buttons "Cancelar", "Guardar" and "Borrar texto"
+- **THEN** it announces "Cerrar", the text field "Editar elemento de texto", and the buttons "Cancelar", "Guardar" and "Borrar este texto"
 
 #### Scenario: Confirmation step names
 - **WHEN** a screen reader moves through the confirmation step

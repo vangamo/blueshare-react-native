@@ -23,3 +23,21 @@ export function normalizeTextBody(raw: string, maxLength: number = TEXT_MAX_LENG
   if (body.length > maxLength) throw new InvalidTextError('too_long', maxLength);
   return body;
 }
+
+/**
+ * The item with `rawText` as its new text and `now` as its update time, or `null` when
+ * the trimmed text equals the current one (nothing to store). Id, type and creation
+ * time stay the same.
+ *
+ * @throws InvalidTextError when the trimmed text is empty or longer than `maxLength`.
+ */
+export function withNewText(
+  item: TextItem,
+  rawText: string,
+  now: number,
+  maxLength: number = TEXT_MAX_LENGTH,
+): TextItem | null {
+  const body = normalizeTextBody(rawText, maxLength);
+  if (body === item.body) return null;
+  return { ...item, body, updatedAt: now };
+}

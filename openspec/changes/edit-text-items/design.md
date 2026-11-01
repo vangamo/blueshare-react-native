@@ -205,14 +205,14 @@ Alternatives:
 - **Layout:**
   - A `ScrollView` (`keyboardShouldPersistTaps="handled"`, so Guardar works on the first tap with the keyboard up) holds the box.
   - The box sits at `insets.top + Spacing.lg` from the top, with `Spacing.lg` side margins, so it stays clear of the keyboard, which comes up from the bottom.
-  - Height estimate with the text area at its maximum: about 16 + 20 + 10 + 200 + 10 + 44 + 32 + 4 ≈ 340 pt for the title through Guardar. That fits above a ~330 pt keyboard on the 780 pt reference screen. "Borrar texto" may sit under the keyboard while typing, and the scroll view reaches it.
+  - Height estimate with the text area at its maximum: about 16 + 20 + 10 + 200 + 10 + 44 + 32 + 4 ≈ 340 pt for the title through Guardar. That fits above a ~330 pt keyboard on the 780 pt reference screen. "Borrar este texto" may sit under the keyboard while typing, and the scroll view reaches it.
   - No `KeyboardAvoidingView`. Its behavior inside a translucent Android Modal varies, and top placement makes it unnecessary. To be confirmed on the device.
 - **Box:**
   - `creationBg`, a 2 pt **solid** `primaryBlue` border, `Radius.lg`, `Spacing.lg` padding and a `Layout.creationGap` gap.
   - The header row has the title (`FontSize.small` bold, `textMain`, `accessibilityRole="header"`) and the close button on the right.
   - **Close button:** a `Pressable` of `Layout.touchTarget` × `Layout.touchTarget`. Its glyph is "✕" in `FontSize.titleCard` bold `textMain`. It has `accessibilityRole="button"` and `accessibilityLabel="Cerrar"`.
 - **Text area:** the creation box's styles (`textAreaMinHeight` and `textAreaMaxHeight`, `primaryDark` border, `cardBg`, `FontSize.bodyLarge`), with `maxLength={TEXT_MAX_LENGTH}` and **no `autoFocus`**, so the keyboard doesn't hide the dialog's other actions. The shared style moves into a small `TextArea` component, or into shared style constants, so the two places don't drift apart.
-- **Divider:** `Layout.hairlineWidth` in the `divider` color, then "Borrar texto" at full width.
+- **Divider:** `Layout.hairlineWidth` in the `divider` color, then "Borrar este texto" at full width.
 - **Confirm step:** the same box and header ("¿Borrar este texto?" with the close button), the message "Desaparecerá de tu línea de tiempo." (`FontSize.body`, `textMain`), and the buttons "No, volver" (secondary) and "Sí, borrar" (danger).
 - **Screen readers:**
   - On Android, the Modal is its own window, so TalkBack stays inside it.
@@ -227,7 +227,7 @@ Alternatives:
 | Variant | Background | Border | Label | Used by |
 | --- | --- | --- | --- | --- |
 | `danger` | `danger` | none | `onDanger` | Sí, borrar |
-| `dangerOutline` | `surfaceMuted` | 2 pt `danger` | `danger` | Borrar texto |
+| `dangerOutline` | `surfaceMuted` | 2 pt `danger` | `danger` | Borrar este texto |
 
 They share the size, radius, press feedback and disabled behavior of the existing variants.
 
@@ -240,20 +240,20 @@ They share the size, radius, press feedback and disabled behavior of the existin
 
 **Contrast pairs added to `theme-test.ts`:**
 - `onDanger` on `danger` (TEXT): Sí, borrar
-- `danger` on `surfaceMuted` (TEXT): Borrar texto label
-- `danger` on `creationBg` (LARGE_OR_UI): Borrar texto border
+- `danger` on `surfaceMuted` (TEXT): Borrar este texto label
+- `danger` on `creationBg` (LARGE_OR_UI): Borrar este texto border
 - `textMain` on `creationBg` (LARGE_OR_UI): close glyph. The TEXT pair already covers it.
 
 The dialog border (`primaryBlue` on `creationBg`) and the overlay are decorative, like the creation box border.
 
-Alternative: a danger-colored solid "Borrar texto". It is louder than "Guardar", which is the main action of the edit step, so the outline keeps the hierarchy, and the solid style is kept for the actual confirmation.
+Alternative: a danger-colored solid "Borrar este texto". It is louder than "Guardar", which is the main action of the edit step, so the outline keeps the hierarchy, and the solid style is kept for the actual confirmation.
 
 ### D8. Copy and labels
 
 All new text is Spanish, and each label equals the visible text (WCAG 2.5.3), as in `add-text-items` D11:
 - the title "Editar elemento de texto:", and the text area label "Editar elemento de texto"
 - "Cerrar" (the close button's label; the glyph is "✕")
-- "Cancelar", "Guardar", "Borrar texto"
+- "Cancelar", "Guardar", "Borrar este texto"
 - "¿Borrar este texto?", "Desaparecerá de tu línea de tiempo.", "No, volver", "Sí, borrar"
 - the two error messages
 

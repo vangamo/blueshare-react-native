@@ -1,7 +1,7 @@
 ---
 type: Component
 title: Text item card
-description: A text item in the Timeline: the full text with its line breaks, then a divider and the Editar and Compartir actions, which do nothing yet.
+description: A text item in the Timeline: the full text with its line breaks, then a divider and the Editar and Compartir actions. Editar opens the edit dialog; Compartir does nothing yet.
 tags: [component, card, timeline, items]
 resource: ../../src/components/text-item-card.tsx
 status: stable
@@ -23,11 +23,11 @@ generated:
 
 ## Behavior
 
-- "Editar" and "Compartir" are buttons named by their labels. Both are no-ops for now: editing and sharing over Bluetooth come in later changes.
+- "Editar" and "Compartir" are buttons named by their labels. "Editar" calls the `onEdit` prop, and the [Timeline feed](timeline-feed.md) opens the [edit dialog](edit-text-dialog.md). "Compartir" is a no-op: sharing over Bluetooth comes in Phase 4.
 - The body has `testID="text-item-body"`, which tests use to read card texts in order.
 
 ## Tests
 
-`src/__tests__/unit/components/text-item-card-test.tsx`: the text with line breaks, the card, text and action colors in both palettes, action sizes and order, and that pressing either action changes nothing.
+`src/__tests__/unit/components/text-item-card-test.tsx`: the text with line breaks, the card, text and action colors in both palettes, action sizes and order, that Editar calls `onEdit`, and that Compartir changes nothing.
 
 Spec: [timeline-feed](../specs/timeline-feed.md).

@@ -6,8 +6,11 @@ import { useTheme } from '@/hooks/use-theme';
 type BoxButtonProps = {
   /** Visible text, also used as the accessibility label. */
   label: string;
-  /** `primary` for Guardar and Crear, `secondary` for Cancelar. */
-  variant: 'primary' | 'secondary';
+  /**
+   * `primary` for Guardar and Crear, `secondary` for Cancelar. `danger` (solid) is
+   * the deletion confirmation and `dangerOutline` the button that asks for it.
+   */
+  variant: 'primary' | 'secondary' | 'danger' | 'dangerOutline';
   disabled?: boolean;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
@@ -20,7 +23,26 @@ type BoxButtonProps = {
  */
 export function BoxButton({ label, variant, disabled = false, onPress, style }: BoxButtonProps) {
   const theme = useTheme();
-  const primary = variant === 'primary';
+  const variantStyle = {
+    primary: { backgroundColor: theme.primaryBlueHover },
+    secondary: {
+      backgroundColor: theme.surfaceMuted,
+      borderColor: theme.borderDark,
+      borderWidth: Layout.borderWidth,
+    },
+    danger: { backgroundColor: theme.danger },
+    dangerOutline: {
+      backgroundColor: theme.surfaceMuted,
+      borderColor: theme.danger,
+      borderWidth: Layout.borderWidth,
+    },
+  }[variant];
+  const labelColor = {
+    primary: theme.onPrimary,
+    secondary: theme.textMain,
+    danger: theme.onDanger,
+    dangerOutline: theme.danger,
+  }[variant];
 
   return (
     <Pressable
@@ -31,18 +53,12 @@ export function BoxButton({ label, variant, disabled = false, onPress, style }: 
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
-        primary
-          ? { backgroundColor: theme.primaryBlueHover }
-          : {
-              backgroundColor: theme.surfaceMuted,
-              borderColor: theme.borderDark,
-              borderWidth: Layout.borderWidth,
-            },
+        variantStyle,
         disabled && styles.disabled,
         pressed && styles.pressed,
         style,
       ]}>
-      <Text style={[styles.label, { color: primary ? theme.onPrimary : theme.textMain }]}>
+      <Text style={[styles.label, { color: labelColor }]}>
         {label}
       </Text>
     </Pressable>

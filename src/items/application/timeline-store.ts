@@ -15,6 +15,14 @@ export type TimelineStore = {
   getSnapshot(): TimelineSnapshot;
   /** Waits for the first load, saves, then puts the new item first. Rejects on failure. */
   createText(rawText: string): Promise<TextItem>;
+  /**
+   * Waits for the first load, saves the new text and replaces the item in place, so
+   * its position doesn't change. An unchanged text leaves the snapshot as it is.
+   * Rejects on failure.
+   */
+  updateText(id: string, rawText: string): Promise<TextItem>;
+  /** Waits for the first load, deletes the item and removes it from the list. Rejects on failure. */
+  deleteItem(id: string): Promise<void>;
 };
 
 type TimelineStoreDeps = {
@@ -22,6 +30,8 @@ type TimelineStoreDeps = {
   prepare: () => Promise<void>;
   listTimeline: () => Promise<TimelineItem[]>;
   createText: (rawText: string) => Promise<TextItem>;
+  updateText: (id: string, rawText: string) => Promise<TextItem>;
+  deleteItem: (id: string) => Promise<void>;
 };
 
 export function createTimelineStore(deps: TimelineStoreDeps): TimelineStore {
@@ -62,6 +72,24 @@ export function createTimelineStore(deps: TimelineStoreDeps): TimelineStore {
       const item = await deps.createText(rawText);
       update({ status: snapshot.status, items: [item, ...snapshot.items] });
       return item;
+    },
+
+    async updateText(id, rawText) {
+      await load();
+      const item = await deps.updateText(id, rawText);
+      const shown = snapshot.items.find((existing) => existing.id === id);
+      // An unchanged text comes back with the same body and update time: nothing to re-render.
+      if (shown && (shown.body !== item.body || shown.updatedAt !== item.updatedAt)) {
+        const items = snapshot.items.map((existing) => (existing.id === id ? item : existing));
+        update({ status: snapshot.status, items });
+      }
+      return item;
+    },
+
+    async deleteItem(id) {
+      await load();
+      await deps.deleteItem(id);
+      update({ status: snapshot.status, items: snapshot.items.filter((item) => item.id !== id) });
     },
   };
 }

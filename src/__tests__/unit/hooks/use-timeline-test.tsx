@@ -35,6 +35,28 @@ describe('useTimeline', () => {
     expect(result.current.items.map((item) => item.body)).toEqual(['Segundo', 'Primero']);
   });
 
+  test('an edit and a deletion are reflected in items', async () => {
+    const { result } = await renderHook(() => useTimeline(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    await act(async () => {
+      await result.current.createText('Primero');
+    });
+    await act(async () => {
+      await result.current.createText('Segundo');
+    });
+    const [second, first] = result.current.items;
+
+    await act(async () => {
+      await result.current.updateText(first.id, 'Primero editado');
+    });
+    expect(result.current.items.map((item) => item.body)).toEqual(['Segundo', 'Primero editado']);
+
+    await act(async () => {
+      await result.current.deleteItem(second.id);
+    });
+    expect(result.current.items.map((item) => item.body)).toEqual(['Primero editado']);
+  });
+
   test('without a provider it throws', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     await expect(renderHook(() => useTimeline())).rejects.toThrow(/inside ItemsProvider/);

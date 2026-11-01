@@ -12,3 +12,11 @@ export class InvalidTextError extends Error {
     this.name = 'InvalidTextError';
   }
 }
+
+/** No live (not deleted) item has this id. */
+export class ItemNotFoundError extends Error {
+  constructor(readonly id: string) {
+    super(`Item ${id} was not found.`);
+    this.name = 'ItemNotFoundError';
+  }
+}

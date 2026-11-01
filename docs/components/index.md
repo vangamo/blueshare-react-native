@@ -12,5 +12,6 @@ All components are in `src/components/`. Each is a named export that reads its c
 * [Creation box](creation-box.md) - Inline box at the top of the Timeline: choose a type, then write and save a text.
 * [Type select](type-select.md) - Field and list for picking Evento, Texto or Imagen.
 * [Box button](box-button.md) - Primary and secondary creation box buttons, with a faded disabled state.
+* [Edit text dialog](edit-text-dialog.md) - Dialog over the Timeline to edit or delete a text item, with a deletion confirmation step.
 * [Timeline feed](timeline-feed.md) - The Timeline section: creation box, text cards newest first, empty, loading and error states.
 * [Text item card](text-item-card.md) - A text item with its full text and the (inactive) Editar and Compartir actions.

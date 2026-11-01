@@ -17,6 +17,7 @@ generated:
 ## Layout
 
 - A `FlatList` (the feed has no upper bound) with `flex: 1`, `backgroundMain`, and `Spacing.lg` content padding. It scrolls only between the header and the footer.
+- **Edit dialog:** the feed keeps `editingId` in `useState`, derives the item during render and renders `<EditTextDialog key={item.id} />` next to the list. Each card's `onEdit` sets the id and the dialog's `onClose` clears it. A deleted item makes the dialog disappear by itself. See [Edit text dialog](edit-text-dialog.md).
 - `ListHeaderComponent` is always `<CreationBox />`, which renders nothing while closed. Keeping the same component type means the text area never remounts and loses focus while typing.
 - Items: a [text item card](text-item-card.md) each, newest first.
 - `keyboardShouldPersistTaps="handled"`, so Crear and Cancelar work on the first tap while the keyboard is up.

@@ -25,7 +25,7 @@ generated:
 
 The sketch file stays untouched. The copy adds:
 - the color roles `surface_muted`, `avatar_bg`, `primary_blue_deep`, `primary_shadow` and `on_primary`
-- the color roles `card_shadow` and `divider` (light values from the mock's cards) and `overlay` (the type list backdrop)
+- the color roles `card_shadow` and `divider` (light values from the mock's cards) `overlay` (the type list and edit dialog backdrop), and `danger` and `on_danger` (the deletion buttons of the edit dialog)
 - the full `colors_dark` block
 - `components.footer.border_top` set to `2px solid #e2e8f0` (the HTML wins)
 - `components.footer.tab_active` set to `#006fe6` with a `#0058b8` border (see [Active tab contrast](../decisions/active-tab-contrast.md))

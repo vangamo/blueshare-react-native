@@ -34,7 +34,9 @@ generated:
 | `badgeBg` / `badgeText` | `#e0f2fe` / `#0369a1` | `#0c2a4a` / `#7dd3fc` | reserved for feed cards |
 | `cardShadow` | `rgba(15,23,42,0.04)` | `rgba(2,6,23,0.5)` | text card shadow |
 | `divider` | `#f1f5f9` | `#1e293b` | line above the card action row (decorative) |
-| `overlay` | `rgba(15,23,42,0.5)` | `rgba(2,6,23,0.7)` | type list backdrop |
+| `overlay` | `rgba(15,23,42,0.5)` | `rgba(2,6,23,0.7)` | type list and edit dialog backdrop |
+| `danger` | `#b91c1c` | `#f87171` | "Borrar este texto" border and label, "Sí, borrar" background |
+| `onDanger` | `#ffffff` | `#0f172a` | "Sí, borrar" label |
 
 ## Contrast rules (tested in `theme-test.ts`)
 
@@ -58,6 +60,9 @@ Checked pairs (light / dark):
 | empty and error messages (`textSecondary` on `backgroundMain`) | 9.83 / 12.68 |
 | select, options and text area text (`textMain` on `cardBg`) | 17.85 / 16.30 |
 | select and text area border (`primaryDark` on `cardBg`) | 17.85 / 14.48 |
+| Sí, borrar label (`onDanger` on `danger`) | 6.47 / 6.45 |
+| Borrar este texto label (`danger` on `surfaceMuted`) | 6.18 / 5.29 |
+| Borrar este texto border (`danger` on `creationBg`) | 5.99 / 5.71 |
 
 ## Dark palette logic
 

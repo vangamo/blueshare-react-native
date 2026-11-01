@@ -37,11 +37,11 @@ In both palettes, every text and background pair the app draws (the shell, the c
 - **THEN** its text and its action labels contrast at least 4.5:1 with their backgrounds
 
 #### Scenario: Deletion buttons
-- **WHEN** "Borrar texto" or "Sí, borrar" is shown, in either mode
-- **THEN** the danger label of "Borrar texto" contrasts at least 4.5:1 with the muted surface, and the on-danger label of "Sí, borrar" contrasts at least 4.5:1 with the danger background
+- **WHEN** "Borrar este texto" or "Sí, borrar" is shown, in either mode
+- **THEN** the danger label of "Borrar este texto" contrasts at least 4.5:1 with the muted surface, and the on-danger label of "Sí, borrar" contrasts at least 4.5:1 with the danger background
 
 ### Requirement: Contrast of icons and control boundaries
-In both palettes, the menu glyph, the create button's `+`, the type select's chevron, the edit dialog's close glyph, and borders that are the only visual boundary of an interactive control (menu button, title field, type select, text areas, the "Borrar texto" button) SHALL contrast at least 3:1 with their adjacent background.
+In both palettes, the menu glyph, the create button's `+`, the type select's chevron, the edit dialog's close glyph, and borders that are the only visual boundary of an interactive control (menu button, title field, type select, text areas, the "Borrar este texto" button) SHALL contrast at least 3:1 with their adjacent background.
 
 #### Scenario: Menu glyph
 - **WHEN** the menu button is shown in either mode
@@ -64,4 +64,4 @@ Every color in the shell, the placeholder screens, the creation box, the edit di
 
 #### Scenario: Danger color propagates
 - **WHEN** a developer changes the danger value in a palette
-- **THEN** the "Borrar texto" border and label and the "Sí, borrar" background all show the new value with no other code change
+- **THEN** the "Borrar este texto" border and label and the "Sí, borrar" background all show the new value with no other code change

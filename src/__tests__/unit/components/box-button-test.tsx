@@ -34,6 +34,30 @@ describe('BoxButton', () => {
       });
       expect(screen.getByText('Cancelar')).toHaveStyle({ color: colors.textMain });
     });
+
+    test('danger is solid danger with the on-danger label', async () => {
+      const colors = Colors[scheme];
+      await render(<BoxButton label="Sí, borrar" variant="danger" onPress={() => {}} />);
+      const button = screen.getByRole('button', { name: 'Sí, borrar' });
+      expect(button).toHaveStyle({
+        backgroundColor: colors.danger,
+        minHeight: Layout.touchTarget,
+      });
+      expect(screen.getByText('Sí, borrar')).toHaveStyle({ color: colors.onDanger });
+    });
+
+    test('dangerOutline is the muted surface with a danger border and label', async () => {
+      const colors = Colors[scheme];
+      await render(<BoxButton label="Borrar este texto" variant="dangerOutline" onPress={() => {}} />);
+      const button = screen.getByRole('button', { name: 'Borrar este texto' });
+      expect(button).toHaveStyle({
+        backgroundColor: colors.surfaceMuted,
+        borderColor: colors.danger,
+        borderWidth: Layout.borderWidth,
+        minHeight: Layout.touchTarget,
+      });
+      expect(screen.getByText('Borrar este texto')).toHaveStyle({ color: colors.danger });
+    });
   });
 
   test('disabled is faded, announced as disabled and ignores presses', async () => {

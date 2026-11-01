@@ -1,9 +1,9 @@
 import { useRef } from 'react';
-import { AccessibilityInfo, Keyboard, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibilityInfo, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { BoxButton } from '@/components/box-button';
+import { BoxTextArea } from '@/components/box-text-area';
 import { TypeSelect } from '@/components/type-select';
-import { TEXT_MAX_LENGTH } from '@/constants/limits';
 import { FontSize, FontWeight, Layout, Radius, Spacing } from '@/constants/theme';
 import { useCreationBox } from '@/hooks/use-creation-box';
 import { useTheme } from '@/hooks/use-theme';
@@ -78,21 +78,13 @@ export function CreationBox() {
   return (
     <View style={boxStyle} testID="creation-box">
       <Text style={titleStyle}>Crear nuevo elemento de texto:</Text>
-      <TextInput
+      <BoxTextArea
         value={box.text}
         onChangeText={(text) => dispatch({ type: 'setText', text })}
-        multiline
-        maxLength={TEXT_MAX_LENGTH}
         // Mounts only when entering this step, so returning from another tab
         // (the screen stays mounted) doesn't refocus it.
         autoFocus
-        textAlignVertical="top"
         accessibilityLabel="Crear nuevo elemento de texto"
-        selectionColor={theme.primaryBlue}
-        style={[
-          styles.textArea,
-          { color: theme.textMain, backgroundColor: theme.cardBg, borderColor: theme.primaryDark },
-        ]}
       />
       {box.failed ? (
         <Text
@@ -130,15 +122,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSize.small,
     fontWeight: FontWeight.bold,
-  },
-  textArea: {
-    minHeight: Layout.textAreaMinHeight,
-    maxHeight: Layout.textAreaMaxHeight,
-    borderWidth: Layout.borderWidth,
-    borderRadius: Layout.controlRadius,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    fontSize: FontSize.bodyLarge,
   },
   error: {
     fontSize: FontSize.small,

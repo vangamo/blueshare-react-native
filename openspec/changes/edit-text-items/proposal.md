@@ -10,10 +10,10 @@ Text cards show an "Editar" button that does nothing, so a typo or an outdated m
   - a close button "✕" (label "Cerrar") at the top right
   - a multi-line text area holding the item's current text, with the same limits as Crear
   - "Cancelar" and "Guardar". Guardar is disabled while the text is blank or unchanged.
-  - below a divider, a full-width "Borrar texto" button in a new danger style
+  - below a divider, a full-width "Borrar este texto" button in a new danger style
 - **Closing:** the dialog closes without changes only through "✕", "Cancelar" or the Android back button. Tapping outside the dialog does nothing.
 - **Guardar** saves the new text. The card shows it right away, **in the same place**: the feed stays ordered by creation time.
-- **Borrar texto** asks for confirmation inside the same dialog: "¿Borrar este texto?", "Desaparecerá de tu línea de tiempo.", "No, volver" and "Sí, borrar". "Sí, borrar" deletes the item, closes the dialog and removes the card. "No, volver" and the Android back button return to the edit step with the text kept.
+- **Borrar este texto** asks for confirmation inside the same dialog: "¿Borrar este texto?", "Desaparecerá de tu línea de tiempo.", "No, volver" and "Sí, borrar". "Sí, borrar" deletes the item, closes the dialog and removes the card. "No, volver" and the Android back button return to the edit step with the text kept.
 - **Errors** keep the dialog open with the text kept and show "⚠️ No se pudo guardar. Inténtalo de nuevo." or "⚠️ No se pudo borrar. Inténtalo de nuevo.".
 - **Storage keeps every version** (schema version 2). The live tables `items` and `text_items` keep holding what the Timeline shows. New append-only tables `items_history` and `text_items_history`, keyed by item id plus a counter (1, 2, 3, …), hold earlier versions:
   - an edit first copies the current rows into the history, then updates the text and the update time in place

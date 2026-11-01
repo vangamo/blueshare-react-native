@@ -8,8 +8,10 @@ import type { SqlDatabase } from '@/items/infrastructure/sql-database';
 import { SqliteItemRepository } from '@/items/infrastructure/sqlite-item-repository';
 
 import { createTextItem } from './create-text-item';
+import { deleteItem } from './delete-item';
 import { listTimeline } from './list-timeline';
 import { createTimelineStore, type TimelineStore } from './timeline-store';
+import { updateTextItem } from './update-text-item';
 
 export type ItemsAdapters = {
   db: SqlDatabase;
@@ -27,6 +29,8 @@ export function createItemsModule({ db, ids, clock }: ItemsAdapters): ItemsModul
     prepare: () => migrate(db),
     listTimeline: listTimeline(deps),
     createText: createTextItem(deps),
+    updateText: updateTextItem(deps),
+    deleteItem: deleteItem(deps),
   });
   return { store };
 }

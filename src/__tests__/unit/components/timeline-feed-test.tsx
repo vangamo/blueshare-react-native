@@ -87,4 +87,47 @@ describe('TimelineFeed', () => {
       expect(scrollToOffset).toHaveBeenCalledWith(expect.objectContaining({ offset: 0 })),
     );
   });
+
+  describe('Editar', () => {
+    const dialogText = () => screen.getByLabelText('Editar elemento de texto');
+
+    async function twoCards() {
+      await renderRouter('./src/app');
+      await journey.createText('Primero');
+      await journey.createText('Segundo');
+    }
+
+    test('opens the dialog for that card with its text', async () => {
+      await twoCards();
+      await fireEvent.press(screen.getAllByRole('button', { name: 'Editar' })[1]);
+      expect(dialogText()).toHaveProp('value', 'Primero');
+    });
+
+    test('Guardar changes the card and keeps its position', async () => {
+      await twoCards();
+      await fireEvent.press(screen.getAllByRole('button', { name: 'Editar' })[1]);
+      await fireEvent.changeText(dialogText(), 'Primero editado');
+      await fireEvent.press(journey.button('Guardar'));
+      await waitFor(() => expect(screen.queryByTestId('edit-text-dialog')).toBeNull());
+      expect(journey.cardTexts()).toEqual(['Segundo', 'Primero editado']);
+    });
+
+    test('Sí, borrar removes the card and the others keep their order', async () => {
+      await twoCards();
+      await fireEvent.press(screen.getAllByRole('button', { name: 'Editar' })[0]);
+      await fireEvent.press(journey.button('Borrar este texto'));
+      await fireEvent.press(journey.button('Sí, borrar'));
+      await waitFor(() => expect(screen.queryByTestId('edit-text-dialog')).toBeNull());
+      expect(journey.cardTexts()).toEqual(['Primero']);
+    });
+
+    test('deleting the only item shows the empty message', async () => {
+      await renderRouter('./src/app');
+      await journey.createText('Único');
+      await fireEvent.press(journey.button('Editar'));
+      await fireEvent.press(journey.button('Borrar este texto'));
+      await fireEvent.press(journey.button('Sí, borrar'));
+      expect(await screen.findByText(EMPTY_TIMELINE_MESSAGE)).toBeOnTheScreen();
+    });
+  });
 });

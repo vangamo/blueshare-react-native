@@ -21,6 +21,26 @@ export const MIGRATIONS: readonly string[] = [
     body    TEXT NOT NULL
   );
   `,
+  // 2. Append-only history of earlier versions (openspec edit-text-items design D2).
+  // No foreign key from items_history to items: the live row is gone after a deletion.
+  `
+  CREATE TABLE items_history (
+    item_id    TEXT NOT NULL,
+    counter    INTEGER NOT NULL CHECK (counter >= 1),
+    type       TEXT NOT NULL CHECK (type IN ('text', 'image', 'event')),
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER,
+    PRIMARY KEY (item_id, counter)
+  );
+  CREATE TABLE text_items_history (
+    item_id TEXT NOT NULL,
+    counter INTEGER NOT NULL,
+    body    TEXT NOT NULL,
+    PRIMARY KEY (item_id, counter),
+    FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
+  );
+  `,
 ];
 
 /** The schema version recorded in the database (0 for a new file). */

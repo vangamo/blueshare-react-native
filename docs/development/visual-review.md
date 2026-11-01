@@ -19,7 +19,7 @@ The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel di
 
 ## Approved references
 
-`src/__tests__/e2e/screenshots/`: `timeline` (empty timeline), `circles`, `events`, `title-focused`, and for the creation box and feed `box-choose` (placeholder, Guardar disabled), `box-list` (type list open), `box-texto` (Texto chosen), `box-write` (text step with two lines, keyboard closed) and `timeline-cards` (two text cards), each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
+`src/__tests__/e2e/screenshots/`: `timeline` (empty timeline), `circles`, `events`, `title-focused`, and for the creation box and feed `box-choose` (placeholder, Guardar disabled), `box-list` (type list open), `box-texto` (Texto chosen), `box-write` (text step with two lines, keyboard closed) and `timeline-cards` (two text cards), and for the edit dialog `edit-open` ("Hola a todos." unchanged, Guardar disabled), `edit-changed` (" Nos vemos el domingo." added, keyboard closed), `edit-confirm` (deletion confirmation) and `timeline-edited` (the edited card in its place), each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
 
 ## Intentional differences from the sketches
 

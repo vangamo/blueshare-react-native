@@ -26,8 +26,11 @@ function CardAction({ label, onPress }: CardActionProps) {
   );
 }
 
-/** A text item in the Timeline: the full text, then the Editar and Compartir actions. */
-export function TextItemCard({ item }: { item: TimelineItem }) {
+/**
+ * A text item in the Timeline: the full text, then the Editar and Compartir actions.
+ * Editar calls `onEdit` (the feed opens the edit dialog).
+ */
+export function TextItemCard({ item, onEdit }: { item: TimelineItem; onEdit: () => void }) {
   const theme = useTheme();
 
   return (
@@ -45,8 +48,7 @@ export function TextItemCard({ item }: { item: TimelineItem }) {
         {item.body}
       </Text>
       <View style={[styles.actions, { borderTopColor: theme.divider }]}>
-        {/* Editing items comes in a later change. */}
-        <CardAction label="Editar" onPress={() => {}} />
+        <CardAction label="Editar" onPress={onEdit} />
         {/* Sharing with contacts over Bluetooth comes in a later change. */}
         <CardAction label="Compartir" onPress={() => {}} />
       </View>

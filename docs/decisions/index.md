@@ -30,3 +30,9 @@ From the `add-text-items` change (its `design.md`, now in `openspec/changes/arch
 * [Text limit](text-limit.md) - D9: `TEXT_MAX_LENGTH` (8192), trimmed and checked in the domain.
 * [Creation box buttons](creation-box-buttons.md) - D10: active-tab blue for Guardar and Crear, a faded disabled state, and the new color roles.
 * [Spanish copy and labels](spanish-copy-labels.md) - D11: Spanish copy, labels equal to the visible text, announced errors.
+
+## edit-text-items
+
+From the `edit-text-items` change (its `design.md`, in `openspec/changes/edit-text-items/` until archived). Its D1 and D2 (live and history tables) are in [Items schema](items-schema.md).
+
+* [Edit dialog](edit-dialog.md) - D5 to D7: local state, an RN `Modal` instead of a route, in-dialog deletion confirmation, and the `danger` colors.

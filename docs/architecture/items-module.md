@@ -18,7 +18,8 @@ Items (texts now, images and events later) are kept in a local SQLite database o
 
 ```
 src/items/
-  domain/           ItemType, ItemMeta, TextItem, normalizeTextBody, TimelineItem, ports, InvalidTextError
+  domain/           ItemType, ItemMeta, TextItem, normalizeTextBody, TimelineItem, ports,
+                    InvalidTextError, ItemNotFoundError
   application/      use cases, the timeline store, items-module.ts (composition root)
   infrastructure/   sql-database.ts (port), migrations.ts, sqlite-item-repository.ts,
                     expo-sql-database.ts, app-adapters.ts
@@ -33,12 +34,12 @@ src/items/
 
 | Port | Methods | Implemented by |
 | --- | --- | --- |
-| `ItemRepository` (domain) | `saveText(item)`, `listTimeline()` | `SqliteItemRepository` |
+| `ItemRepository` (domain) | `saveText(item)`, `listTimeline()`, `findText(id)`, `updateText(item)`, `deleteItem(id, deletedAt)` | `SqliteItemRepository` |
 | `Clock` (domain) | `now()`: UTC ms | `Date.now` |
 | `IdGenerator` (domain) | `newId()`: UUID v4 | `randomUUID` from `expo-crypto` (Jest: `node:crypto`) |
 | `SqlDatabase` (infrastructure) | `exec`, `run`, `getAll`, `getFirst`, `transaction(work)` | `ExpoSqlDatabase`, `NodeSqlDatabase` |
 
-Only what the current features use exists. Update and soft-delete methods arrive with "Editar"; the columns already exist, so they need no migration.
+Only what the current features use exists. `updateText` and `deleteItem` throw `ItemNotFoundError` when no live item has the id.
 
 ## Driver injection: the app vs Jest
 
@@ -56,12 +57,13 @@ Only what the current features use exists. Update and soft-delete methods arrive
 
 ## Application layer
 
-- **Use cases** take `{ repository, clock, ids }`: `createTextItem(deps)(rawText)` normalizes the text (throws `InvalidTextError` before storing anything), builds the item with `createdAt === updatedAt` and `deletedAt: null`, and saves it. `listTimeline(deps)()` returns the items newest first.
+- **Use cases** take `{ repository, clock, ids }` (`updateTextItem` and `deleteItem` only need the repository and the clock): `createTextItem(deps)(rawText)` normalizes the text (throws `InvalidTextError` before storing anything), builds the item with `createdAt === updatedAt` and `deletedAt: null`, and saves it. `listTimeline(deps)()` returns the items newest first. `updateTextItem(deps)(id, raw)` finds the item (`ItemNotFoundError`), applies `withNewText` (`InvalidTextError` before anything is written; an unchanged trimmed text returns the current item and writes nothing) and calls `repository.updateText`. `deleteItem(deps)(id)` calls `repository.deleteItem(id, clock.now())`.
 - **`createItemsModule({ db, ids, clock })`** builds the repository, the use cases and the store, and returns `{ store }`.
 - **Timeline store** (`timeline-store.ts`), a plain object:
   - `getSnapshot()` returns `{ status: 'loading' | 'ready' | 'error', items }`. It is a new object only when something changes, as `useSyncExternalStore` requires.
   - `subscribe(listener)` returns an unsubscribe function. The first call starts the load: `migrate()`, then `listTimeline()`. Any failure gives `status: 'error'`.
   - `createText(raw)` waits for the load (starting it if needed), runs the use case, puts the new item first and notifies subscribers. On failure it rejects and leaves the snapshot unchanged, so the creation box can show its error.
+  - `updateText(id, raw)` waits for the load, runs the use case and replaces the item **in place**, so its position doesn't change. An unchanged text leaves the snapshot object as it is. `deleteItem(id)` removes the item from the list. Both reject on failure with the snapshot untouched. The list isn't reloaded after a change: updating in place matches `createText` and avoids a query and a flash.
 - **How the UI reads it:** `ItemsProvider` creates the module once, with a lazy `useState` initializer, and `useTimeline()` reads the store with `useSyncExternalStore`.
 - **Why no `setState` in effects:** the React Compiler lint rule (`react-hooks/set-state-in-effect`) forbids it. The store owns the async load and pushes changes to React through `subscribe`, so no component fetches in an effect. A refresh after creating needs no extra mechanism either, which `use(promise)` with Suspense would.
 
@@ -86,6 +88,37 @@ CREATE TABLE text_items (
 - `saveText` writes `items` and `text_items` in one transaction: all or nothing.
 - The text length limit is not a SQL `CHECK`. The domain enforces `TEXT_MAX_LENGTH`, so changing it needs no migration.
 
+## Schema v2: history tables
+
+```sql
+CREATE TABLE items_history (
+  item_id TEXT NOT NULL, counter INTEGER NOT NULL CHECK (counter >= 1),
+  type TEXT NOT NULL CHECK (type IN ('text', 'image', 'event')),
+  created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+  deleted_at INTEGER,                              -- set only on the version a deletion writes
+  PRIMARY KEY (item_id, counter)                   -- no FK to items: the live row is gone after a deletion
+);
+CREATE TABLE text_items_history (
+  item_id TEXT NOT NULL, counter INTEGER NOT NULL, body TEXT NOT NULL,
+  PRIMARY KEY (item_id, counter),
+  FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
+);
+```
+
+`items` and `text_items` keep what the Timeline shows. Each history row is the state **before** an action, and the counter (not the time) orders versions of one item. Both actions run in one transaction:
+
+| Step | `updateText(item)` | `deleteItem(id, deletedAt)` |
+| --- | --- | --- |
+| 1 | read the live `type`, else `ItemNotFoundError` | same |
+| 2 | next counter = `COALESCE(MAX(counter), 0) + 1` for the id | same |
+| 3 | copy the `items` row into `items_history` (`deleted_at` null) | same, with `deleted_at = deletedAt` |
+| 4 | copy the type's content (`text_items` into `text_items_history`) | same |
+| 5 | `UPDATE items.updated_at` and `UPDATE text_items.body` | `DELETE` the `text_items` row, then the `items` row |
+
+- The type's content is copied in `archive()`, which switches on `type`. Image and event items add a case. Any other type throws, so content is never dropped silently.
+- Deletion removes the rows explicitly, because the Expo driver's exclusive transactions don't enforce foreign keys.
+- `items.deleted_at` is now always NULL in the live table. The column and the partial index stay, since migrations are append-only.
+
 ## Migrations
 
 - `MIGRATIONS` in `migrations.ts` is a list of SQL steps; step N brings `PRAGMA user_version` to N.
@@ -97,6 +130,7 @@ CREATE TABLE text_items (
 
 - `owner_id` on `items`, with `people (id, display_name, original_name, is_me)`. Names live on `people`, so a rename leaves no stale copies.
 - `item_shares (item_id, person_id, shared_at)`.
+- `image_items_history` and `event_items_history`, mirroring their live tables.
 - `image_items`, `event_items` and `event_photos`, each with its own `LEFT JOIN` in the timeline query.
 
 Related: [Project structure](project-structure.md), [Testing](../development/testing.md), [Dependencies](../development/dependencies.md).

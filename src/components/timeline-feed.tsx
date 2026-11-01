@@ -1,5 +1,5 @@
 import { useIsFocused } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   BackHandler,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { CreationBox } from '@/components/creation-box';
+import { EditTextDialog } from '@/components/edit-text-dialog';
 import { TextItemCard } from '@/components/text-item-card';
 import { FontSize, Spacing } from '@/constants/theme';
 import { useCreationBox } from '@/hooks/use-creation-box';
@@ -31,6 +32,9 @@ export function TimelineFeed() {
   const focused = useIsFocused();
   const listRef = useRef<FlatList<TimelineItem>>(null);
   const boxOpen = box.step !== 'closed';
+  // Only the id is kept: the item is derived, so a deleted item closes the dialog by itself.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const editing = items.find((item) => item.id === editingId);
 
   // Each open scrolls to the top so the box is visible. Imperative, no state change.
   useEffect(() => {
@@ -69,20 +73,27 @@ export function TimelineFeed() {
   }
 
   return (
-    <FlatList
-      ref={listRef}
-      testID="timeline-feed"
-      data={status === 'error' ? [] : items}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <TextItemCard item={item} />}
-      // Always the same component type, so the text area never remounts (and loses
-      // focus) while typing. It renders nothing while the box is closed.
-      ListHeaderComponent={<CreationBox />}
-      ListEmptyComponent={empty ?? undefined}
-      keyboardShouldPersistTaps="handled"
-      style={[styles.list, { backgroundColor: theme.backgroundMain }]}
-      contentContainerStyle={styles.content}
-    />
+    <>
+      <FlatList
+        ref={listRef}
+        testID="timeline-feed"
+        data={status === 'error' ? [] : items}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TextItemCard item={item} onEdit={() => setEditingId(item.id)} />
+        )}
+        // Always the same component type, so the text area never remounts (and loses
+        // focus) while typing. It renders nothing while the box is closed.
+        ListHeaderComponent={<CreationBox />}
+        ListEmptyComponent={empty ?? undefined}
+        keyboardShouldPersistTaps="handled"
+        style={[styles.list, { backgroundColor: theme.backgroundMain }]}
+        contentContainerStyle={styles.content}
+      />
+      {editing ? (
+        <EditTextDialog key={editing.id} item={editing} onClose={() => setEditingId(null)} />
+      ) : null}
+    </>
   );
 }
 

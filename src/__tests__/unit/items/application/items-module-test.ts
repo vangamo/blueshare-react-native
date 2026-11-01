@@ -27,4 +27,24 @@ describe('createItemsModule', () => {
     expect(secondRun.store.getSnapshot().status).toBe('ready');
     expect(secondRun.store.getSnapshot().items.map((item) => item.body)).toEqual(['Dos', 'Uno']);
   });
+
+  test('an edit keeps its place and a deletion stays gone after a restart', async () => {
+    const db = new NodeSqlDatabase();
+    const firstRun = createItemsModule({ db, clock: fixedClock(1000, 1), ids: sequentialIds('a') });
+    await firstRun.store.createText('Uno');
+    await firstRun.store.createText('Dos');
+    await firstRun.store.createText('Tres');
+    const items = firstRun.store.getSnapshot().items;
+    const idOf = (body: string) => items.find((item) => item.body === body)!.id;
+
+    await firstRun.store.updateText(idOf('Uno'), 'Uno editado');
+    await firstRun.store.deleteItem(idOf('Dos'));
+
+    const secondRun = createItemsModule({ db, clock: fixedClock(5000, 1), ids: sequentialIds('b') });
+    await loaded(secondRun.store);
+    expect(secondRun.store.getSnapshot().items.map((item) => item.body)).toEqual([
+      'Tres',
+      'Uno editado',
+    ]);
+  });
 });
