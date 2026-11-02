@@ -1,18 +1,18 @@
 ---
 type: Specification
 title: item-editing
-description: The edit dialog opened by a text card's Editar button. Change the text with Guardar, close it with the close button, Cancelar or Android back, or delete the item after a confirmation.
+description: The edit dialog opened by a text or image card's Editar button. Change the text with Guardar, close it with the close button, Cancelar or Android back, or delete the item after a confirmation.
 tags: [spec, implemented, edit-dialog, items]
 resource: ../../openspec/specs/item-editing/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T18:00:00Z
+  at: 2026-11-02T21:00:00Z
 ---
 
 # item-editing (implemented)
 
-Full text: `openspec/specs/item-editing/spec.md`. From the change `edit-text-items`.
+Full text: `openspec/specs/item-editing/spec.md`. From the change `edit-text-items`, extended by `add-image-items` (the image dialog).
 
 | Requirement | Summary | Implemented in |
 | --- | --- | --- |
@@ -28,6 +28,13 @@ Full text: `openspec/specs/item-editing/spec.md`. From the change `edit-text-ite
 | Sí, borrar deletes the item | Deletes, closes and removes the card at once. Shows the empty message for the last item. | same, [Items module](../architecture/items-module.md) |
 | Failed deletion keeps the item | "⚠️ No se pudo borrar. Inténtalo de nuevo." The confirmation stays and can retry. | same |
 | Dialog buttons, deletion styles, close button | At least 44 pt. "Borrar este texto" has a danger outline, "Sí, borrar" a solid danger background. The close button is 44×44, "Cerrar". | [Box button](../components/box-button.md) |
+| Image edit step contents | For an image item: the photo, "Cambiar foto", the alternative text and caption fields, Guardar, Cancelar and "Borrar esta imagen". | [Edit image dialog](../components/edit-image-dialog.md) |
+| Image edit fields start from the stored item | Prefilled with the stored texts and photo. | same |
+| Changing the photo of an image item | The new photo is only kept after Guardar. Cancelling leaves the item as it was. | same |
+| Guardar for an image item is enabled only for a real change | A different photo or different trimmed texts. | same |
+| Guardar saves the image item | Closes the dialog and the card keeps its position. One save per double tap. | same |
+| Failed image save keeps the edit | The dialog stays with the changes and shows the error. | same |
+| Image dialog scrolls inside | Guardar and the delete button stay reachable in every layout, including phone landscape. | [Shared edit dialog frame](../decisions/shared-edit-dialog-frame.md) |
 | Edit dialog accessibility | Labels equal the visible text, the text area is "Editar elemento de texto", and focus stays inside the dialog. | [Edit text dialog](../components/edit-text-dialog.md) |
 
 Tests: `src/__tests__/unit/components/edit-text-dialog-test.tsx` and `src/__tests__/e2e/edit-text-item-test.tsx`. Decision: [Edit dialog](../decisions/edit-dialog.md).

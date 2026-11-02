@@ -2,6 +2,10 @@
 
 ## 2026-11-02
 
+* **Update** Archived the OpenSpec change `add-image-items` to `openspec/changes/archive/2026-11-02-add-image-items/` with `/opsx:archive`, after syncing its delta specs into `openspec/specs/` (no new capability): item-creation (image step, 11 added, 1 removed), item-editing (image dialog), item-storage (image content, photo files), timeline-feed (image card), adaptive-layout (maximum image height) and app-theming. `openspec validate --specs` passes. Context updated to match:
+  * `docs/specs/` pages for the six capabilities and `specs/index.md`; `product/roadmap.md`, `product/known-limitations.md` (photo files are never removed) and the archived list in `development/openspec-workflow.md`.
+  * `CLAUDE.md` "Current state". The architecture, component, design-system and decision pages and the nested `CLAUDE.md` files were already updated while implementing (see the entry below).
+
 * **Fix** Two glitches found on a real phone with a three-button navigation bar (landscape, side inset on the right):
   * The photo box overflowed its card in landscape. `useContentStyle()` set the column's `width` to `columnWidth + 2 × padding`, but the side insets are added as padding too, so the content was `columnWidth` minus the insets wide while `PhotoPreview` sized its box from `columnWidth`. The width now adds the insets (`src/hooks/use-content-style.ts`); test `use-content-style-test.tsx`. Checked on the emulator with the three-button bar.
   * Back in portrait the tabs overflowed the screen (each kept the 120-point landscape width). I couldn't reproduce it on the emulator (10 rotations, tabs fit). As protection, the tabs now have `flexShrink: 1`, so a fixed width is a preferred width and they shrink to fit the bar. Updated `components/tab-bar` tests. If it appears again, the cause is a stale frame in `TabBar` after rotation. Both fixes were confirmed on the user's phone.

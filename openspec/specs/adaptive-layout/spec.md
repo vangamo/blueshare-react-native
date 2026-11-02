@@ -48,6 +48,10 @@ Component sizes and font sizes SHALL depend only on whether the layout is a phon
 - **WHEN** a tablet layout is used
 - **THEN** the box and dialog titles are 15 points, the type select and text areas use 17-point text, the type select and the box and dialog buttons are at least 48 points tall with 16-point labels, and the type list rows are 60 points tall
 
+#### Scenario: Image items on a tablet
+- **WHEN** a tablet layout is used
+- **THEN** image captions, field labels and the alternative text hint are 15 points, the caption field is at least 48 points tall with 17-point text, and the photo button is at least 48 points tall with a 16-point label
+
 #### Scenario: Same sizes in both orientations
 - **WHEN** the user rotates a phone, or a tablet
 - **THEN** the card text, the title field and the create button keep the same size in both orientations
@@ -126,7 +130,7 @@ The header, the tab bar, the create button and the section content SHALL stay cl
 - **THEN** its "Cancelar" and "Crear" buttons can be scrolled fully above the gesture bar
 
 ### Requirement: Rotation keeps the user's place
-Rotating the device, or any other change of the window size, SHALL NOT reset what the user is doing. The current section, the feed's scroll position, the creation box with its step, type and text, the open edit dialog with its text, and the focused text field with its open keyboard SHALL be kept. Focus SHALL NOT move to another field.
+Rotating the device, or any other change of the window size, SHALL NOT reset what the user is doing. The current section, the feed's scroll position, the creation box with its step, type, text, chosen photo, alternative text and caption, the open edit dialog with its edited content and any newly picked photo, and the focused text field with its open keyboard SHALL be kept. Focus SHALL NOT move to another field.
 
 #### Scenario: Typing in the creation box
 - **WHEN** the user is typing "Hola" in the creation box with the keyboard open and rotates the phone, then rotates it back
@@ -135,6 +139,14 @@ Rotating the device, or any other change of the window size, SHALL NOT reset wha
 #### Scenario: Edit dialog open
 - **WHEN** the edit dialog is open with changed text and the user rotates the device
 - **THEN** the dialog is still open with the changed text, in its current step
+
+#### Scenario: Image step with a photo
+- **WHEN** the image step shows a chosen photo and a typed caption, and the user rotates the device
+- **THEN** the image step still shows the same photo and caption, with the preview resized to the new layout
+
+#### Scenario: Image dialog with a new photo
+- **WHEN** the image dialog shows a newly picked, unsaved photo and the user rotates the device
+- **THEN** the dialog still shows the new photo and the edited fields, in its current step
 
 #### Scenario: Draft on another section
 - **WHEN** a draft is pending on Timeline, the user rotates the device on Circles and returns to Timeline
@@ -150,3 +162,9 @@ In the phone landscape layout, the app SHALL let the system show its full-screen
 #### Scenario: Typing in the full-screen editor
 - **WHEN** the user types "nunca" in the creation box through the full-screen editor in phone landscape and presses the editor's done key
 - **THEN** the editor closes, the creation box shows the text with "nunca", and the text area keeps its focus
+### Requirement: Maximum image height follows the layout
+The maximum height of a photo on a card or in a preview SHALL be computed for the current layout and window, and SHALL be updated as soon as the layout or the window size changes, without changing which photo or item is shown.
+
+#### Scenario: Rotating with a tall photo on screen
+- **WHEN** a card with a tall photo is shown in phone portrait and the user rotates to phone landscape
+- **THEN** the photo is shown smaller, whole, so that the photo, its caption line and its actions fit in the visible content area
