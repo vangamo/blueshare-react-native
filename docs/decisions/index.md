@@ -18,7 +18,9 @@ The technical decisions taken in the `basic-app-layout` change (its `design.md`,
 
 ## adaptive-layout
 
-* [Adaptive layout](adaptive-layout.md) - D1, D2, D9: the layout from the window size, two size sets and four frames, and the full-screen editor kept on.
+From the `adaptive-layout` change (its `design.md`, D1 to D9, now in `openspec/changes/archive/2026-11-02-adaptive-layout/`).
+
+* [Adaptive layout](adaptive-layout.md) - D1, D2, D4 to D9: the layout from the window size, two size sets and four frames, the title field's rotation grace, safe areas and the content column, the `app.json` and test setup, and the full-screen editor kept on.
 * [Tab bar stays in one slot](tab-bar-single-slot.md) - D3: the tab bar is drawn at the top in landscape without leaving the navigator's bottom slot, so a rotation keeps focus.
 
 ## add-text-items

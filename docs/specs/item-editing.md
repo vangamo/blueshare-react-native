@@ -7,7 +7,7 @@ resource: ../../openspec/specs/item-editing/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T12:00:00Z
+  at: 2026-11-02T18:00:00Z
 ---
 
 # item-editing (implemented)
@@ -17,7 +17,7 @@ Full text: `openspec/specs/item-editing/spec.md`. From the change `edit-text-ite
 | Requirement | Summary | Implemented in |
 | --- | --- | --- |
 | Editar opens the edit dialog | The dialog opens over the dimmed Timeline, and nothing under it responds or is reachable by a screen reader. | [Edit text dialog](../components/edit-text-dialog.md) |
-| Edit dialog appearance and contents | Creation background, solid primary-blue border, near the top. Title, close button, text area, Cancelar and Guardar, a divider and "Borrar este texto". | same |
+| Edit dialog appearance and contents | Creation background, solid primary-blue border, near the top, spanning the layout's content column (centered; 500 on tablet portrait) with the size set's padding and radius. On phones in landscape Android's full-screen editor may cover it while typing. Title, close button, text area, Cancelar and Guardar, a divider and "Borrar este texto". | same |
 | Edit text area | Prefilled with the current text, no keyboard on open, same limits as the creation box. | same |
 | Guardar enabled only for a real change | Disabled while the trimmed text is blank or equal to the current one. | same |
 | Guardar saves the new text | Trims, closes the dialog and keyboard, and the card keeps its position. One save per double tap. | same |

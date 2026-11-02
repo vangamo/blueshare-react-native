@@ -2,6 +2,11 @@
 
 ## 2026-11-02
 
+* **Update** Archived the OpenSpec change `adaptive-layout` to `openspec/changes/archive/2026-11-02-adaptive-layout/` with `/opsx:archive`, after syncing its delta specs: new main spec `adaptive-layout` (7 requirements), and changed requirements in `app-platform` (phones and tablets in any orientation), `app-shell` (tab bar and safe areas per layout, header, create button, title field keeps focus on rotation), `timeline-feed` (content column), `item-creation` (box visible below the top tab bar) and `item-editing` (dialog in the content column). Context updated to match:
+  * New spec page `specs/adaptive-layout.md`; updated `specs/app-platform.md`, `app-shell.md`, `timeline-feed.md`, `item-creation.md`, `item-editing.md` and `specs/index.md`.
+  * `decisions/adaptive-layout.md` now covers D1, D2 and D4 to D9 (D3 is `decisions/tab-bar-single-slot.md`); `decisions/index.md`, `product/roadmap.md`, `product/known-limitations.md` and the "Current state" in `development/openspec-workflow.md` updated.
+  * `CLAUDE.md`: the platform wording, the "Current state", a new "Layout sizes" key rule and a "When to read what" row for layouts and rotation. Nested `CLAUDE.md` files in `src/app/`, `src/components/`, `src/constants/` and `src/__tests__/`, and the `add-main-section` skill, updated for the layout rules.
+  * The `run-on-emulator` and `visual-review` skills were updated while implementing.
 * **Update** Implementing the OpenSpec change `adaptive-layout` (`/opsx:apply`):
   * Added `LayoutKind`, `SizeSet`, `Frame`, the `Sizes` and `Frames` tables and `layoutFor()` to `src/constants/theme.ts`. The varying values left `Layout` (now only fixed values, `footerPaddingHorizontal` renamed `tabBarPaddingHorizontal`, new `keyboardHideGraceMs`). Components read the phone values for now. `FooterTabBar` is renamed `TabBar`.
   * Added `useWindowSize` and `useShellLayout`, and the test helpers `TEST_WINDOWS` and `setMockWindow` (the default window is phone portrait). Tests for `layoutFor`, the size sets and the hook. Updated `design-system/layout-sizes.md`, `theme-module.md` and `development/testing.md`.

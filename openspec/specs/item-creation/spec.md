@@ -17,6 +17,10 @@ When the create button is pressed on Timeline, the app SHALL show the creation b
 - **WHEN** the user has scrolled the Timeline down and taps the create button
 - **THEN** the feed scrolls to the top and the creation box is fully visible below the header
 
+#### Scenario: Opening while scrolled down in landscape
+- **WHEN** the user has scrolled the Timeline down in a landscape layout and taps the create button
+- **THEN** the feed scrolls to the top and the creation box starts fully visible below the tab bar, not under it
+
 ### Requirement: Creation box appearance
 The creation box SHALL have a 2-point dashed border in primary blue, the creation background color, a 16-point corner radius, 16 points of padding and 16 points of space below it. Its title ("Crear nuevo elemento:" or "Crear nuevo elemento de texto:") SHALL be 14-point bold in the main text color.
 
