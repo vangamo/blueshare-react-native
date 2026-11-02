@@ -19,6 +19,20 @@ const PAIRS: Pair[] = [
   { fg: 'primaryBlue', bg: 'cardBg', min: LARGE_OR_UI, use: 'menu border / focused field border' },
   { fg: 'primaryDark', bg: 'surfaceMuted', min: LARGE_OR_UI, use: 'title field border at rest' },
   { fg: 'primaryDark', bg: 'cardBg', min: LARGE_OR_UI, use: 'avatar border' },
+  // Creation box and timeline (add-text-items design D10).
+  { fg: 'textMain', bg: 'creationBg', min: TEXT, use: 'creation box title and save error' },
+  { fg: 'onPrimary', bg: 'primaryBlueHover', min: TEXT, use: 'Guardar and Crear labels' },
+  { fg: 'textMain', bg: 'surfaceMuted', min: TEXT, use: 'Cancelar and card action labels' },
+  { fg: 'textSecondary', bg: 'cardBg', min: TEXT, use: 'text card body' },
+  { fg: 'textSecondary', bg: 'backgroundMain', min: TEXT, use: 'empty and error messages' },
+  { fg: 'textMain', bg: 'cardBg', min: TEXT, use: 'type select, options and text area text' },
+  { fg: 'primaryDark', bg: 'cardBg', min: LARGE_OR_UI, use: 'type select and text area border' },
+  { fg: 'textMain', bg: 'cardBg', min: LARGE_OR_UI, use: 'type select chevron' },
+  // Edit dialog and danger buttons (edit-text-items design D7).
+  { fg: 'onDanger', bg: 'danger', min: TEXT, use: 'Sí, borrar label' },
+  { fg: 'danger', bg: 'surfaceMuted', min: TEXT, use: 'Borrar este texto label' },
+  { fg: 'danger', bg: 'creationBg', min: LARGE_OR_UI, use: 'Borrar este texto border' },
+  { fg: 'textMain', bg: 'creationBg', min: LARGE_OR_UI, use: 'edit dialog close glyph' },
 ];
 
 describe('palettes', () => {

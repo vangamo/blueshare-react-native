@@ -2,13 +2,13 @@
 
 BlueShare is an accessible, intergenerational social app that connects older adults with young people. Users share events, short texts and photos with their family and close circles. It is an **Expo / React Native** app for **Android and iOS phones, portrait only, running in Expo Go** (no web). The audience includes seniors, so high contrast and large touch targets are requirements, not extras.
 
-**Current state:** Phase 1 has delivered the app shell: a fixed header (menu, a title that doubles as search, avatar), footer tabs (Timeline, Circles, Events), a floating `+` button, and light and dark themes built from JSON design tokens. The sections show placeholders. The feed is next.
+**Current state:** Phase 1 has delivered the app shell (a fixed header with menu, a title that doubles as search and avatar; footer tabs Timeline, Circles, Events; a floating `+` button; light and dark themes from JSON design tokens) and text items. On Timeline, `+` opens a creation box to write a text, saved in a local SQLite database and listed newest first as cards, and "Editar" on a card opens a dialog to change or delete it (every earlier version goes to history tables). Circles and Events show placeholders. Image and event items are next.
 
 Detailed knowledge lives in [`docs/`](docs/index.md) (Open Knowledge Format, one topic per file). Open only the files the task needs, using the index below.
 
 ## Stack
 
-Expo SDK **58** (`expo ~58.0.22`), Expo Router 58 (JS tabs), React Native 0.88.1, React 19.3, strict TypeScript 6, React Compiler and typed routes on, Jest 30 + jest-expo + React Native Testing Library. Package manager: **npm** (use `npx`, not `bunx`).
+Expo SDK **58** (`expo ~58.0.22`), Expo Router 58 (JS tabs), React Native 0.88.1, React 19.3, strict TypeScript 6, React Compiler and typed routes on, Jest 30 + jest-expo + React Native Testing Library. Items are stored with `expo-sqlite`; tests run the same SQL on Node's `node:sqlite` (Node ≥ 22.13). Package manager: **npm** (use `npx`, not `bunx`).
 
 ## Expo has changed: do not trust your training data
 
@@ -45,13 +45,14 @@ A task is finished only when **lint (0 warnings), typecheck and tests pass**, wi
 - **Accessibility:** touch targets ≥ 44×44 pt, `accessibilityRole` and `accessibilityLabel` on every control, WCAG AA contrast in both palettes (tested).
 - **React Compiler:** no manual `useMemo` or `useCallback`, and no `setState` inside effects. Compute derived values during render.
 - **Expo Go only:** no native modules beyond those bundled in Expo Go. A library with other native code needs a development build (`npx expo run:android|ios` or `eas build --profile development`), so propose a spec change first. Prefer Expo modules, and check the available skills before adding dependencies.
+- **Items module:** storage and domain code lives in `src/items/` (hexagonal: `domain/` ← `application/` ← `infrastructure/`). UI reaches it only through `ItemsProvider` and the hooks. Migrations are append-only. Local rules in `src/items/CLAUDE.md`.
 - **Continuous Native Generation:** never create or edit `ios/` or `android/`. Configure native behavior in `app.json` and config plugins.
 - **Never edit `sketches/`.** They are design references. The HTML mock wins over `sketches/design_system.json`.
 - **Specs first:** features go through OpenSpec (`/opsx:propose`, `/opsx:apply`, `/opsx:archive`). Current specs are in `openspec/specs/`. After a successful `/opsx:archive`, update `CLAUDE.md` and `docs/` to match what shipped. The rule is in `openspec/config.yaml` (`operations.archive.guidance`) and explained in [OpenSpec workflow](docs/development/openspec-workflow.md).
 
 ## When to read what
 
-Read the listed files **before** starting that kind of work. Folders `src/app/`, `src/components/`, `src/constants/` and `src/__tests__/` have their own `CLAUDE.md` with local rules.
+Read the listed files **before** starting that kind of work. Folders `src/app/`, `src/components/`, `src/constants/`, `src/items/` and `src/__tests__/` have their own `CLAUDE.md` with local rules.
 
 | When you… | Read or use |
 | --- | --- |
@@ -61,10 +62,12 @@ Read the listed files **before** starting that kind of work. Folders `src/app/`,
 | touch `_layout.tsx`, the header, footer or create button | [shell layout](docs/architecture/shell-layout.md), the page in [docs/components/](docs/components/index.md) |
 | add or change a route, link or deep link | [routing](docs/architecture/routing.md) |
 | add a tab or main section | skill `add-main-section` |
+| store, read or migrate items, or add an item type | [items module](docs/architecture/items-module.md), [items schema](docs/decisions/items-schema.md) (live and history tables) |
+| touch the creation box, the edit dialog, the timeline feed or cards | the pages in [docs/components/](docs/components/index.md), [specs](docs/specs/index.md) (item-creation, item-editing, timeline-feed) |
 | style a component or use colors and sizes | [theme module](docs/design-system/theme-module.md), [sizes and typography](docs/design-system/layout-sizes.md) |
 | add or change a color or token | [design tokens](docs/design-system/design-tokens.md), [color palettes](docs/design-system/color-palettes.md) |
 | add a control or change text and background colors | [accessibility](docs/development/accessibility.md) |
-| want to undo or rework an existing choice (tabs, splash, tokens, contrast, packages) | [decisions](docs/decisions/index.md) first: they record what was rejected and why |
+| want to undo or rework an existing choice (tabs, splash, tokens, contrast, packages, storage, state) | [decisions](docs/decisions/index.md) first: they record what was rejected and why |
 | change behavior covered by a spec | [specs](docs/specs/index.md) (full text in `openspec/specs/`), [OpenSpec workflow](docs/development/openspec-workflow.md) |
 | add, remove or upgrade a package | [dependencies](docs/development/dependencies.md), [kept and removed dependencies](docs/decisions/kept-dependencies.md) |
 | touch `app.json`, icons, splash or builds | [native config and EAS](docs/development/native-config-and-eas.md) |

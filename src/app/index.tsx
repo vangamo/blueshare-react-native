@@ -1,5 +1,5 @@
-import { PlaceholderScreen } from '@/components/placeholder-screen';
+import { TimelineFeed } from '@/components/timeline-feed';
 
 export default function TimelineScreen() {
-  return <PlaceholderScreen title="Timeline" />;
+  return <TimelineFeed />;
 }

@@ -1,12 +1,12 @@
 ---
 type: Decision
 title: Kept and removed dependencies
-description: Web and demo packages were uninstalled. Expo Router peers, system UI and the animation and image packages planned for the feed were kept.
+description: Web and demo packages were uninstalled. Expo Router peers, system UI and the animation and image packages planned for the feed were kept. expo-sqlite, expo-crypto and @types/node were added for items.
 tags: [decision, dependencies, packages]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:30:00Z
 ---
 
 # Kept and removed dependencies (D8)
@@ -19,5 +19,11 @@ generated:
 - `expo-constants`, `expo-linking` and `expo-font`: required peers of expo or expo-router.
 - `react-dom`: a **required** peer of the `@radix-ui/*` packages that expo-router depends on. It is unused on native.
 - `react-native-reanimated`, `react-native-worklets`, `react-native-gesture-handler` and `expo-image`: navigation and animation infrastructure bundled in Expo Go, which the Phase 1 feed (images, carousels) is expected to use.
+
+**Added** (change `add-text-items`):
+- `expo-sqlite` and `expo-crypto`: local item storage and UUID v4 IDs. Both are included in Expo Go, so the app stays Expo Go only.
+- `@types/node` (dev): types for the `node:sqlite` test driver. Requires Node ≥ 22.13 to run tests (`engines` in `package.json`).
+
+Rejected for tests: `better-sqlite3` (a native addon that can fail to install), `sql.js` (WebAssembly, slower, another dependency) and mocking `expo-sqlite` (it tests the mock, not the SQL).
 
 **Rule:** before removing a package, check `grep -rn "<pkg>" src app.json` and `npm ls <pkg>`. Removal uses `npm uninstall`. Adding a package always uses `npx expo install`. See [Dependencies](../development/dependencies.md).

@@ -6,7 +6,7 @@ tags: [openspec, workflow, specs, process]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-02T12:00:00Z
 ---
 
 # OpenSpec workflow
@@ -58,4 +58,10 @@ Limits:
 
 ## Current state
 
-The change `basic-app-layout` (created 2026-10-31, branch `01-layout`) has all 51 of its tasks done. Its specs are synced into `openspec/specs/`. It is **not archived yet**: run `/opsx:archive` after review.
+No change is active. Archived changes:
+- `basic-app-layout` (branch `01-layout`, 51/51 tasks), archived 2026-11-01 to `openspec/changes/archive/2026-11-01-basic-app-layout/`.
+- `add-text-items` (branch `02-text-items`, 42/42 tasks), archived 2026-11-01 to `openspec/changes/archive/2026-11-01-add-text-items/`. Its delta specs were synced: item-creation, item-storage and timeline-feed are new, and app-shell and app-theming changed.
+
+- `edit-text-items` (branch `02-text-items`, 29/29 tasks), archived 2026-11-02 to `openspec/changes/archive/2026-11-02-edit-text-items/`. Its delta specs were synced: item-editing is new, and item-storage, timeline-feed and app-theming changed.
+
+The main specs in `openspec/specs/` are app-platform, app-shell, app-theming, item-creation, item-editing, item-storage and timeline-feed. The next changes are image and event items, see the [roadmap](../product/roadmap.md).

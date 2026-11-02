@@ -74,7 +74,8 @@
         position: relative;
       }
 
-      .search-input {
+      .search-input,
+      .event-textbox {
         width: 100%;
         height: 42px;
         border: 2px solid #0f172a;
@@ -87,7 +88,8 @@
         text-align: center;
       }
 
-      .search-input:focus {
+      .search-input:focus,
+      .event-textbox:focus {
         outline: none;
         border-color: #0084ff;
         background-color: #ffffff;
@@ -142,6 +144,12 @@
         background: white;
         color: #0f172a;
         margin-bottom: 10px;
+      }
+      .event-textbox {
+        padding: 12px 12px;
+        height: auto;
+        margin-bottom: 10px;
+        text-align: start;
       }
 
       .btn-create-submit {
@@ -375,13 +383,37 @@
           >
             Crear nuevo elemento:
           </p>
-          <select class="select-type">
+          <select class="select-type" id="select-type">
+            <option disabled selected value="">Selecciona una opción</option>
             <option value="event">📅 Evento</option>
             <option value="text">📝 Texto</option>
             <option value="image">📷 Imagen</option>
           </select>
-          <button class="btn-create-submit" onclick="toggleCreationBox()">
-            Publicar
+          <button class="btn-create-submit" onclick="createNewItem()">
+            Guardar
+          </button>
+        </div>
+
+        <!-- Caja Desplegable para Crear Contenido de texto -->
+        <div class="creation-box" id="textCreationBox">
+          <p
+            style="
+              font-size: 14px;
+              font-weight: bold;
+              margin-bottom: 8px;
+              color: #0f172a;
+            "
+          >
+            Crear nuevo elemento de texto:
+          </p>
+          <textarea
+            class="event-textbox"
+            name="event-text"
+            id="event-text"
+            rows="3"
+          ></textarea>
+          <button class="btn-create-submit" onclick="toggleTextCreationBox()">
+            Crear
           </button>
         </div>
 
@@ -451,6 +483,21 @@
       function toggleCreationBox() {
         const box = document.getElementById("creationBox");
         box.classList.toggle("active");
+      }
+
+      function toggleTextCreationBox() {
+        const box = document.getElementById("textCreationBox");
+        box.classList.toggle("active");
+      }
+
+      function createNewItem() {
+        const typeSelect = document.getElementById("select-type");
+        const typeSelected = typeSelect.value;
+
+        toggleCreationBox();
+        if ("text" === typeSelected) {
+          toggleTextCreationBox();
+        }
       }
 
       const searchInput = document.getElementById("searchInput");

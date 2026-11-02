@@ -7,7 +7,7 @@ resource: ../../src/app/
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T16:30:00Z
 ---
 
 # Routing
@@ -16,7 +16,7 @@ generated:
 - **Tabs come from `expo-router/js-tabs`**, not from `expo-router`: the `Tabs` export of `expo-router` is `@deprecated` in SDK 58. `BottomTabBarProps` is exported from `expo-router/js-tabs`.
 - **SDK 58 shows only declared screens.** Every route file needs a matching `Tabs.Screen` in `_layout.tsx`, or it is not shown.
 - Routes are flat for now: `/` (Timeline, `index.tsx`), `/circles` and `/events`. There is no `(tabs)` group and no stack. Add them when the first screen has to open on top of the tabs.
-- **Back behavior:** Android back from another tab returns to Timeline (the first tab, the JS tabs default).
+- **Back behavior:** Android back from another tab returns to Timeline (the first tab, the JS tabs default). On Timeline, while the creation box is open, back closes the box instead (see [Timeline feed](../components/timeline-feed.md)).
 
 ## Adding a main section
 

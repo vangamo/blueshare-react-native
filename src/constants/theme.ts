@@ -85,6 +85,19 @@ export const Layout = {
   controlRadius: 10,
   borderWidth: 2,
   fabBorderWidth: 3,
+  /** Space between creation box controls, and between its two buttons. */
+  creationGap: 10,
+  /** Text area: about three lines plus padding, then it grows up to the max and scrolls. */
+  textAreaMinHeight: 96,
+  textAreaMaxHeight: 200,
+  /** Card text line height: 15 × 1.5. */
+  cardTextLineHeight: 22.5,
+  /** Card divider and card action border. */
+  hairlineWidth: 1,
+  /** Rows of the type list. */
+  optionRowHeight: 56,
+  /** View opacity of a disabled box button (a faded primary, not gray). */
+  disabledOpacity: 0.45,
 } as const;
 
 function navigationTheme(base: Theme, colors: ThemeColors): Theme {

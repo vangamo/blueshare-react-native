@@ -6,7 +6,7 @@ tags: [device, android, emulator, expo-go, adb]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-01T17:30:00Z
 ---
 
 # Device testing
@@ -40,5 +40,16 @@ Inside Expo Go, deep links use `exp://127.0.0.1:8081/--/<path>`. `blueshare://` 
 - **Title field:** all its scenarios pass. Menu and avatar taps do nothing.
 - **Accessibility:** TalkBack announces the tabs with their selected state.
 - **Accepted:** the keyboard covers the footer, see [Known limitations](../product/known-limitations.md).
+
+### Items and the creation box (change `add-text-items`)
+
+- **SQLite:** in `__DEV__` the app logs `[items] SQLite 3.53.3` (Expo Go 58 on Android). Jest's `node:sqlite` (Node 24.21) bundles 3.53.4.
+- **Creation flow:** `+` opens the box at the top and hides; the type list opens and picks; Guardar with Texto opens the text step with the keyboard; Crear saves, closes the keyboard and puts the card first.
+- **Persistence:** items survive a force-stop of Expo Go in the same order ("Dos" above "Uno"). Creating with airplane mode on saves too.
+- **Back button:** with the type list open it closes only the list; with the keyboard up the first press closes the keyboard; with the box open it closes the box and the app stays; with the box closed it leaves the app; on Events with a draft it returns to Timeline with the draft.
+- **Keyboard:** entering the text step opens it; returning from another tab does not; typing keeps focus; with a 10-line text the area stops at its maximum height and scrolls, and Crear stays above the keyboard and works on the first tap.
+- **Scroll to top:** opening the box while scrolled down scrolls the feed to the top.
+- **Accessibility tree** (`uiautomator dump`): the select reads "Crear nuevo elemento, <value>"; disabled Guardar and Crear are `enabled=false`; options are radio buttons with `checked`; card actions are buttons named "Editar" and "Compartir"; `+` is not in the tree while the box is open. The user checked the same points by ear with TalkBack.
+- **adb timing:** `adb shell input text` delivers keys asynchronously. A tap right after it can land while Crear is still disabled, which only closes the keyboard. Wait about 0.5 s after typing before tapping.
 
 Screenshot comparison: [Visual review](visual-review.md).

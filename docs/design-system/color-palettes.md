@@ -7,31 +7,36 @@ resource: ../../src/constants/design-system.json
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T12:36:10Z
+  at: 2026-11-02T12:00:00Z
 ---
 
 # Color palettes
 
 | Role (`theme.*`) | Light | Dark | Used by |
 | --- | --- | --- | --- |
-| `primaryDark` (strong ink) | `#0f172a` | `#e2e8f0` | title-field border at rest, avatar border |
-| `primaryBlue` | `#0084ff` | `#4da3ff` | FAB fill, menu glyph and border, focused field border, cursor |
-| `primaryBlueHover` | `#006fe6` | `#80bdff` | active tab background |
+| `primaryDark` (strong ink) | `#0f172a` | `#e2e8f0` | title-field border at rest, avatar border, type select and text area borders |
+| `primaryBlue` | `#0084ff` | `#4da3ff` | FAB fill, menu glyph and border, focused field border, cursor, creation box dashed border |
+| `primaryBlueHover` | `#006fe6` | `#80bdff` | active tab background, Guardar and Crear buttons |
 | `primaryBlueDeep` | `#0058b8` | `#b3d7ff` | active tab border |
 | `primaryShadow` | `rgba(0,132,255,0.3)` | `rgba(77,163,255,0.3)` | active tab and FAB shadow |
-| `onPrimary` | `#ffffff` | `#0f172a` | active tab label, FAB `+` |
+| `onPrimary` | `#ffffff` | `#0f172a` | active tab label, FAB `+`, Guardar and Crear labels |
 | `backgroundMain` | `#faf9f6` | `#0b1120` | content, scenes, root view |
 | `backgroundBody` | `#f1f5f9` | `#020617` | reserved for later |
-| `cardBg` | `#ffffff` | `#0f172a` | header, footer, focused field, FAB ring |
-| `surfaceMuted` | `#f8fafc` | `#1e293b` | field at rest, inactive tabs |
+| `cardBg` | `#ffffff` | `#0f172a` | header, footer, focused field, FAB ring, text cards, type select, type list sheet, text area |
+| `surfaceMuted` | `#f8fafc` | `#1e293b` | field at rest, inactive tabs, Cancelar, card actions |
 | `avatarBg` | `#fdf6f0` | `#3a2e25` | avatar |
-| `creationBg` | `#f0f7ff` | `#0c2340` | menu button background |
-| `borderColor` | `#e2e8f0` | `#334155` | header and footer separators |
-| `borderDark` | `#cbd5e1` | `#64748b` | inactive tab border |
-| `textMain` | `#0f172a` | `#f1f5f9` | field text, placeholder title |
-| `textSecondary` | `#334155` | `#cbd5e1` | inactive tab label, placeholder body |
+| `creationBg` | `#f0f7ff` | `#0c2340` | menu button background, creation box, selected type option |
+| `borderColor` | `#e2e8f0` | `#334155` | header and footer separators, text card border |
+| `borderDark` | `#cbd5e1` | `#64748b` | inactive tab border, Cancelar and card action borders |
+| `textMain` | `#0f172a` | `#f1f5f9` | field text, placeholder title, creation box text, button labels except primary |
+| `textSecondary` | `#334155` | `#cbd5e1` | inactive tab label, placeholder body, card text, timeline messages |
 | `textMuted` | `#475569` | `#94a3b8` | "Buscar..." placeholder |
 | `badgeBg` / `badgeText` | `#e0f2fe` / `#0369a1` | `#0c2a4a` / `#7dd3fc` | reserved for feed cards |
+| `cardShadow` | `rgba(15,23,42,0.04)` | `rgba(2,6,23,0.5)` | text card shadow |
+| `divider` | `#f1f5f9` | `#1e293b` | line above the card action row (decorative) |
+| `overlay` | `rgba(15,23,42,0.5)` | `rgba(2,6,23,0.7)` | type list and edit dialog backdrop |
+| `danger` | `#b91c1c` | `#f87171` | "Borrar este texto" border and label, "Sí, borrar" background |
+| `onDanger` | `#ffffff` | `#0f172a` | "Sí, borrar" label |
 
 ## Contrast rules (tested in `theme-test.ts`)
 
@@ -48,10 +53,21 @@ Checked pairs (light / dark):
 | active tab label | 4.75 / 9.05 |
 | menu glyph on its background | 3.39 / 6.01 |
 | title border | 17.06 / 11.87 |
+| creation box title and save error (`textMain` on `creationBg`) | 16.54 / 14.41 |
+| Guardar and Crear labels (`onPrimary` on `primaryBlueHover`) | 4.75 / 9.05 |
+| Cancelar and card action labels (`textMain` on `surfaceMuted`) | 17.06 / 13.35 |
+| card text (`textSecondary` on `cardBg`) | 10.35 / 12.02 |
+| empty and error messages (`textSecondary` on `backgroundMain`) | 9.83 / 12.68 |
+| select, options and text area text (`textMain` on `cardBg`) | 17.85 / 16.30 |
+| select and text area border (`primaryDark` on `cardBg`) | 17.85 / 14.48 |
+| Sí, borrar label (`onDanger` on `danger`) | 6.47 / 6.45 |
+| Borrar este texto label (`danger` on `surfaceMuted`) | 6.18 / 5.29 |
+| Borrar este texto border (`danger` on `creationBg`) | 5.99 / 5.71 |
 
 ## Dark palette logic
 
 - Same slate and blue family as light.
 - "Hover" and "deep" get **lighter** in dark mode, because emphasis on a dark background means more light.
 - `onPrimary` turns navy, because white on a light blue fails contrast. See [Active tab contrast](../decisions/active-tab-contrast.md).
-- The light inactive-tab border (`#cbd5e1` on `#f8fafc`, 1.42:1) is decorative. The tab is identified by its label and background.
+- The light inactive-tab border (`#cbd5e1` on `#f8fafc`, 1.42:1) is decorative. The tab is identified by its label and background. The Cancelar border (`borderDark` on `creationBg`, about 1.4:1) is decorative for the same reason.
+- Guardar and Crear use `primaryBlueHover`, not the mock's `#0084ff`: white on `#0084ff` is 3.66:1, below AA for 15 pt bold. Disabled button labels are exempt from contrast rules.

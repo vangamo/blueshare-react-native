@@ -6,7 +6,9 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppHeader } from '@/components/app-header';
 import { CreateButton } from '@/components/create-button';
+import { CreationBoxProvider } from '@/components/creation-box-provider';
 import { FooterTabBar } from '@/components/footer-tab-bar';
+import { ItemsProvider } from '@/components/items-provider';
 import { NavigationThemes } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
@@ -24,20 +26,24 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={NavigationThemes[scheme]}>
-      <View
-        style={[styles.root, { backgroundColor: theme.backgroundMain }]}
-        onLayout={hideSplash}>
-        <StatusBar style="auto" />
-        <AppHeader />
-        <Tabs
-          tabBar={(props) => <FooterTabBar {...props} />}
-          screenOptions={{ headerShown: false }}>
-          <Tabs.Screen name="index" options={{ title: 'Timeline' }} />
-          <Tabs.Screen name="circles" options={{ title: 'Circles' }} />
-          <Tabs.Screen name="events" options={{ title: 'Events' }} />
-        </Tabs>
-        <CreateButton />
-      </View>
+      <ItemsProvider>
+        <CreationBoxProvider>
+          <View
+            style={[styles.root, { backgroundColor: theme.backgroundMain }]}
+            onLayout={hideSplash}>
+            <StatusBar style="auto" />
+            <AppHeader />
+            <Tabs
+              tabBar={(props) => <FooterTabBar {...props} />}
+              screenOptions={{ headerShown: false }}>
+              <Tabs.Screen name="index" options={{ title: 'Timeline' }} />
+              <Tabs.Screen name="circles" options={{ title: 'Circles' }} />
+              <Tabs.Screen name="events" options={{ title: 'Events' }} />
+            </Tabs>
+            <CreateButton />
+          </View>
+        </CreationBoxProvider>
+      </ItemsProvider>
     </ThemeProvider>
   );
 }

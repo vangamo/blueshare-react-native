@@ -1,6 +1,10 @@
 # Decisions
 
-The technical decisions taken in the `basic-app-layout` change (its `design.md`, D1 to D11). Each page gives the decision, why it was taken and the rejected alternatives. The decisions about tooling are in [Development](../development/index.md): mandatory lint (D9), the Jest setup (D10) and the screenshot review (D11).
+Each page gives a decision, why it was taken and the rejected alternatives, grouped by the OpenSpec change that took it.
+
+## basic-app-layout
+
+The technical decisions taken in the `basic-app-layout` change (its `design.md`, D1 to D11, now in `openspec/changes/archive/2026-11-01-basic-app-layout/`). The decisions about tooling are in [Development](../development/index.md): mandatory lint (D9), the Jest setup (D10) and the screenshot review (D11).
 
 * [JS tabs with a custom tab bar](js-tabs-custom-tab-bar.md) - D1: `expo-router/js-tabs` with a `tabBar` prop, instead of native or headless tabs.
 * [Shell at the root layout](shell-at-root-layout.md) - D2: header, footer and FAB are rendered once around the navigator, not per screen.
@@ -11,3 +15,24 @@ The technical decisions taken in the `basic-app-layout` change (its `design.md`,
 * [Title field state without effects](title-field-state.md) - D7: the displayed value is computed during render, and state changes only in focus and blur handlers.
 * [Kept and removed dependencies](kept-dependencies.md) - D8: which packages were removed and why the others stay.
 * [Mobile only, portrait, no web](mobile-only.md) - Android and iOS phones in portrait, running in Expo Go.
+
+## add-text-items
+
+From the `add-text-items` change (its `design.md`, now in `openspec/changes/archive/2026-11-01-add-text-items/`). Its D7 (Timeline list, scroll, back button and keyboard) and D12 (wiring) are described in [Timeline feed](../components/timeline-feed.md) and [Shell layout](../architecture/shell-layout.md).
+
+* [Local SQLite storage](local-sqlite-storage.md) - D1: one `expo-sqlite` database on the phone, instead of key-value storage, a JSON file or a server.
+* [Items schema](items-schema.md) - D2: a base `items` table plus a table per type, UTC-millisecond times, UUID v4 ids and soft deletion.
+* [Hexagonal items module](hexagonal-items-module.md) - D3: `src/items/` with domain, application and infrastructure layers.
+* [Injected SQL driver](injected-sql-driver.md) - D4: `expo-sqlite` in the app and `node:sqlite` in Jest behind one port, so tests run the real SQL.
+* [UI state without effects](ui-state-without-effects.md) - D5: an external timeline store and a creation box reducer above the tabs.
+* [Create action per route](create-action-per-route.md) - D6: `useCreateAction()` maps the route and box state to the `+` button.
+* [Custom type select](custom-type-select.md) - D8: a `Pressable` field with a `Modal` list, instead of the platform picker.
+* [Text limit](text-limit.md) - D9: `TEXT_MAX_LENGTH` (8192), trimmed and checked in the domain.
+* [Creation box buttons](creation-box-buttons.md) - D10: active-tab blue for Guardar and Crear, a faded disabled state, and the new color roles.
+* [Spanish copy and labels](spanish-copy-labels.md) - D11: Spanish copy, labels equal to the visible text, announced errors.
+
+## edit-text-items
+
+From the `edit-text-items` change (its `design.md`, now in `openspec/changes/archive/2026-11-02-edit-text-items/`). Its D1 and D2 (live and history tables) are in [Items schema](items-schema.md).
+
+* [Edit dialog](edit-dialog.md) - D5 to D7: local state, an RN `Modal` instead of a route, in-dialog deletion confirmation, and the `danger` colors.

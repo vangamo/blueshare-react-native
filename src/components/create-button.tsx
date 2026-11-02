@@ -2,19 +2,25 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FontWeight, Layout } from '@/constants/theme';
+import { useCreateAction } from '@/hooks/use-create-action';
 import { useTheme } from '@/hooks/use-theme';
 
-/** Floating "+" button above the footer. Rendered once by the root layout. */
+/**
+ * Floating "+" button above the footer. Rendered once by the root layout. What it
+ * does, and whether it shows, depends on the section (`useCreateAction`).
+ */
 export function CreateButton() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { visible, onPress } = useCreateAction();
+
+  if (!visible) return null;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel="Create"
-      // The creation flow is not built yet.
-      onPress={() => {}}
+      onPress={onPress}
       style={({ pressed }) => [
         styles.button,
         {
