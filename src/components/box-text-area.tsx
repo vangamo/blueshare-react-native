@@ -10,18 +10,25 @@ type BoxTextAreaProps = {
   onChangeText: (text: string) => void;
   /** Also the screen reader name. */
   accessibilityLabel: string;
+  /** Read after the name, e.g. what the field is for. */
+  accessibilityHint?: string;
+  /** Longest text accepted. Defaults to the text item limit. */
+  maxLength?: number;
   /** Opens the keyboard on mount. The creation box does, the edit dialog doesn't. */
   autoFocus?: boolean;
 };
 
 /**
  * The multi-line text area of the creation box and the edit dialog: three lines tall,
- * growing up to a maximum height and then scrolling, limited to `TEXT_MAX_LENGTH`.
+ * growing up to a maximum height and then scrolling, limited to `maxLength` (the text
+ * item limit by default).
  */
 export function BoxTextArea({
   value,
   onChangeText,
   accessibilityLabel,
+  accessibilityHint,
+  maxLength = TEXT_MAX_LENGTH,
   autoFocus = false,
 }: BoxTextAreaProps) {
   const theme = useTheme();
@@ -31,10 +38,11 @@ export function BoxTextArea({
       value={value}
       onChangeText={onChangeText}
       multiline
-      maxLength={TEXT_MAX_LENGTH}
+      maxLength={maxLength}
       autoFocus={autoFocus}
       textAlignVertical="top"
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       selectionColor={theme.primaryBlue}
       style={[
         styles.textArea,

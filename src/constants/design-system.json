@@ -26,7 +26,8 @@
       "divider": "#f1f5f9",
       "overlay": "rgba(15, 23, 42, 0.5)",
       "danger": "#b91c1c",
-      "on_danger": "#ffffff"
+      "on_danger": "#ffffff",
+      "image_backdrop": "#e2e8f0"
     },
     "colors_dark": {
       "primary_dark": "#e2e8f0",
@@ -52,7 +53,8 @@
       "divider": "#1e293b",
       "overlay": "rgba(2, 6, 23, 0.7)",
       "danger": "#f87171",
-      "on_danger": "#0f172a"
+      "on_danger": "#0f172a",
+      "image_backdrop": "#1e293b"
     },
     "typography": {
       "font_family": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",

@@ -7,7 +7,7 @@ resource: ../../openspec/specs/adaptive-layout/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T18:00:00Z
+  at: 2026-11-02T21:00:00Z
 ---
 
 # adaptive-layout (implemented)
@@ -23,6 +23,7 @@ Full text: `openspec/specs/adaptive-layout/spec.md`. From the change `adaptive-l
 | Header horizontal padding on tablets | 24 points plus the side insets. | [App header](../components/app-header.md) |
 | Create button position per layout | 20 (phone) or 28 (tablet) from the right, 10 or 16 above the tab bar in portrait, 16 above the bottom inset in landscape. | [Create button](../components/create-button.md) |
 | Centered content column | Outside phone portrait the feed, cards, creation box, type list and edit dialog sit in a column of at most 550, 500 or 600 points. | `useContentStyle()`, [Timeline feed](../components/timeline-feed.md) |
+| Maximum image height follows the layout | A photo never grows taller than `imageMaxHeight` (5:4 cap in portrait, shorter in landscape), also in the creation box and the edit dialog, and it follows a rotation. | `useShellLayout()`, [Layout sizes](../design-system/layout-sizes.md) |
 | Safe areas on every side | Header, tab bar, create button and content clear the side insets, and in landscape the bottom inset too. | [Shell layout](../architecture/shell-layout.md) |
 | Rotation keeps the user's place | The section, scroll position, creation box, edit dialog and the focused field with its keyboard survive a rotation. | `src/__tests__/e2e/rotation-test.tsx`, [Title search field](../components/title-search-field.md) |
 | Landscape keyboard on phones | Android's full-screen editor is allowed, and closing it keeps the text and the focus. | [Adaptive layout](../decisions/adaptive-layout.md) |

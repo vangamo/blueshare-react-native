@@ -1,7 +1,7 @@
 ---
 type: Component
 title: Creation box provider
-description: Holds the creation box state above the tabs (closed, choose, write, plus openCount) with a reducer, so the draft survives tab switches and the + button can hide.
+description: Holds the creation box state above the tabs (closed, choose, write, image, plus openCount) with a reducer, so the draft survives tab switches and the + button can hide.
 tags: [component, provider, state, creation-box]
 resource: ../../src/components/creation-box-provider.tsx
 status: stable
@@ -21,6 +21,8 @@ box =
   | { step: 'closed' }
   | { step: 'choose'; type: ItemType | null }
   | { step: 'write'; text: string; saving: boolean; failed: boolean }
+  | { step: 'image'; photo: PickedPhoto | null; altText: string; caption: string;
+      saving: boolean; error: 'save' | 'picker' | null }
 openCount: number   goes up on every open; the feed scrolls to the top when it changes
 ```
 
@@ -28,9 +30,12 @@ openCount: number   goes up on every open; the feed scrolls to the top when it c
 | --- | --- |
 | `open` | closed → choose(null), `openCount + 1` |
 | `chooseType` | choose → choose(type) |
-| `confirmType` | choose(text) → write(''). With `event`, `image` or no type nothing changes. |
+| `confirmType` | choose(text) → write(''), choose(image) → image(no photo, empty texts). With `event` or no type nothing changes. |
 | `setText` | write → new text, `failed` cleared |
-| `saveStarted` / `saveFailed` | `saving` on / `saving` off and `failed` on |
+| `photoPicked` | image → new photo (the picker's cache URI, copied only on Crear), texts kept, `error` cleared |
+| `setAltText` / `setCaption` | image → new text, `error` cleared |
+| `pickerFailed` | image → `error: 'picker'` |
+| `saveStarted` / `saveFailed` | `saving` on / `saving` off and `failed` on (write), `error: 'save'` (image) |
 | `close` | any → closed (Cancelar, the back button or a successful Crear) |
 
 An action for another step returns the same state object. The reducer is exported as `creationBoxReducer` with `initialCreationBoxState`.

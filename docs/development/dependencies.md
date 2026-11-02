@@ -33,6 +33,13 @@ The current kept and removed list, with reasons: [Kept and removed dependencies]
 
 Only `src/items/infrastructure/expo-sql-database.ts` and `app-adapters.ts` import them. See [Items module](../architecture/items-module.md).
 
+## Runtime dependencies added for image items
+
+- `expo-image-picker`: opens the system photo picker (`launchImageLibraryAsync`, no permission needed). Included in Expo Go. Imported only by `src/hooks/use-pick-photo.ts`. Its config plugin is in `app.json` with a Spanish `photosPermission` and `cameraPermission` and `microphonePermission` set to `false`, so builds outside Expo Go ask only for what the app uses (`CAMERA` and `RECORD_AUDIO` are removed from the Android manifest).
+- `expo-file-system`: copies each chosen photo into `<documents>/images/` (`File`, `Directory`, `Paths`). Already installed through `expo`, now a direct dependency. Imported only by `src/items/infrastructure/expo-photo-store.ts`.
+
+**Android storage permissions:** the library adds `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE`, limited to Android 12 and older (`maxSdkVersion` 32). The plugin cannot block them. They are harmless, because the system photo picker needs no permission.
+
 ## Dev dependencies
 
 `jest`, `jest-expo`, `@types/jest`, `@testing-library/react-native`, `eslint`, `eslint-config-expo`, `typescript`, `@types/react` and `@types/node`. They do not affect Expo Go.

@@ -6,7 +6,7 @@ tags: [openspec, workflow, specs, process]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T18:00:00Z
+  at: 2026-11-02T21:00:00Z
 ---
 
 # OpenSpec workflow
@@ -66,4 +66,6 @@ No change is active. Archived changes:
 
 - `adaptive-layout` (branch `01bb-adaptable-layout`, 28/28 tasks), archived 2026-11-02 to `openspec/changes/archive/2026-11-02-adaptive-layout/`. Its delta specs were synced: adaptive-layout is new, and app-platform, app-shell, timeline-feed, item-creation and item-editing changed.
 
-The main specs in `openspec/specs/` are adaptive-layout, app-platform, app-shell, app-theming, item-creation, item-editing, item-storage and timeline-feed. The next changes are image and event items, see the [roadmap](../product/roadmap.md).
+- `add-image-items` (branch `03-image-items`, 36/36 tasks), archived 2026-11-02 to `openspec/changes/archive/2026-11-02-add-image-items/`. Its delta specs were synced: item-creation, item-editing, item-storage, timeline-feed, adaptive-layout and app-theming changed (no new capability).
+
+The main specs in `openspec/specs/` are adaptive-layout, app-platform, app-shell, app-theming, item-creation, item-editing, item-storage and timeline-feed. The next changes are image locations (`add-item-locations`) and event items, see the [roadmap](../product/roadmap.md).

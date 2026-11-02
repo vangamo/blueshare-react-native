@@ -41,6 +41,8 @@ Components read `Sizes` and `Frames` through `useShellLayout()` and pass them in
 | `optionRow` | 56 | 60 | type list rows |
 | `textAreaMin` / `textAreaMax` | 96 / 200 | 104 / 240 | text area: about three lines, then grows and scrolls |
 | `placeholderTitle` / `placeholderBody` | 18 / 15 | 20 / 16 | placeholder screens |
+| `captionText` | 14 | 15 | image card caption (italic) |
+| `fieldLabel` / `fieldHint` | 14 / 14 | 15 / 15 | labels and hints of the image fields |
 
 Tablet values come from the tablet portrait mock, rounded up to 44-point targets. `textAreaMin/Max` and `optionRow` on tablets are not in the mock: they are scaled to the larger font and tuned in the visual review. After the visual review on the tablet emulator the tablet values were kept as listed (no tuning was needed for the text area heights or the option rows). Tablet landscape has no mock, so it combines the tablet sizes with the landscape structure.
 
@@ -55,6 +57,8 @@ Tablet values come from the tablet portrait mock, rounded up to 44-point targets
 
 Bar heights are added to the safe-area insets. `columnWidth` (from `useShellLayout()`) is the window minus the side insets and twice `contentPadding`, capped at the frame's column.
 
+`imageMaxHeight` (also from `useShellLayout()`) is the tallest photo box, so a whole image card fits below the header and tab bar: window height, minus the top and bottom insets, `headerHeight`, `tabBarHeight`, twice `contentPadding` and the card chrome (card padding and border, `photoGap`, one caption line of `captionText × 1.5`, and the action row), never less than `Layout.imageMinHeight` (120). On the test windows the floor wins in phone landscape (363 points high). Each photo box is then `min(width × h / w, width × imageMaxRatio, imageMaxHeight)` tall.
+
 ## `Layout` (fixed values)
 
 | Key | Value | Used for |
@@ -68,6 +72,10 @@ Bar heights are added to the safe-area insets. `columnWidth` (from `useShellLayo
 | `hairlineWidth` | 1 | card divider, card action border |
 | `disabledOpacity` | 0.45 | disabled Guardar and Crear (a faded primary, not gray) |
 | `keyboardHideGraceMs` | 400 | how long the title field waits before blurring after the keyboard hides |
+| `photoRadius` | 12 | corner radius of the photo box |
+| `photoGap` | 8 | space between photo, caption and actions |
+| `imageMinHeight` | 120 | floor of the photo box height |
+| `imageMaxRatio` | 1.25 | tallest photo box, as a multiple of its width |
 
 A value from the HTML that is not a design token belongs in `Sizes`, `Frames` or `Layout`, never inline.
 

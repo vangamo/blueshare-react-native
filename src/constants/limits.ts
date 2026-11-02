@@ -5,3 +5,9 @@
 
 /** Maximum text item length, in UTF-16 code units (the unit `TextInput.maxLength` counts). */
 export const TEXT_MAX_LENGTH = 8192;
+
+/** Maximum alternative text of an image item, in UTF-16 code units. */
+export const ALT_TEXT_MAX_LENGTH = 1000;
+
+/** Maximum caption of an image item, in UTF-16 code units. */
+export const CAPTION_MAX_LENGTH = 500;

@@ -3,7 +3,9 @@ import type { TimelineStore } from '@/items/application/timeline-store';
 import type { SqlDatabase } from '@/items/infrastructure/sql-database';
 import { FailingSqlDatabase } from '@/test-utils/failing-sql-database';
 import { fixedClock, sequentialIds } from '@/test-utils/item-test-deps';
+import { NodePhotoStore, writeFixturePhoto } from '@/test-utils/node-photo-store';
 import { NodeSqlDatabase } from '@/test-utils/node-sql-database';
+import { bodyOf } from '@/test-utils/item-helpers';
 
 let run = 0;
 
@@ -11,7 +13,7 @@ let run = 0;
 function storeOn(db: SqlDatabase) {
   run += 1;
   const ids = sequentialIds(`run${run}-`);
-  return createItemsModule({ db, clock: fixedClock(run * 1000, 1), ids }).store;
+  return createItemsModule({ db, clock: fixedClock(run * 1000, 1), ids, photos: new NodePhotoStore() }).store;
 }
 
 /** Subscribes and resolves once the store leaves `loading`. */
@@ -26,7 +28,7 @@ function loaded(store: TimelineStore) {
   });
 }
 
-const bodies = (store: TimelineStore) => store.getSnapshot().items.map((item) => item.body);
+const bodies = (store: TimelineStore) => store.getSnapshot().items.map(bodyOf);
 
 describe('timeline store', () => {
   test('starts loading and becomes ready with the stored items', async () => {
@@ -105,7 +107,7 @@ describe('timeline store', () => {
       return { db, store };
     }
     const idOf = (store: TimelineStore, body: string) =>
-      store.getSnapshot().items.find((item) => item.body === body)!.id;
+      store.getSnapshot().items.find((item) => bodyOf(item) === body)!.id;
 
     test('both wait for the first load', async () => {
       const { db } = await threeItems();
@@ -166,5 +168,80 @@ describe('timeline store', () => {
       expect(failing.getSnapshot()).toBe(before);
       expect(bodies(failing)).toEqual(['Tres', 'Dos', 'Uno']);
     });
+  });
+});
+
+describe('timeline store image items', () => {
+  const photo = () => ({ uri: writeFixturePhoto(), width: 400, height: 300, mimeType: 'image/png' });
+  const input = (caption: string | null = null) => ({ photo: photo(), altText: null, caption });
+  const ids = (store: TimelineStore) => store.getSnapshot().items.map((item) => item.type);
+
+  test('createImage waits for the load and puts the new item first', async () => {
+    const db = new NodeSqlDatabase();
+    await storeOn(db).createText('Viejo');
+
+    const store = storeOn(db); // not subscribed yet
+    const created = await store.createImage(input('Verano'));
+
+    expect(store.getSnapshot().status).toBe('ready');
+    expect(ids(store)).toEqual(['image', 'text']);
+    expect(store.getSnapshot().items[0]).toEqual(created);
+  });
+
+  test('updateImage replaces the item in place and keeps the order', async () => {
+    const store = storeOn(new NodeSqlDatabase());
+    const first = await store.createImage(input('Uno'));
+    await store.createText('Dos');
+    const listener = jest.fn();
+    store.subscribe(listener);
+
+    const updated = await store.updateImage(first.id, { newPhoto: null, altText: 'Playa', caption: 'Uno' });
+
+    expect(ids(store)).toEqual(['text', 'image']);
+    expect(store.getSnapshot().items[1]).toEqual(updated);
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  test('an unchanged updateImage keeps the same snapshot object', async () => {
+    const store = storeOn(new NodeSqlDatabase());
+    const item = await store.createImage(input('Uno'));
+    const before = store.getSnapshot();
+
+    await store.updateImage(item.id, { newPhoto: null, altText: '  ', caption: ' Uno ' });
+
+    expect(store.getSnapshot()).toBe(before);
+  });
+
+  test('a failed createImage rejects and leaves the snapshot unchanged', async () => {
+    const inner = new NodeSqlDatabase();
+    const store = storeOn(new FailingSqlDatabase(inner, (sql) => sql.includes('INSERT INTO image_items')));
+    await loaded(store);
+    const before = store.getSnapshot();
+
+    await expect(store.createImage(input())).rejects.toThrow(/Injected failure/);
+
+    expect(store.getSnapshot()).toBe(before);
+  });
+
+  test('a failed updateImage rejects and leaves the snapshot unchanged', async () => {
+    const inner = new NodeSqlDatabase();
+    const store = storeOn(new FailingSqlDatabase(inner, (sql) => sql.includes('UPDATE image_items')));
+    const item = await store.createImage(input('Uno'));
+    const before = store.getSnapshot();
+
+    await expect(
+      store.updateImage(item.id, { newPhoto: null, altText: 'Otro', caption: 'Uno' }),
+    ).rejects.toThrow(/Injected failure/);
+
+    expect(store.getSnapshot()).toBe(before);
+  });
+
+  test('deleteItem removes an image item', async () => {
+    const store = storeOn(new NodeSqlDatabase());
+    const item = await store.createImage(input());
+
+    await store.deleteItem(item.id);
+
+    expect(store.getSnapshot().items).toEqual([]);
   });
 });

@@ -34,6 +34,10 @@ const PAIRS: Pair[] = [
   { fg: 'danger', bg: 'surfaceMuted', min: TEXT, use: 'Borrar este texto label' },
   { fg: 'danger', bg: 'creationBg', min: LARGE_OR_UI, use: 'Borrar este texto border' },
   { fg: 'textMain', bg: 'creationBg', min: LARGE_OR_UI, use: 'edit dialog close glyph' },
+  // Image items (add-image-items design Context).
+  { fg: 'textMuted', bg: 'cardBg', min: TEXT, use: 'image card caption' },
+  { fg: 'textMuted', bg: 'creationBg', min: TEXT, use: 'alternative text hint' },
+  { fg: 'textMuted', bg: 'imageBackdrop', min: TEXT, use: 'missing photo message' },
 ];
 
 describe('palettes', () => {
@@ -108,6 +112,15 @@ describe('Sizes', () => {
       optionRow: 56,
       textAreaMin: 96,
       textAreaMax: 200,
+      captionText: 14,
+      fieldLabel: 14,
+      fieldHint: 14,
+    });
+    expect(Layout).toMatchObject({
+      photoRadius: 12,
+      photoGap: 8,
+      imageMinHeight: 120,
+      imageMaxRatio: 1.25,
     });
     expect(Frames['phone-portrait']).toMatchObject({
       headerHeight: 70,

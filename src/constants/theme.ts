@@ -85,6 +85,14 @@ export const Layout = {
   disabledOpacity: 0.45,
   /** How long the title field waits after the keyboard hides before it blurs. */
   keyboardHideGraceMs: 400,
+  /** Corner radius of the photo box on cards, in the creation box and in the edit dialog. */
+  photoRadius: 12,
+  /** Space between the photo and the caption or the actions. */
+  photoGap: 8,
+  /** The photo box never gets shorter than this, even in phone landscape. */
+  imageMinHeight: 120,
+  /** Tallest photo box, as a multiple of its width. */
+  imageMaxRatio: 1.25,
 } as const;
 
 export type LayoutKind = 'phone-portrait' | 'phone-landscape' | 'tablet-portrait' | 'tablet-landscape';
@@ -124,6 +132,9 @@ export type SizeSet = {
   textAreaMax: number;
   placeholderTitle: number;
   placeholderBody: number;
+  captionText: number;
+  fieldLabel: number;
+  fieldHint: number;
 };
 
 /** The phone set is today's phone portrait look (sketches/mobile-portrait.html). */
@@ -158,6 +169,9 @@ export const Sizes: Record<DeviceKind, SizeSet> = {
     textAreaMax: 200,
     placeholderTitle: 18,
     placeholderBody: 15,
+    captionText: 14,
+    fieldLabel: 14,
+    fieldHint: 14,
   },
   // From sketches/tablet-portrait.html, rounded up to 44-point targets. The text area
   // and option row values are not in the mock and are tuned in the visual review.
@@ -191,6 +205,9 @@ export const Sizes: Record<DeviceKind, SizeSet> = {
     textAreaMax: 240,
     placeholderTitle: 20,
     placeholderBody: 16,
+    captionText: 15,
+    fieldLabel: 15,
+    fieldHint: 15,
   },
 };
 

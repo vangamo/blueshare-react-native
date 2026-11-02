@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Items module
-description: How timeline items are stored and read. A hexagonal module in src/items with domain, application and infrastructure layers, an injected SQLite driver (expo-sqlite in the app, node:sqlite in Jest), live and history tables (schema v2) and append-only migrations.
+description: How timeline items are stored and read. A hexagonal module in src/items with domain, application and infrastructure layers, an injected SQLite driver (expo-sqlite in the app, node:sqlite in Jest), live and history tables (schema v3) and append-only migrations.
 tags: [items, architecture, sqlite, hexagonal, persistence]
 resource: ../../src/items/
 status: stable
@@ -18,8 +18,9 @@ Items (texts now, images and events later) are kept in a local SQLite database o
 
 ```
 src/items/
-  domain/           ItemType, ItemMeta, TextItem, normalizeTextBody, TimelineItem, ports,
-                    InvalidTextError, ItemNotFoundError
+  domain/           ItemType, ItemMeta, TextItem, normalizeTextBody, ImageItem, PickedPhoto,
+                    normalizeImageTexts, withImageChanges, TimelineItem (TextItem | ImageItem),
+                    ports, InvalidTextError, InvalidImageTextError, ItemNotFoundError
   application/      use cases, the timeline store, items-module.ts (composition root)
   infrastructure/   sql-database.ts (port), migrations.ts, sqlite-item-repository.ts,
                     expo-sql-database.ts, app-adapters.ts
@@ -27,19 +28,20 @@ src/items/
 
 - `domain/` ← `application/` ← `infrastructure/`. The domain imports no React, Expo or SQL (it only reads `TEXT_MAX_LENGTH` from `src/constants/limits.ts`).
 - Use cases and the store depend on domain ports only. `application/items-module.ts` is the single place that wires the infrastructure in.
-- Only `expo-sql-database.ts` and `app-adapters.ts` import Expo packages (`expo-sqlite`, `expo-crypto`).
+- Only `expo-sql-database.ts`, `expo-photo-store.ts` and `app-adapters.ts` import Expo packages (`expo-sqlite`, `expo-crypto`, `expo-file-system`).
 - UI code (components and hooks) reaches the module only through `ItemsProvider` and its hooks.
 
 ## Ports
 
 | Port | Methods | Implemented by |
 | --- | --- | --- |
-| `ItemRepository` (domain) | `saveText(item)`, `listTimeline()`, `findText(id)`, `updateText(item)`, `deleteItem(id, deletedAt)` | `SqliteItemRepository` |
+| `ItemRepository` (domain) | `saveText(item)`, `saveImage(item)`, `listTimeline()`, `findText(id)`, `findImage(id)`, `updateText(item)`, `updateImage(item)`, `deleteItem(id, deletedAt)` | `SqliteItemRepository` |
+| `PhotoStore` (domain) | `importPhoto(sourceUri, fileName)`, `removePhoto(fileName)`, `uriFor(fileName)` | `createExpoPhotoStore()` (`expo-file-system`, `<documents>/images/`), `NodePhotoStore` (Jest, a temp folder per instance) |
 | `Clock` (domain) | `now()`: UTC ms | `Date.now` |
 | `IdGenerator` (domain) | `newId()`: UUID v4 | `randomUUID` from `expo-crypto` (Jest: `node:crypto`) |
 | `SqlDatabase` (infrastructure) | `exec`, `run`, `getAll`, `getFirst`, `transaction(work)` | `ExpoSqlDatabase`, `NodeSqlDatabase` |
 
-Only what the current features use exists. `updateText` and `deleteItem` throw `ItemNotFoundError` when no live item has the id.
+Only what the current features use exists. `updateText`, `updateImage` and `deleteItem` throw `ItemNotFoundError` when no live item has the id.
 
 ## Driver injection: the app vs Jest
 
@@ -50,20 +52,21 @@ Only what the current features use exists. `updateText` and `deleteItem` throw `
          src/items/infrastructure/expo-sql-database.ts                    src/test-utils/
 ```
 
-- **App:** `createAppAdapters()` returns `{ db, ids, clock }`. The database is `blueshare.db`, opened once per session with `openDatabaseSync`, with `PRAGMA journal_mode = WAL` and `PRAGMA foreign_keys = ON`. `transaction` uses `withExclusiveTransactionAsync`, which runs on its own connection: only the `tx` queries belong to it, and foreign keys are not enforced inside it (the pragma can't be set once `BEGIN` has run). In `__DEV__` it logs `[items] SQLite <version>` once.
-- **Jest:** `src/test-utils/jest-setup.ts` replaces `@/items/infrastructure/app-adapters` with a version that returns a fresh in-memory `NodeSqlDatabase`, `randomUUID` from `node:crypto` and `Date.now`. Each render of the app gets an empty database. Unit tests create `new NodeSqlDatabase()` directly.
+- **App:** `createAppAdapters()` returns `{ db, ids, clock, photos }` (`photos` copies files into `<documents>/images/`). The database is `blueshare.db`, opened once per session with `openDatabaseSync`, with `PRAGMA journal_mode = WAL` and `PRAGMA foreign_keys = ON`. `transaction` uses `withExclusiveTransactionAsync`, which runs on its own connection: only the `tx` queries belong to it, and foreign keys are not enforced inside it (the pragma can't be set once `BEGIN` has run). In `__DEV__` it logs `[items] SQLite <version>` once.
+- **Jest:** `src/test-utils/jest-setup.ts` replaces `@/items/infrastructure/app-adapters` with a version that returns a fresh in-memory `NodeSqlDatabase`, `randomUUID` from `node:crypto`, `Date.now` and a `NodePhotoStore` (real file I/O in a fresh temp folder; `writeFixturePhoto()` makes a small picked file). Each render of the app gets an empty database. Unit tests create `new NodeSqlDatabase()` directly.
 - **No fake repository:** the real SQL and migrations run in Jest. Metro never bundles the Node driver, because only test code imports it.
 - **SQL rules:** positional `?` parameters only, and only features both bundled SQLite versions support.
 
 ## Application layer
 
 - **Use cases** take `{ repository, clock, ids }` (`updateTextItem` and `deleteItem` only need the repository and the clock): `createTextItem(deps)(rawText)` normalizes the text (throws `InvalidTextError` before storing anything), builds the item with `createdAt === updatedAt` and `deletedAt: null`, and saves it. `listTimeline(deps)()` returns the items newest first. `updateTextItem(deps)(id, raw)` finds the item (`ItemNotFoundError`), applies `withNewText` (`InvalidTextError` before anything is written; an unchanged trimmed text returns the current item and writes nothing) and calls `repository.updateText`. `deleteItem(deps)(id)` calls `repository.deleteItem(id, clock.now())`.
-- **`createItemsModule({ db, ids, clock })`** builds the repository, the use cases and the store, and returns `{ store }`.
+- **`createItemsModule({ db, ids, clock })`** builds the repository, the use cases and the store, and returns `{ store, photos }`: the UI reads photo URIs from `photos.uriFor` and never imports `infrastructure/`.
 - **Timeline store** (`timeline-store.ts`), a plain object:
   - `getSnapshot()` returns `{ status: 'loading' | 'ready' | 'error', items }`. It is a new object only when something changes, as `useSyncExternalStore` requires.
   - `subscribe(listener)` returns an unsubscribe function. The first call starts the load: `migrate()`, then `listTimeline()`. Any failure gives `status: 'error'`.
   - `createText(raw)` waits for the load (starting it if needed), runs the use case, puts the new item first and notifies subscribers. On failure it rejects and leaves the snapshot unchanged, so the creation box can show its error.
   - `updateText(id, raw)` waits for the load, runs the use case and replaces the item **in place**, so its position doesn't change. An unchanged text leaves the snapshot object as it is. `deleteItem(id)` removes the item from the list. Both reject on failure with the snapshot untouched. The list isn't reloaded after a change: updating in place matches `createText` and avoids a query and a flash.
+- **Image items:** `createImage(input)` and `updateImage(id, input)` behave like their text twins: they wait for the load, put a created item first, replace an updated item in place (an unchanged edit keeps the snapshot object, decided by comparing the photo file, the texts and the update time) and reject with the snapshot untouched. Both are exposed by `useTimeline()`. `usePhotoUri(file)` reads `photos.uriFor` from the module.
 - **How the UI reads it:** `ItemsProvider` creates the module once, with a lazy `useState` initializer, and `useTimeline()` reads the store with `useSyncExternalStore`.
 - **Why no `setState` in effects:** the React Compiler lint rule (`react-hooks/set-state-in-effect`) forbids it. The store owns the async load and pushes changes to React through `subscribe`, so no component fetches in an effect. A refresh after creating needs no extra mechanism either, which `use(promise)` with Suspense would.
 
@@ -115,9 +118,32 @@ CREATE TABLE text_items_history (
 | 4 | copy the type's content (`text_items` into `text_items_history`) | same |
 | 5 | `UPDATE items.updated_at` and `UPDATE text_items.body` | `DELETE` the `text_items` row, then the `items` row |
 
-- The type's content is copied in `archive()`, which switches on `type`. Image and event items add a case. Any other type throws, so content is never dropped silently.
-- Deletion removes the rows explicitly, because the Expo driver's exclusive transactions don't enforce foreign keys.
+- The type's content is copied in `archive()`, which switches on `type` (`text` and `image` today). Event items add a case. Any other type throws, so content is never dropped silently.
+- Deletion removes the rows explicitly, because the Expo driver's exclusive transactions don't enforce foreign keys. Step 5 deletes the row of the **type's own table** (`text_items` or `image_items`, from a small map in the repository) before the `items` row.
 - `items.deleted_at` is now always NULL in the live table. The column and the partial index stay, since migrations are append-only.
+
+## Schema v3: image items
+
+```sql
+CREATE TABLE image_items (
+  item_id TEXT PRIMARY KEY NOT NULL REFERENCES items (id) ON DELETE CASCADE,
+  photo_file TEXT NOT NULL,                          -- '<uuid>.<ext>' in <documents>/images/
+  photo_width INTEGER NOT NULL CHECK (photo_width > 0),
+  photo_height INTEGER NOT NULL CHECK (photo_height > 0),
+  alt_text TEXT, caption TEXT                        -- NULL = none
+);
+CREATE TABLE image_items_history (
+  item_id TEXT NOT NULL, counter INTEGER NOT NULL,
+  photo_file TEXT NOT NULL, photo_width INTEGER NOT NULL, photo_height INTEGER NOT NULL,
+  alt_text TEXT, caption TEXT,
+  PRIMARY KEY (item_id, counter),
+  FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
+);
+```
+
+- Only the **relative** file name is stored: the app container's absolute path changes between installs on iOS. The width and height are the upright size, so a card reserves its space before the photo loads.
+- The text limits (`ALT_TEXT_MAX_LENGTH`, `CAPTION_MAX_LENGTH`) are enforced by the domain, not by SQL.
+- The timeline query adds `LEFT JOIN image_items`. `saveImage` and `updateImage` follow the text methods (one transaction, `updateImage` archives first). An old build that opens a v3 database skips image rows in `toTimelineItem`, so they are hidden there, not lost.
 
 ## Migrations
 
@@ -130,7 +156,6 @@ CREATE TABLE text_items_history (
 
 - `owner_id` on `items`, with `people (id, display_name, original_name, is_me)`. Names live on `people`, so a rename leaves no stale copies.
 - `item_shares (item_id, person_id, shared_at)`.
-- `image_items_history` and `event_items_history`, mirroring their live tables.
-- `image_items`, `event_items` and `event_photos`, each with its own `LEFT JOIN` in the timeline query.
+- `event_items`, `event_items_history` and `event_photos`, each with its own `LEFT JOIN` in the timeline query.
 
 Related: [Project structure](project-structure.md), [Testing](../development/testing.md), [Dependencies](../development/dependencies.md).

@@ -8,6 +8,7 @@ import { migrate } from '@/items/infrastructure/migrations';
 import { SqliteItemRepository } from '@/items/infrastructure/sqlite-item-repository';
 import { fixedClock, sequentialIds } from '@/test-utils/item-test-deps';
 import { NodeSqlDatabase } from '@/test-utils/node-sql-database';
+import { bodyOf } from '@/test-utils/item-helpers';
 
 const NOW = 1_700_000_000_000;
 
@@ -60,7 +61,7 @@ describe('listTimeline', () => {
     const { create, list } = await setup();
     await create('Primero');
     await create('Segundo');
-    expect((await list()).map((item) => item.body)).toEqual(['Segundo', 'Primero']);
+    expect((await list()).map(bodyOf)).toEqual(['Segundo', 'Primero']);
   });
 });
 

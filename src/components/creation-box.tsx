@@ -3,6 +3,7 @@ import { AccessibilityInfo, Keyboard, Platform, StyleSheet, Text, View } from 'r
 
 import { BoxButton } from '@/components/box-button';
 import { BoxTextArea } from '@/components/box-text-area';
+import { ImageFields } from '@/components/image-fields';
 import { TypeSelect } from '@/components/type-select';
 import { FontWeight, Layout } from '@/constants/theme';
 import { useShellLayout } from '@/hooks/use-shell-layout';
@@ -14,14 +15,15 @@ export const SAVE_ERROR_MESSAGE = '⚠️ No se pudo guardar. Inténtalo de nuev
 
 /**
  * Inline box at the top of the Timeline for creating an item. Choose step: type
- * select, Cancelar and Guardar. Write step (Texto only): text area, Cancelar and
- * Crear. Renders nothing while closed. Its state lives in `CreationBoxProvider`.
+ * select, Cancelar and Guardar. Write step (Texto): text area, Cancelar and Crear.
+ * Image step (Imagen): photo, alternative text and caption, Cancelar and Crear.
+ * Renders nothing while closed. Its state lives in `CreationBoxProvider`.
  */
 export function CreationBox() {
   const theme = useTheme();
   const { sizes } = useShellLayout();
   const { box, dispatch } = useCreationBox();
-  const { createText } = useTimeline();
+  const { createText, createImage } = useTimeline();
   // Guards against a second tap landing before the "saving" render.
   const savingRef = useRef(false);
 
@@ -32,12 +34,12 @@ export function CreationBox() {
     dispatch({ type: 'close' });
   };
 
-  const save = async (text: string) => {
+  const save = async (create: () => Promise<unknown>) => {
     if (savingRef.current) return;
     savingRef.current = true;
     dispatch({ type: 'saveStarted' });
     try {
-      await createText(text);
+      await create();
       Keyboard.dismiss();
       dispatch({ type: 'close' });
     } catch {
@@ -75,8 +77,50 @@ export function CreationBox() {
             label="Guardar"
             variant="primary"
             disabled={box.type === null}
-            // Only Texto moves on; Evento and Imagen do nothing yet.
+            // Texto and Imagen move on; Evento does nothing yet.
             onPress={() => dispatch({ type: 'confirmType' })}
+            style={styles.button}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  if (box.step === 'image') {
+    const { photo } = box;
+    return (
+      <View style={boxStyle} testID="creation-box">
+        <Text style={titleStyle}>Crear nuevo elemento de imagen:</Text>
+        <ImageFields
+          photo={photo}
+          altText={box.altText}
+          caption={box.caption}
+          onAltTextChange={(text) => dispatch({ type: 'setAltText', text })}
+          onCaptionChange={(text) => dispatch({ type: 'setCaption', text })}
+          onPhotoPicked={(picked) => dispatch({ type: 'photoPicked', photo: picked })}
+          onPickerFailed={() => dispatch({ type: 'pickerFailed' })}
+          pickerFailed={box.error === 'picker'}
+        />
+        {box.error === 'save' ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            style={[styles.error, { fontSize: sizes.boxTitle, color: theme.textMain }]}>
+            {SAVE_ERROR_MESSAGE}
+          </Text>
+        ) : null}
+        <View style={styles.buttons}>
+          <BoxButton label="Cancelar" variant="secondary" onPress={cancel} style={styles.button} />
+          <BoxButton
+            label="Crear"
+            variant="primary"
+            disabled={!photo || box.saving}
+            onPress={() => {
+              if (!photo) return;
+              void save(() =>
+                createImage({ photo, altText: box.altText, caption: box.caption }),
+              );
+            }}
             style={styles.button}
           />
         </View>
@@ -112,7 +156,7 @@ export function CreationBox() {
           variant="primary"
           disabled={!canCreate}
           onPress={() => {
-            void save(box.text);
+            void save(() => createText(box.text));
           }}
           style={styles.button}
         />

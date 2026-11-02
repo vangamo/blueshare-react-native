@@ -35,11 +35,13 @@ jest.mock('@/items/infrastructure/app-adapters', () => ({
   __esModule: true,
   createAppAdapters: () => {
     const { NodeSqlDatabase } = jest.requireActual('@/test-utils/node-sql-database');
+    const { NodePhotoStore } = jest.requireActual('@/test-utils/node-photo-store');
     const { randomUUID } = jest.requireActual('node:crypto');
     return {
       db: new NodeSqlDatabase(),
       ids: { newId: () => randomUUID() },
       clock: { now: () => Date.now() },
+      photos: new NodePhotoStore(),
     };
   },
 }));

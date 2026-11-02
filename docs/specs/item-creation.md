@@ -1,18 +1,18 @@
 ---
 type: Specification
 title: item-creation
-description: The inline creation box opened by the + button on Timeline. Choose a type, write a text, then Crear, Cancelar or the Android back button. The draft survives tab switches.
+description: The inline creation box opened by the + button on Timeline. Choose a type, write a text or pick a photo with its texts, then Crear, Cancelar or the Android back button. The draft survives tab switches.
 tags: [spec, implemented, creation-box, items]
 resource: ../../openspec/specs/item-creation/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T18:00:00Z
+  at: 2026-11-02T21:00:00Z
 ---
 
 # item-creation (implemented)
 
-Full text: `openspec/specs/item-creation/spec.md`. From the change `add-text-items`.
+Full text: `openspec/specs/item-creation/spec.md`. From the change `add-text-items`, extended by `add-image-items` (the image step).
 
 | Requirement | Summary | Implemented in |
 | --- | --- | --- |
@@ -24,7 +24,17 @@ Full text: `openspec/specs/item-creation/spec.md`. From the change `add-text-ite
 | Type select accessibility | Button "Crear nuevo elemento" with the selection as its value. Options announce their selected state. | same |
 | Guardar is enabled only after choosing a type | Faded and announced as disabled until a type is chosen. | [Box button](../components/box-button.md) |
 | Guardar with Texto opens the text step | The text step replaces the choose step. The text area gets focus and the keyboard opens. | [Creation box](../components/creation-box.md) |
-| Guardar with Evento or Imagen does nothing yet | The box stays in its choose step with the same selection. | same |
+| Guardar with Evento does nothing yet | The box stays in its choose step with the same selection. | same |
+| Guardar with Imagen opens the image step | The image step replaces the choose step. | [Creation box](../components/creation-box.md) |
+| Choosing a photo | "Elegir foto" opens the system photo library (no permission prompt). A cancelled pick changes nothing. | `usePickPhoto` |
+| Photo picker failure | A message in the step, the draft is kept and the user can try again. | same |
+| Photo preview | The photo whole at its proportions, up to the layout's maximum height. | [Photo preview](../components/photo-preview.md) |
+| Alternative text field | Labeled, optional, at most `ALT_TEXT_MAX_LENGTH` (1000) characters. | [Field components](../components/field-components.md) |
+| Caption field | Labeled, optional, at most `CAPTION_MAX_LENGTH` (500) characters. | same |
+| Crear is enabled only with a photo | Disabled until a photo is chosen, whatever the texts. | [Creation box](../components/creation-box.md) |
+| Crear saves the image item | Copies the photo into app storage, saves the item, closes the box and shows the card first. One item per double tap. | same, [Items module](../architecture/items-module.md) |
+| Failed image save keeps the draft | The box stays with the photo and texts and shows the save error. Crear retries. | same |
+| Image step accessibility | Labels equal the visible text, the photo has an announced preview and the fields have hints. | same |
 | Text step input | Multi-line, at least three lines, grows up to a maximum height, then scrolls. Keeps line breaks. | same |
 | Text length limit | At most `TEXT_MAX_LENGTH` (8192) characters. | `src/constants/limits.ts`, [Text limit](../decisions/text-limit.md) |
 | Crear is enabled only with some text | Disabled while the text is blank or only whitespace. | [Creation box](../components/creation-box.md) |

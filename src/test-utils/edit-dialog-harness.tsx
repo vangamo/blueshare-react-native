@@ -7,7 +7,9 @@ import { useTimeline } from '@/hooks/use-timeline';
 import { createItemsModule } from '@/items/application/items-module';
 import type { AppAdapters } from '@/items/infrastructure/app-adapters';
 import type { SqlDatabase } from '@/items/infrastructure/sql-database';
+import { NodePhotoStore } from '@/test-utils/node-photo-store';
 import { NodeSqlDatabase } from '@/test-utils/node-sql-database';
+import { bodyOf } from '@/test-utils/item-helpers';
 
 /** Adapters on a database already holding `bodies` (the first one created is oldest). */
 export async function seededAdapters(
@@ -17,7 +19,12 @@ export async function seededAdapters(
   const db = new NodeSqlDatabase();
   let next = 0;
   let time = 1_700_000_000_000;
-  const adapters = { db, ids: { newId: () => `id-${++next}` }, clock: { now: () => time++ } };
+  const adapters = {
+    db,
+    ids: { newId: () => `id-${++next}` },
+    clock: { now: () => time++ },
+    photos: new NodePhotoStore(),
+  };
   const { store } = createItemsModule(adapters);
   for (const body of bodies) await store.createText(body);
   return { ...adapters, db: wrap(db) };
@@ -26,16 +33,17 @@ export async function seededAdapters(
 function Host({ onClosed }: { onClosed: () => void }) {
   const { items } = useTimeline();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const editing = items.find((item) => item.id === editingId);
+  const found = items.find((item) => item.id === editingId);
+  const editing = found?.type === 'text' ? found : undefined;
   return (
     <>
       {items.map((item) => (
         <Pressable
           key={item.id}
           accessibilityRole="button"
-          accessibilityLabel={`Abrir ${item.body}`}
+          accessibilityLabel={`Abrir ${bodyOf(item)}`}
           onPress={() => setEditingId(item.id)}>
-          <Text testID="stored-item">{item.body}</Text>
+          <Text testID="stored-item">{bodyOf(item)}</Text>
         </Pressable>
       ))}
       {editing ? (

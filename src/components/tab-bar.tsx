@@ -96,6 +96,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tab: {
+    // A fixed width is a preferred width: the tabs shrink rather than leave the screen.
+    flexShrink: 1,
     marginHorizontal: Layout.tabMarginHorizontal,
     borderRadius: Layout.controlRadius,
     borderWidth: Layout.borderWidth,

@@ -6,14 +6,14 @@ tags: [product, roadmap, planning]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T18:00:00Z
+  at: 2026-11-02T21:00:00Z
 ---
 
 # Roadmap
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 1 | Core layout and main feed | Shell, text items and Editar done. Image and event items and Compartir not started. |
+| 1 | Core layout and main feed | Shell, text items, image items and Editar done. Event items and Compartir not started. |
 | 2 | Circles (contacts management) | Not started |
 | 3 | User events management | Not started |
 | 4 | Bluetooth sharing | Not started |
@@ -51,8 +51,9 @@ Specs: [adaptive-layout](../specs/adaptive-layout.md). Decisions: [Adaptive layo
 
 ## Next in Phase 1
 
-- Image and event items: their creation steps (Guardar with "📷 Imagen" or "📅 Evento" does nothing yet) and their cards, using the reserved tokens (`badgeBg`, `badgeText`, `backgroundBody`) and the `feed_cards` component notes in the [design tokens](../design-system/design-tokens.md). Each type gets its own table ([Items schema](../decisions/items-schema.md)).
-- "Compartir" on text cards waits for Phase 4. Editar on image and event items comes with those types.
+- Image items are done (creation step, card, edit dialog; photos copied into app storage). Locations for image items are the next change, `add-item-locations`.
+- Event items: their creation step (Guardar with "📅 Evento" does nothing yet) and their cards, using the reserved tokens (`badgeBg`, `badgeText`, `backgroundBody`) and the `feed_cards` component notes in the [design tokens](../design-system/design-tokens.md). Each type gets its own table ([Items schema](../decisions/items-schema.md)).
+- "Compartir" on text and image cards waits for Phase 4. Editar on event items comes with that type.
 - The side menu ([app header](../components/app-header.md)) and search ([title search field](../components/title-search-field.md)).
 
 ## Workflow follow-ups

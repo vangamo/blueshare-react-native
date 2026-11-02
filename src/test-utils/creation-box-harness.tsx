@@ -18,7 +18,7 @@ function Controls() {
       </Pressable>
       {items.map((item) => (
         <Text key={item.id} testID="stored-item">
-          {item.body}
+          {item.type === 'text' ? item.body : (item.caption ?? '')}
         </Text>
       ))}
     </>
