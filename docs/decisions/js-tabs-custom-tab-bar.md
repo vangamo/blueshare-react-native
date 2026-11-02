@@ -11,7 +11,7 @@ generated:
 
 # JS tabs with a custom tab bar (D1)
 
-**Decision:** `<Tabs tabBar={(props) => <FooterTabBar {...props} />} screenOptions={{ headerShown: false }}>` from `expo-router/js-tabs`.
+**Decision:** `<Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>` from `expo-router/js-tabs`.
 
 **Why:**
 - It is stable, not experimental.
@@ -23,4 +23,4 @@ generated:
 - `NativeTabs`: the design needs a custom-drawn bar.
 - `Tabs` from `expo-router`: deprecated in SDK 58.
 
-**Consequence:** in expo-router 58 the tab bar receives `emitter` and `navigateToTab`, not `navigation`. See [Footer tab bar](../components/footer-tab-bar.md) and [Routing](../architecture/routing.md).
+**Consequence:** in expo-router 58 the tab bar receives `emitter` and `navigateToTab`, not `navigation`. See [Tab bar](../components/tab-bar.md) and [Routing](../architecture/routing.md).

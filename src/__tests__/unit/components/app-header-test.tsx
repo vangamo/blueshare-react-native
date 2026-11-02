@@ -1,8 +1,8 @@
 import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { StyleSheet } from 'react-native';
 
-import { Colors, Layout } from '@/constants/theme';
-import { TEST_INSETS, setMockColorScheme } from '@/test-utils/test-values';
+import { Colors, Frames, Layout, Sizes } from '@/constants/theme';
+import { TEST_INSETS, TEST_WINDOWS, setMockColorScheme, setMockWindow } from '@/test-utils/test-values';
 
 /** The header row: the menu button's parent. */
 function header() {
@@ -43,7 +43,7 @@ describe('AppHeader', () => {
   test('header is the shell height plus the top inset', async () => {
     await renderRouter('./src/app');
     expect(header()).toHaveStyle({
-      height: Layout.headerHeight + TEST_INSETS.top,
+      height: Frames['phone-portrait'].headerHeight + TEST_INSETS.top,
       paddingTop: TEST_INSETS.top,
       paddingHorizontal: 16,
       borderBottomWidth: 2,
@@ -69,5 +69,39 @@ describe('AppHeader', () => {
       backgroundColor: colors.avatarBg,
       borderColor: colors.primaryDark,
     });
+  });
+
+  test('phone landscape: shorter header and a title field capped at 300', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await renderRouter('./src/app');
+    expect(header()).toHaveStyle({
+      height: Frames['phone-landscape'].headerHeight + TEST_INSETS.top,
+      paddingLeft: Sizes.phone.headerPaddingHorizontal + TEST_INSETS.left,
+      paddingRight: Sizes.phone.headerPaddingHorizontal + TEST_INSETS.right,
+    });
+    expect(screen.getByLabelText('Search')).toHaveStyle({
+      maxWidth: Frames['phone-landscape'].titleMaxWidth,
+    });
+  });
+
+  test('tablet portrait: tablet sizes, 24 padding and every control at least 44', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    await renderRouter('./src/app');
+    expect(header()).toHaveStyle({
+      height: Frames['tablet-portrait'].headerHeight + TEST_INSETS.top,
+      paddingLeft: Sizes.tablet.headerPaddingHorizontal + TEST_INSETS.left,
+    });
+    const menu = StyleSheet.flatten(screen.getByRole('button', { name: 'Menu' }).props.style);
+    expect(menu.minWidth).toBe(Sizes.tablet.menuButton);
+    expect(menu.minHeight).toBeGreaterThanOrEqual(Layout.touchTarget);
+    expect(screen.getByLabelText('Search')).toHaveStyle({
+      height: Sizes.tablet.fieldHeight,
+      maxWidth: Frames['tablet-portrait'].titleMaxWidth,
+    });
+    expect(screen.getByLabelText('Profile')).toHaveStyle({
+      width: Sizes.tablet.avatar,
+      height: Sizes.tablet.avatar,
+    });
+    expect(screen.getByText('👵')).toHaveStyle({ fontSize: Sizes.tablet.avatarEmoji });
   });
 });

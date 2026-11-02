@@ -42,6 +42,13 @@ The OpenSpec change `edit-text-items` (branch `02-text-items`, archived 2026-11-
 
 Specs: [item-editing](../specs/item-editing.md) (new), and changes to [item-storage](../specs/item-storage.md), [timeline-feed](../specs/timeline-feed.md) and [app-theming](../specs/app-theming.md).
 
+The OpenSpec change `adaptive-layout` (implemented on branch `01bb-adaptable-layout`, not archived yet; device checks and visual review pending):
+- the app runs on phones and tablets in any orientation, with four layouts chosen from the window size
+- phone and tablet size sets, a content column, safe areas on every side, and the tab bar under the header in landscape
+- a rotation keeps the section, draft, open dialog and focused field
+
+Decisions: [Adaptive layout](../decisions/adaptive-layout.md), [Tab bar stays in one slot](../decisions/tab-bar-single-slot.md).
+
 ## Next in Phase 1
 
 - Image and event items: their creation steps (Guardar with "📷 Imagen" or "📅 Evento" does nothing yet) and their cards, using the reserved tokens (`badgeBg`, `badgeText`, `backgroundBody`) and the `feed_cards` component notes in the [design tokens](../design-system/design-tokens.md). Each type gets its own table ([Items schema](../decisions/items-schema.md)).

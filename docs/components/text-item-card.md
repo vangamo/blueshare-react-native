@@ -16,6 +16,9 @@ generated:
 
 ## Styles
 
+**Sizes come from the layout** (`useShellLayout().sizes`): card padding, radius and bottom margin (`cardPadding`, `cardRadius`, `itemGap`), body `cardText` and `cardLineHeight`, action `actionHeight` and `actionLabel`. The values below are the phone set; the tablet set is in [Sizes and typography](../design-system/layout-sizes.md).
+
+
 - Card: `cardBg`, 2-point `borderColor` border, `Radius.lg` (16), `Spacing.lg` padding and bottom margin, shadow `0 2px 6px cardShadow`.
 - Text: the full body, 15 pt, line height `Layout.cardTextLineHeight` (22.5), `textSecondary`. No truncation, line breaks kept.
 - Action row: a `Layout.hairlineWidth` `divider` top border, `Spacing.md` above and below it, buttons aligned right, `Layout.creationGap` (10) apart.

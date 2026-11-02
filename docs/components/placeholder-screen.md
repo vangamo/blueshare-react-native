@@ -14,10 +14,10 @@ generated:
 
 `PlaceholderScreen({ title })`. Used by `src/app/circles.tsx` and `events.tsx`. Timeline shows the [Timeline feed](timeline-feed.md) instead.
 
-- A `ScrollView` with `flex: 1` and a `backgroundMain` background, so content scrolls only between the header and the footer.
-- Content padding `Spacing.lg` (16), gap `Spacing.sm`.
-- Title: the section name, `textMain`, 18-point extrabold.
-- Body: "Coming soon.", `textSecondary`, 15 pt.
+- A `ScrollView` with `flex: 1` and a `backgroundMain` background, so content scrolls only between the header and the tab bar.
+- Content padding, side and bottom insets and the centered content column come from `useContentStyle()`, like the [Timeline feed](timeline-feed.md). Gap `Spacing.sm`.
+- Title: the section name, `textMain`, extrabold, `sizes.placeholderTitle` (18 phone, 20 tablet).
+- Body: "Coming soon.", `textSecondary`, `sizes.placeholderBody` (15 or 16).
 
 Replace it per section when that section gets real content, see [Roadmap](../product/roadmap.md). The e2e navigation test uses the "Coming soon." text to find which of Circles and Events is shown, so update `src/__tests__/e2e/navigation-test.tsx` when you replace it.
 

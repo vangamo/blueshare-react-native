@@ -1,7 +1,7 @@
 ---
 type: Component
 title: Create button
-description: The floating round "+" button, 56×56, 20 points from the right and 10 points above the footer. On Timeline it opens the creation box and hides while the box is open; on Circles and Events it does nothing yet.
+description: The floating round "+" button, sized by the layout, 20 points (phone) or 28 (tablet) from the right and above the tab bar or the bottom inset. On Timeline it opens the creation box and hides while the box is open; on Circles and Events it does nothing yet.
 tags: [component, fab, shell]
 resource: ../../src/components/create-button.tsx
 status: stable
@@ -16,9 +16,10 @@ generated:
 
 ## Styles
 
-- `position: absolute`, `right: Layout.fabOffsetRight` (20), `bottom: Layout.footerHeight + insets.bottom + Layout.fabOffsetBottom` (75 + inset + 10).
-- 56×56, round, `primaryBlue` fill, 3-point `cardBg` ring, shadow `0 4px 12px primaryShadow`.
-- `+` in `onPrimary`, 28-point bold, with `includeFontPadding: false` so it stays centered on Android.
+- `position: absolute`, `right: sizes.fabRight + insets.right` (20 phone, 28 tablet).
+- `bottom`: in portrait `frame.tabBarHeight + insets.bottom + frame.fabBottom` (10 phone, 16 tablet), in landscape `insets.bottom + frame.fabBottom` (16), because no bar sits below.
+- `sizes.fab` square (56 phone, 60 tablet), round, `primaryBlue` fill, 3-point `cardBg` ring, shadow `0 4px 12px primaryShadow`.
+- `+` in `onPrimary`, `sizes.fabFont` bold (28 or 30), with `includeFontPadding: false` so it stays centered on Android.
 - Opacity 0.8 when pressed.
 
 ## Behavior
@@ -34,10 +35,10 @@ generated:
   | `/events` | any | yes | nothing yet (event creation comes later) |
 
 - Hidden means not rendered, so it is also out of the accessibility tree. The look never changes.
-- The FAB keeps `#0084ff` in light mode: white 28-point bold text is large text and only needs 3:1.
+- The FAB keeps `#0084ff` in light mode: white `sizes.fabFont` bold (28 or 30) text is large text and only needs 3:1.
 
 ## Tests
 
-`src/__tests__/unit/components/create-button-test.tsx` checks the label, the 56×56 size, `right` 20, `bottom` 75 + inset + 10, the palette, that pressing it on Timeline hides it, that pressing it on Circles or Events changes nothing, and that with the box open it shows on Events and hides again on Timeline.
+`src/__tests__/unit/components/create-button-test.tsx` checks the label, the size and position in phone portrait, phone landscape, tablet portrait and tablet landscape, the palette, that pressing it on Timeline hides it, that pressing it on Circles or Events changes nothing, and that with the box open it shows on Events and hides again on Timeline.
 
 Spec: [app-shell](../specs/app-shell.md) (floating create button, action per section, hidden while creating). Decision: [Create action per route](../decisions/create-action-per-route.md).

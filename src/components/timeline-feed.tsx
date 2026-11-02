@@ -13,8 +13,9 @@ import {
 import { CreationBox } from '@/components/creation-box';
 import { EditTextDialog } from '@/components/edit-text-dialog';
 import { TextItemCard } from '@/components/text-item-card';
-import { FontSize, Spacing } from '@/constants/theme';
+import { FontSize } from '@/constants/theme';
 import { useCreationBox } from '@/hooks/use-creation-box';
+import { useContentStyle } from '@/hooks/use-content-style';
 import { useTheme } from '@/hooks/use-theme';
 import { useTimeline, type TimelineItem } from '@/hooks/use-timeline';
 
@@ -27,6 +28,7 @@ export const LOAD_ERROR_MESSAGE = '⚠️ No se pudieron cargar las publicacione
  */
 export function TimelineFeed() {
   const theme = useTheme();
+  const contentStyle = useContentStyle();
   const { status, items } = useTimeline();
   const { box, openCount, dispatch } = useCreationBox();
   const focused = useIsFocused();
@@ -88,7 +90,7 @@ export function TimelineFeed() {
         ListEmptyComponent={empty ?? undefined}
         keyboardShouldPersistTaps="handled"
         style={[styles.list, { backgroundColor: theme.backgroundMain }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={contentStyle}
       />
       {editing ? (
         <EditTextDialog key={editing.id} item={editing} onClose={() => setEditingId(null)} />
@@ -100,9 +102,6 @@ export function TimelineFeed() {
 const styles = StyleSheet.create({
   list: {
     flex: 1,
-  },
-  content: {
-    padding: Spacing.lg,
   },
   message: {
     fontSize: FontSize.body,

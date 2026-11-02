@@ -1,8 +1,8 @@
 import { fireEvent, renderRouter, screen, within } from 'expo-router/testing-library';
 import { StyleSheet } from 'react-native';
 
-import { Colors, Layout } from '@/constants/theme';
-import { TEST_INSETS, setMockColorScheme } from '@/test-utils/test-values';
+import { Colors, Frames, Layout, Sizes } from '@/constants/theme';
+import { TEST_INSETS, TEST_WINDOWS, setMockColorScheme, setMockWindow } from '@/test-utils/test-values';
 
 const TAB_NAMES = ['Timeline', 'Circles', 'Events'];
 
@@ -20,7 +20,7 @@ function tabList() {
   return parent;
 }
 
-describe('FooterTabBar', () => {
+describe('TabBar', () => {
   test('shows the three tabs in order inside a tab list', async () => {
     await renderRouter('./src/app');
     expect(tabList().props.accessibilityRole).toBe('tablist');
@@ -30,7 +30,7 @@ describe('FooterTabBar', () => {
   test('footer is the shell height plus the bottom inset', async () => {
     await renderRouter('./src/app');
     expect(tabList()).toHaveStyle({
-      height: Layout.footerHeight + TEST_INSETS.bottom,
+      height: Frames['phone-portrait'].tabBarHeight + TEST_INSETS.bottom,
       paddingBottom: TEST_INSETS.bottom,
       borderTopWidth: 2,
     });
@@ -87,5 +87,62 @@ describe('FooterTabBar', () => {
       });
       expect(within(tab(name)).getByText(name)).toHaveStyle({ color: colors.textSecondary });
     }
+  });
+
+  test('phone portrait tabs stretch and have the phone height', async () => {
+    await renderRouter('./src/app');
+    expect(tab('Timeline')).toHaveStyle({ flex: 1, height: Sizes.phone.tabHeight });
+  });
+
+  test('phone landscape: absolute at the top, bottom border, no bottom inset, fixed tab width', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await renderRouter('./src/app');
+    const frame = Frames['phone-landscape'];
+    expect(tabList()).toHaveStyle({
+      position: 'absolute',
+      top: 0,
+      height: frame.tabBarHeight,
+      paddingBottom: 0,
+      borderBottomWidth: Layout.borderWidth,
+      justifyContent: 'center',
+    });
+    expect(StyleSheet.flatten(tabList().props.style).borderTopWidth).toBeUndefined();
+    expect(tab('Timeline')).toHaveStyle({ width: frame.tabWidth, height: Sizes.phone.tabHeight });
+  });
+
+  test('tablet portrait: at the bottom with the tablet sizes and 150-point tabs', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    await renderRouter('./src/app');
+    const frame = Frames['tablet-portrait'];
+    expect(tabList()).toHaveStyle({
+      height: frame.tabBarHeight + TEST_INSETS.bottom,
+      borderTopWidth: Layout.borderWidth,
+    });
+    expect(tab('Circles')).toHaveStyle({ width: frame.tabWidth, height: Sizes.tablet.tabHeight });
+    expect(within(tab('Circles')).getByText('Circles')).toHaveStyle({ fontSize: Sizes.tablet.tabLabel });
+  });
+
+  test('every landscape and tablet tab is at least 44 points tall', async () => {
+    for (const window of Object.values(TEST_WINDOWS)) {
+      setMockWindow(window);
+      await renderRouter('./src/app');
+      for (const name of TAB_NAMES) {
+        expect(StyleSheet.flatten(tab(name).props.style).height).toBeGreaterThanOrEqual(Layout.touchTarget);
+      }
+    }
+  });
+
+  test('landscape pads the screens by the bar height, portrait does not', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await renderRouter('./src/app');
+    const scene = screen.getByTestId('timeline-feed').parent;
+    let padded = false;
+    for (let node = scene; node; node = node.parent) {
+      if (StyleSheet.flatten(node.props.style)?.paddingTop === Frames['phone-landscape'].tabBarHeight) {
+        padded = true;
+        break;
+      }
+    }
+    expect(padded).toBe(true);
   });
 });

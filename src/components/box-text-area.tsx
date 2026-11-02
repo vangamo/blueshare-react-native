@@ -1,7 +1,8 @@
 import { StyleSheet, TextInput } from 'react-native';
 
 import { TEXT_MAX_LENGTH } from '@/constants/limits';
-import { FontSize, Layout, Spacing } from '@/constants/theme';
+import { Layout, Spacing } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useTheme } from '@/hooks/use-theme';
 
 type BoxTextAreaProps = {
@@ -24,6 +25,7 @@ export function BoxTextArea({
   autoFocus = false,
 }: BoxTextAreaProps) {
   const theme = useTheme();
+  const { sizes } = useShellLayout();
   return (
     <TextInput
       value={value}
@@ -36,7 +38,12 @@ export function BoxTextArea({
       selectionColor={theme.primaryBlue}
       style={[
         styles.textArea,
-        { color: theme.textMain, backgroundColor: theme.cardBg, borderColor: theme.primaryDark },
+        {
+          minHeight: sizes.textAreaMin,
+          maxHeight: sizes.textAreaMax,
+          fontSize: sizes.inputFont,
+          color: theme.textMain, backgroundColor: theme.cardBg, borderColor: theme.primaryDark,
+        },
       ]}
     />
   );
@@ -44,12 +51,9 @@ export function BoxTextArea({
 
 const styles = StyleSheet.create({
   textArea: {
-    minHeight: Layout.textAreaMinHeight,
-    maxHeight: Layout.textAreaMaxHeight,
     borderWidth: Layout.borderWidth,
     borderRadius: Layout.controlRadius,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    fontSize: FontSize.bodyLarge,
   },
 });

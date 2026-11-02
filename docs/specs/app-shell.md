@@ -25,7 +25,7 @@ Full text: `openspec/specs/app-shell/spec.md`. From `basic-app-layout`, changed 
 | Title field on focus | Blue border, card background, left-aligned. "BlueShare" is cleared to show "Buscar...". | same |
 | Title field on blur | Blank → "BlueShare" again. Other text is kept. Submit does nothing. | same |
 | Avatar | 42×42 circle, strong-ink border, `avatarBg`, `👵`, label "Profile", display only. | [App header](../components/app-header.md) |
-| Footer tab bar | `cardBg`, 2-point top border, 10-point padding, three equal tabs (44 tall, margin 4, radius 10, 14-point bold). | [Footer tab bar](../components/footer-tab-bar.md) |
+| Tab bar | `cardBg`, 2-point top border, 10-point padding, three equal tabs (44 tall, margin 4, radius 10, 14-point bold). | [Tab bar](../components/tab-bar.md) |
 | Active tab indication | Hover-blue background, deep-blue border, on-primary label (≥ 4.5:1), shadow. Selected state for assistive technologies. | same |
 | Tab switching | A press shows that section. Pressing the active tab keeps it. | same |
 | Floating create button | 56×56, blue, 3-point ring, shadow, 28-point `+`, right 20, 10 above the footer, label "Create". Hidden on Timeline while the creation box is open. | [Create button](../components/create-button.md) |

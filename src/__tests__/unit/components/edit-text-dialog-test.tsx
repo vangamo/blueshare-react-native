@@ -1,13 +1,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { AccessibilityInfo, Keyboard, Platform } from 'react-native';
+import { AccessibilityInfo, Keyboard, Platform, StyleSheet } from 'react-native';
 
 import { DELETE_ERROR_MESSAGE, EDIT_SAVE_ERROR_MESSAGE } from '@/components/edit-text-dialog';
 import { TEXT_MAX_LENGTH } from '@/constants/limits';
-import { Colors, Layout, Radius, Spacing } from '@/constants/theme';
+import { Colors, Frames, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import { EditDialogHarness, seededAdapters } from '@/test-utils/edit-dialog-harness';
 import { FailingSqlDatabase } from '@/test-utils/failing-sql-database';
 import { GatedSqlDatabase } from '@/test-utils/gated-sql-database';
-import { setMockColorScheme } from '@/test-utils/test-values';
+import { TEST_INSETS, TEST_WINDOWS, setMockColorScheme, setMockWindow } from '@/test-utils/test-values';
 
 const button = (name: string) => screen.getByRole('button', { name });
 const textArea = () => screen.getByLabelText('Editar elemento de texto');
@@ -279,5 +279,36 @@ describe('EditTextDialog, iOS announcements', () => {
     } finally {
       Platform.OS = original;
     }
+  });
+});
+
+describe('EditTextDialog, other layouts', () => {
+  const box = () => screen.getByText('Editar elemento de texto:').parent!.parent!;
+
+  test('phone landscape: the box is the 550-point column, centered, padded for all insets', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await openDialog();
+    expect(box()).toHaveStyle({ width: Frames['phone-landscape'].column });
+    const scroll = box().parent!.parent!;
+    expect(StyleSheet.flatten(scroll.props.contentContainerStyle)).toMatchObject({
+      alignItems: 'center',
+      paddingTop: TEST_INSETS.top + Spacing.lg,
+      paddingBottom: TEST_INSETS.bottom + Spacing.lg,
+      paddingLeft: TEST_INSETS.left + Spacing.lg,
+      paddingRight: TEST_INSETS.right + Spacing.lg,
+    });
+  });
+
+  test('tablet portrait: a 500-point box with the tablet padding, radius and button sizes', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    await openDialog();
+    expect(box()).toHaveStyle({
+      width: Frames['tablet-portrait'].column,
+      padding: Sizes.tablet.cardPadding,
+      borderRadius: Sizes.tablet.cardRadius,
+    });
+    expect(screen.getByText('Editar elemento de texto:')).toHaveStyle({ fontSize: Sizes.tablet.boxTitle });
+    expect(button('Guardar')).toHaveStyle({ minHeight: Sizes.tablet.controlHeight });
+    expect(textArea()).toHaveStyle({ fontSize: Sizes.tablet.inputFont });
   });
 });

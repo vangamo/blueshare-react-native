@@ -28,6 +28,7 @@ generated:
 
 - `react-native-safe-area-context` uses the library's Jest mock, with fixed insets `TEST_INSETS = { top: 24, bottom: 20, left: 0, right: 0 }` (in `test-values.ts`).
 - `@/hooks/use-color-scheme` is mocked. Force a scheme with `setMockColorScheme('dark')`. It resets to `'light'` after each test.
+- `@/hooks/use-window-size` is mocked with a small store. Tests start in phone portrait (`TEST_WINDOWS.phonePortrait`, 411×866) and switch with `act(() => setMockWindow(TEST_WINDOWS.tabletLandscape))`. `TEST_WINDOWS` holds the four sizes measured on the emulators. The default is a phone because Jest's own window is 750×1334, which the layout rule counts as a tablet. It resets after each test.
 - `@/items/infrastructure/app-adapters` is replaced: `createAppAdapters()` returns a fresh in-memory `NodeSqlDatabase`, `randomUUID` from `node:crypto` and `Date.now`. Every app render starts with an empty database. See [Items module](../architecture/items-module.md).
 - `jest.restoreAllMocks()` runs after each test, so `jest.spyOn` spies (Keyboard, BackHandler, `createAppAdapters`) never stack.
 - Add any new native-module mock here. Never change app code just to make it testable.
@@ -42,7 +43,7 @@ generated:
 
 - Use RNTL queries (`getByRole`, `getByLabelText`, `getByText`) and matchers (`toHaveStyle`, `toBeSelected`).
 - Routes: `renderRouter('./src/app', { initialUrl })` and `expect(screen).toHavePathname('/events')` from `expo-router/testing-library`.
-- Assert spec numbers using `Colors`, `Layout` and `TEST_INSETS`, not literals, so a palette change does not break tests.
+- Assert spec numbers using `Colors`, `Layout`, `Sizes`, `Frames`, `TEST_INSETS` and `TEST_WINDOWS`, not literals, so a palette change does not break tests.
 - **No snapshot tests** (`toMatchSnapshot`) of screens.
 - No `.only` or `.skip` left in the code.
 

@@ -22,7 +22,10 @@ generated:
 | `Radius` | `border_radius` | `{ sm 8, md 12, lg 16, xl 18, pill 9999 }` |
 | `FontSize` | `typography.sizes` | `{ caption 12, small 14, body 15, bodyLarge 16, titleCard 18, titleTablet 20 }` |
 | `FontWeight` | `typography.weights` | `'400' / '600' / '700' / '800'` |
-| `Layout` | written in `theme.ts` | shell sizes, see [Sizes and typography](layout-sizes.md) |
+| `Layout` | written in `theme.ts` | fixed sizes that never vary, see [Sizes and typography](layout-sizes.md) |
+| `Sizes.phone`, `Sizes.tablet`, `SizeSet` | written in `theme.ts` | component and font sizes per device size |
+| `Frames`, `Frame`, `LayoutKind`, `DeviceKind` | written in `theme.ts` | bar heights, tab bar position and column widths per layout |
+| `layoutFor(width, height)`, `TABLET_MIN_SIDE` | written in `theme.ts` | the layout for a window size |
 | `NavigationThemes.light`, `.dark` | `DefaultTheme`/`DarkTheme` + palette | `primary`, `background`, `card`, `text`, `border`, `notification` |
 | `px(value)` | helper | `"12px"` → 12, `"50%"` → 9999. Throws on anything else. |
 
@@ -32,6 +35,9 @@ generated:
 
 - `useColorScheme()` (`src/hooks/use-color-scheme.ts`) re-exports React Native's hook. Tests mock this module to force a scheme.
 - `useTheme()` (`src/hooks/use-theme.ts`) returns `Colors.dark` when the scheme is `'dark'` and `Colors.light` otherwise. It re-renders on a system scheme change, which gives live switching with no restart.
+
+- `useWindowSize()` (`src/hooks/use-window-size.ts`) wraps `useWindowDimensions()`. Tests mock this module with `setMockWindow()`.
+- `useShellLayout()` (`src/hooks/use-shell-layout.ts`) returns `{ kind, device, landscape, frame, sizes, columnWidth }` for the current window and safe-area insets. It is computed during render, with no context and no memoization. Read sizes from it, not from `Sizes` directly, in components.
 
 ## Styling pattern (required)
 
@@ -44,6 +50,7 @@ const styles = StyleSheet.create({
 });
 ```
 
+- Sizes that vary by layout (`sizes`, `frame` from `useShellLayout()`) are inline, like colors.
 - Static layout goes in module-level `StyleSheet.create`, which uses `Spacing`, `Radius`, `FontSize` and `Layout`.
 - **Colors are always inline**, from `useTheme()`. Never put colors in `StyleSheet.create`, and never hard-code them.
 - There is no `useMemo` style factory. React Compiler memoizes.

@@ -4,7 +4,8 @@ import { AccessibilityInfo, Keyboard, Platform, StyleSheet, Text, View } from 'r
 import { BoxButton } from '@/components/box-button';
 import { BoxTextArea } from '@/components/box-text-area';
 import { TypeSelect } from '@/components/type-select';
-import { FontSize, FontWeight, Layout, Radius, Spacing } from '@/constants/theme';
+import { FontWeight, Layout } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useCreationBox } from '@/hooks/use-creation-box';
 import { useTheme } from '@/hooks/use-theme';
 import { useTimeline } from '@/hooks/use-timeline';
@@ -18,6 +19,7 @@ export const SAVE_ERROR_MESSAGE = '⚠️ No se pudo guardar. Inténtalo de nuev
  */
 export function CreationBox() {
   const theme = useTheme();
+  const { sizes } = useShellLayout();
   const { box, dispatch } = useCreationBox();
   const { createText } = useTimeline();
   // Guards against a second tap landing before the "saving" render.
@@ -47,8 +49,17 @@ export function CreationBox() {
     }
   };
 
-  const boxStyle = [styles.box, { backgroundColor: theme.creationBg, borderColor: theme.primaryBlue }];
-  const titleStyle = [styles.title, { color: theme.textMain }];
+  const boxStyle = [
+    styles.box,
+    {
+      borderRadius: sizes.cardRadius,
+      padding: sizes.cardPadding,
+      marginBottom: sizes.itemGap,
+      backgroundColor: theme.creationBg,
+      borderColor: theme.primaryBlue,
+    },
+  ];
+  const titleStyle = [styles.title, { fontSize: sizes.boxTitle, color: theme.textMain }];
 
   if (box.step === 'choose') {
     return (
@@ -90,7 +101,7 @@ export function CreationBox() {
         <Text
           accessibilityLiveRegion="polite"
           accessibilityRole="alert"
-          style={[styles.error, { color: theme.textMain }]}>
+          style={[styles.error, { fontSize: sizes.boxTitle, color: theme.textMain }]}>
           {SAVE_ERROR_MESSAGE}
         </Text>
       ) : null}
@@ -114,17 +125,12 @@ const styles = StyleSheet.create({
   box: {
     borderWidth: Layout.borderWidth,
     borderStyle: 'dashed',
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    marginBottom: Spacing.lg,
     gap: Layout.creationGap,
   },
   title: {
-    fontSize: FontSize.small,
     fontWeight: FontWeight.bold,
   },
   error: {
-    fontSize: FontSize.small,
     fontWeight: FontWeight.bold,
   },
   buttons: {

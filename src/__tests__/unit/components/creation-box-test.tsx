@@ -3,12 +3,12 @@ import { Keyboard } from 'react-native';
 
 import { SAVE_ERROR_MESSAGE } from '@/components/creation-box';
 import { TEXT_MAX_LENGTH } from '@/constants/limits';
-import { Colors, Layout, Radius, Spacing } from '@/constants/theme';
+import { Colors, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import { createAppAdapters } from '@/items/infrastructure/app-adapters';
 import { CreationBoxHarness } from '@/test-utils/creation-box-harness';
 import { FailingSqlDatabase } from '@/test-utils/failing-sql-database';
 import { GatedSqlDatabase } from '@/test-utils/gated-sql-database';
-import { setMockColorScheme } from '@/test-utils/test-values';
+import { TEST_WINDOWS, setMockColorScheme, setMockWindow } from '@/test-utils/test-values';
 
 const button = (name: string) => screen.getByRole('button', { name });
 const textArea = () => screen.getByLabelText('Crear nuevo elemento de texto');
@@ -128,8 +128,8 @@ describe('CreationBox, write step', () => {
     expect(textArea()).toHaveProp('maxLength', TEXT_MAX_LENGTH);
     expect(textArea()).toHaveProp('multiline', true);
     expect(textArea()).toHaveStyle({
-      minHeight: Layout.textAreaMinHeight,
-      maxHeight: Layout.textAreaMaxHeight,
+      minHeight: Sizes.phone.textAreaMin,
+      maxHeight: Sizes.phone.textAreaMax,
       borderColor: Colors.light.primaryDark,
       backgroundColor: Colors.light.cardBg,
       color: Colors.light.textMain,
@@ -219,6 +219,32 @@ describe('CreationBox, write step', () => {
     expect(screen.getByText('Crear nuevo elemento:')).toBeOnTheScreen();
     expect(button('Crear nuevo elemento')).toHaveAccessibilityValue({
       text: 'Selecciona una opción',
+    });
+  });
+});
+
+describe('CreationBox, tablet layout', () => {
+  test('uses the tablet sizes in both steps', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    const sizes = Sizes.tablet;
+    await render(<CreationBoxHarness />);
+    await open();
+    expect(screen.getByTestId('creation-box')).toHaveStyle({
+      padding: sizes.cardPadding,
+      borderRadius: sizes.cardRadius,
+      marginBottom: sizes.itemGap,
+    });
+    expect(screen.getByText('Crear nuevo elemento:')).toHaveStyle({ fontSize: sizes.boxTitle });
+    expect(button('Crear nuevo elemento')).toHaveStyle({ minHeight: sizes.controlHeight });
+    expect(button('Guardar')).toHaveStyle({ minHeight: sizes.controlHeight });
+    expect(screen.getByText('Guardar')).toHaveStyle({ fontSize: sizes.buttonLabel });
+
+    await choose('📝 Texto');
+    await fireEvent.press(button('Guardar'));
+    expect(textArea()).toHaveStyle({
+      minHeight: sizes.textAreaMin,
+      maxHeight: sizes.textAreaMax,
+      fontSize: sizes.inputFont,
     });
   });
 });

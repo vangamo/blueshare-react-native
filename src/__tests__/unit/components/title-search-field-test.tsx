@@ -1,7 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { Keyboard, TextInput } from 'react-native';
 
 import { TitleSearchField } from '@/components/title-search-field';
-import { Colors } from '@/constants/theme';
+import { Colors, Layout } from '@/constants/theme';
+import { TEST_WINDOWS, setMockWindow } from '@/test-utils/test-values';
 
 const colors = Colors.light;
 
@@ -93,5 +95,70 @@ describe('TitleSearchField', () => {
     await fireEvent(field(), 'submitEditing');
     expect(field()).toHaveDisplayValue('abuela');
     expect(field().props.returnKeyType).toBe('search');
+  });
+
+  describe('keyboard hide', () => {
+    type Handlers = Record<string, () => void>;
+
+    /** Captures the Keyboard listeners so the test can fire them. */
+    function captureKeyboard(): Handlers {
+      const handlers: Handlers = {};
+      jest.spyOn(Keyboard, 'addListener').mockImplementation(((event: string, handler: () => void) => {
+        handlers[event] = handler;
+        return { remove: jest.fn() };
+      }) as unknown as typeof Keyboard.addListener);
+      return handlers;
+    }
+
+    // Jest's TextInput mock puts `blur` (a jest.fn) on its prototype.
+    const blur = (TextInput as unknown as { prototype: { blur: jest.Mock } }).prototype.blur;
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      blur.mockClear();
+    });
+    afterEach(() => jest.useRealTimers());
+
+    async function focusedField() {
+      const handlers = captureKeyboard();
+      await setup();
+      await fireEvent(field(), 'focus');
+      return handlers;
+    }
+
+    test('a hide alone blurs after the grace period and restores "BlueShare"', async () => {
+      const handlers = await focusedField();
+      await act(async () => handlers.keyboardDidHide());
+      expect(blur).not.toHaveBeenCalled();
+      await act(async () => jest.advanceTimersByTime(Layout.keyboardHideGraceMs));
+      expect(blur).toHaveBeenCalledTimes(1);
+      // The real blur event then restores the rest state.
+      await fireEvent(field(), 'blur');
+      expect(field()).toHaveDisplayValue('BlueShare');
+    });
+
+    test('a hide then show within the grace period keeps focus', async () => {
+      const handlers = await focusedField();
+      await act(async () => handlers.keyboardDidHide());
+      await act(async () => handlers.keyboardDidShow());
+      await act(async () => jest.advanceTimersByTime(Layout.keyboardHideGraceMs * 2));
+      expect(blur).not.toHaveBeenCalled();
+    });
+
+    test('a hide followed by a window change does not blur', async () => {
+      const handlers = await focusedField();
+      await act(async () => handlers.keyboardDidHide());
+      await act(async () => setMockWindow(TEST_WINDOWS.phoneLandscape));
+      await act(async () => jest.advanceTimersByTime(Layout.keyboardHideGraceMs * 2));
+      expect(blur).not.toHaveBeenCalled();
+    });
+
+    test('unmounting during the grace period does not throw', async () => {
+      const handlers = await focusedField();
+      await act(async () => handlers.keyboardDidHide());
+      await screen.unmount();
+      expect(() => jest.advanceTimersByTime(Layout.keyboardHideGraceMs * 2)).not.toThrow();
+      expect(blur).not.toHaveBeenCalled();
+    });
   });
 });

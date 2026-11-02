@@ -21,6 +21,14 @@ The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel di
 
 `src/__tests__/e2e/screenshots/`: `timeline` (empty timeline), `circles`, `events`, `title-focused`, and for the creation box and feed `box-choose` (placeholder, Guardar disabled), `box-list` (type list open), `box-texto` (Texto chosen), `box-write` (text step with two lines, keyboard closed) and `timeline-cards` (two text cards), and for the edit dialog `edit-open` ("Hola a todos." unchanged, Guardar disabled), `edit-changed` (" Nos vemos el domingo." added, keyboard closed), `edit-confirm` (deletion confirmation) and `timeline-edited` (the edited card in its place), each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
 
+## Layouts and references
+
+The references above are **phone portrait**. The adaptive layout adds phone landscape, tablet portrait and tablet landscape. Phone portrait must stay pixel-identical (apart from a blinking cursor), and that is checked with every visual change. The new layouts are reviewed against `sketches/mobile-landscape.png` and `sketches/tablet-portrait.png`: tablet landscape has no sketch and combines the tablet sizes with the landscape structure. Their references, approved by the user, are `timeline-cards`, `circles`, `box-write` and `edit-open`, each as `<shot>-<layout>-<mode>.png` with `<layout>` = `phone-landscape` (Medium Phone), `tablet-portrait` or `tablet-landscape` (Galaxy Tab A9+, 1200×1920 and 1920×1200 px at density 240), in light and dark: 24 images. The tablet ones were taken with `-gpu swiftshader_indirect`. They change only with new approval.
+
+Masks: the status bar, Expo Go's gear bubble and its purple side bubble are masked in every layout, with rectangles that depend on the layout (see the skill).
+
+Known quirk: the approved `timeline-cards-light.png` has the first card's bottom border 1 px lower than `timeline-edited-light.png` shows for the same card, and a fresh capture matches the latter. It gives about 3,300 differing pixels and is not a regression.
+
 ## Intentional differences from the sketches
 
 - the creation box adds a Cancelar button next to Guardar and Crear (the sketches show only the main button)

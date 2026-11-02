@@ -15,7 +15,7 @@ generated:
 
 - There are no `ios/` or `android/` folders. They are generated. **Never create or edit them by hand.** Configure native behavior in `app.json` and config plugins.
 - Current `app.json` highlights:
-  - `orientation: "portrait"`
+  - `orientation: "default"` (any orientation) and `ios.supportsTablet: true`, see [Adaptive layout](../decisions/adaptive-layout.md). `requireFullScreen` stays at its default, so iPad Split View works.
   - `userInterfaceStyle: "automatic"` (needs `expo-system-ui` on Android)
   - `scheme: "blueshare"`
   - Android adaptive icons, `predictiveBackGestureEnabled: false`

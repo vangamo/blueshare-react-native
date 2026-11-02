@@ -16,6 +16,9 @@ generated:
 
 ## Styles
 
+**Sizes come from the layout:** field `minHeight` `sizes.controlHeight`, text `sizes.inputFont`, list rows `sizes.optionRow` (56 phone, 60 tablet). The list sheet is `columnWidth` wide and centered (full width in phone portrait), and the modal pads for all four insets plus 24. The values below are the phone set.
+
+
 - Field: at least `Layout.touchTarget` (44) tall, 2-point `primaryDark` border, `Layout.controlRadius`, `cardBg`, 16-point semibold `textMain`, with a `▾` chevron.
 - List: a transparent `Modal` (`animationType="fade"`, `statusBarTranslucent`, `navigationBarTranslucent`) over an `overlay` backdrop. The sheet is `cardBg` with a `borderColor` border and `Radius.lg`. Rows are at least `Layout.optionRowHeight` (56) tall; the selected one has a `creationBg` background and a `✓`.
 

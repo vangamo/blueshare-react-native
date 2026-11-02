@@ -16,6 +16,9 @@ generated:
 
 ## Styles
 
+**Sizes come from the layout:** `minHeight` is `sizes.controlHeight` (44 phone, 48 tablet) and the label `sizes.buttonLabel` (15 or 16). The values below are the phone set.
+
+
 | Variant | Background | Border | Label |
 | --- | --- | --- | --- |
 | `primary` | `primaryBlueHover` | none | `onPrimary`, 15-point bold |

@@ -21,7 +21,7 @@ src/
 ├─ components/               # UI components (named exports, kebab-case files)
 │  ├─ app-header.tsx
 │  ├─ title-search-field.tsx
-│  ├─ footer-tab-bar.tsx
+│  ├─ tab-bar.tsx
 │  ├─ create-button.tsx
 │  ├─ placeholder-screen.tsx # Circles and Events
 │  ├─ items-provider.tsx     # items module context

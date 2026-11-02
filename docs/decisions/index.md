@@ -14,7 +14,12 @@ The technical decisions taken in the `basic-app-layout` change (its `design.md`,
 * [Splash hidden on first layout](splash-hidden-on-layout.md) - D6: keep the native splash until the shell's `onLayout`, with no animated overlay.
 * [Title field state without effects](title-field-state.md) - D7: the displayed value is computed during render, and state changes only in focus and blur handlers.
 * [Kept and removed dependencies](kept-dependencies.md) - D8: which packages were removed and why the others stay.
-* [Mobile only, portrait, no web](mobile-only.md) - Android and iOS phones in portrait, running in Expo Go.
+* [Mobile only, no web](mobile-only.md) - Android and iOS phones and tablets in any orientation, running in Expo Go.
+
+## adaptive-layout
+
+* [Adaptive layout](adaptive-layout.md) - D1, D2, D9: the layout from the window size, two size sets and four frames, and the full-screen editor kept on.
+* [Tab bar stays in one slot](tab-bar-single-slot.md) - D3: the tab bar is drawn at the top in landscape without leaving the navigator's bottom slot, so a rotation keeps focus.
 
 ## add-text-items
 

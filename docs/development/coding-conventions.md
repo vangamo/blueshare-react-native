@@ -12,7 +12,7 @@ generated:
 # Coding conventions
 
 - **TypeScript strict.** No `any` escapes. Prefer types derived from the source, as `ThemeColors` is derived from the JSON.
-- **Files:** kebab-case (`footer-tab-bar.tsx`). Components are **named exports** in PascalCase. Route files in `src/app/` use `export default`. See [Project structure](../architecture/project-structure.md).
+- **Files:** kebab-case (`tab-bar.tsx`). Components are **named exports** in PascalCase. Route files in `src/app/` use `export default`. See [Project structure](../architecture/project-structure.md).
 - **Imports:** use the `@/` alias for `src/` (`@/components/app-header`) and `@/assets/*`. Order: packages, a blank line, then `@/` imports.
 - **Styling:** layout in module-level `StyleSheet.create` using `Spacing`, `Radius`, `FontSize`, `FontWeight` and `Layout`. Colors inline from `useTheme()`. No color literals or magic numbers in components. See [Theme module](../design-system/theme-module.md).
 - **React Compiler is on:** no manual `useMemo` or `useCallback` for memoization. Do not set state inside effects (`react-hooks/set-state-in-effect`). Compute derived values during render. See [Title field state without effects](../decisions/title-field-state.md).

@@ -16,6 +16,9 @@ generated:
 
 ## Styles
 
+**Sizes come from the layout:** padding, radius and bottom margin from `sizes.cardPadding`, `cardRadius` and `itemGap`, title and error text `sizes.boxTitle`. The values below are the phone set (tablet: [Sizes and typography](../design-system/layout-sizes.md)). The box fills the feed's centered content column.
+
+
 - Box: 2-point **dashed** `primaryBlue` border, `creationBg`, `Radius.lg` (16), `Spacing.lg` padding and bottom margin, `Layout.creationGap` (10) between children.
 - Title: 14-point bold `textMain` ("Crear nuevo elemento:" or "Crear nuevo elemento de texto:").
 - Buttons: a row of two [box buttons](box-button.md), each `flex: 1`, `Layout.creationGap` apart. Cancelar on the left.
