@@ -1,7 +1,7 @@
 ---
 type: Decision
 title: Kept and removed dependencies
-description: Web and demo packages were uninstalled. Expo Router peers, system UI and the animation and image packages planned for the feed were kept. expo-sqlite, expo-crypto and @types/node were added for items.
+description: Web and demo packages were uninstalled. Expo Router peers, system UI and the animation and image packages planned for the feed were kept. expo-sqlite, expo-crypto and @types/node were added for items, and expo-image-picker and expo-file-system for image items.
 tags: [decision, dependencies, packages]
 status: stable
 generated:
@@ -23,6 +23,9 @@ generated:
 **Added** (change `add-text-items`):
 - `expo-sqlite` and `expo-crypto`: local item storage and UUID v4 IDs. Both are included in Expo Go, so the app stays Expo Go only.
 - `@types/node` (dev): types for the `node:sqlite` test driver. Requires Node ≥ 22.13 to run tests (`engines` in `package.json`).
+
+**Added** (change `add-image-items`):
+- `expo-image-picker` (new) and `expo-file-system` (already installed through `expo`, now direct): choose a photo and copy it into the app's document folder. Both are included in Expo Go. `expo-image`, kept above, now renders the photos.
 
 Rejected for tests: `better-sqlite3` (a native addon that can fail to install), `sql.js` (WebAssembly, slower, another dependency) and mocking `expo-sqlite` (it tests the mock, not the SQL).
 

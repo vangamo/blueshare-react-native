@@ -23,11 +23,13 @@ describe('migrate', () => {
     await migrate(db);
 
     expect(await schemaVersion(db)).toBe(MIGRATIONS.length);
-    expect(MIGRATIONS).toHaveLength(2);
+    expect(MIGRATIONS).toHaveLength(3);
     const objects = await db.getAll<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type IN ('table', 'index') AND name NOT LIKE 'sqlite_%' ORDER BY name",
     );
     expect(objects.map((o) => o.name)).toEqual([
+      'image_items',
+      'image_items_history',
       'items',
       'items_history',
       'items_timeline',
@@ -86,9 +88,47 @@ describe('migrate', () => {
 
     await migrate(db);
 
-    expect(await schemaVersion(db)).toBe(2);
+    expect(await schemaVersion(db)).toBe(MIGRATIONS.length);
     expect(await bodies(db)).toEqual(['Uno']);
     expect(await db.getAll('SELECT item_id FROM items_history')).toEqual([]);
+  });
+
+  test('a version 2 database with text items and history upgrades keeping everything', async () => {
+    const db = new NodeSqlDatabase();
+    await migrate(db, MIGRATIONS.slice(0, 2));
+    await insertText(db, 'a', 'Uno');
+    await db.run(
+      'INSERT INTO items_history (item_id, counter, type, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?, ?)',
+      ['a', 1, 'text', 1, 1, null],
+    );
+    await db.run('INSERT INTO text_items_history (item_id, counter, body) VALUES (?, ?, ?)', ['a', 1, 'Antes']);
+    expect(await schemaVersion(db)).toBe(2);
+
+    await migrate(db);
+
+    expect(await schemaVersion(db)).toBe(3);
+    expect(await bodies(db)).toEqual(['Uno']);
+    expect(await db.getAll('SELECT body FROM text_items_history')).toEqual([{ body: 'Antes' }]);
+    expect(await db.getAll('SELECT item_id FROM image_items')).toEqual([]);
+  });
+
+  test.each([
+    ['width', 0, 10],
+    ['height', 10, 0],
+  ])('an image row with a zero %s is rejected', async (_name, width, height) => {
+    const db = new NodeSqlDatabase();
+    await migrate(db);
+    await db.run(
+      'INSERT INTO items (id, type, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?)',
+      ['i', 'image', 1, 1, null],
+    );
+
+    await expect(
+      db.run(
+        'INSERT INTO image_items (item_id, photo_file, photo_width, photo_height) VALUES (?, ?, ?, ?)',
+        ['i', 'a.jpg', width, height],
+      ),
+    ).rejects.toThrow(/CHECK/i);
   });
 
   test('a history text row needs a matching history item row', async () => {

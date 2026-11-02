@@ -1,7 +1,7 @@
 ---
 type: Component
 title: Timeline feed
-description: The Timeline section: a FlatList with the creation box as its header and text cards newest first, plus the empty, loading and error states, scroll to top and the Android back button.
+description: The Timeline section: a FlatList with the creation box as its header and text and image cards newest first, plus the empty, loading and error states, scroll to top and the Android back button.
 tags: [component, timeline, feed, list]
 resource: ../../src/components/timeline-feed.tsx
 status: stable
@@ -16,13 +16,13 @@ generated:
 
 ## Layout
 
-**Adaptive:** content padding is `sizes.contentPadding` (16 phone, 20 tablet) plus the side insets, and in landscape the bottom padding adds `insets.bottom` (no bar below). Outside phone portrait the content container is `columnWidth + 2 × padding` wide and centered (550 phone landscape, 500 tablet portrait, 600 tablet landscape). Phone portrait stays a plain `padding`. Computed by `useContentStyle()` (`src/hooks/use-content-style.ts`), shared with the placeholder screen.
+**Adaptive:** content padding is `sizes.contentPadding` (16 phone, 20 tablet) plus the side insets, and in landscape the bottom padding adds `insets.bottom` (no bar below). Outside phone portrait the content container is `columnWidth + 2 × padding + the side insets` wide (the insets are padding too, so the content is exactly `columnWidth`) and centered (550 phone landscape, 500 tablet portrait, 600 tablet landscape). Phone portrait stays a plain `padding`. Computed by `useContentStyle()` (`src/hooks/use-content-style.ts`), shared with the placeholder screen.
 
 
 - A `FlatList` (the feed has no upper bound) with `flex: 1`, `backgroundMain`, and `Spacing.lg` content padding. It scrolls only between the header and the footer.
 - **Edit dialog:** the feed keeps `editingId` in `useState`, derives the item during render and renders `<EditTextDialog key={item.id} />` next to the list. Each card's `onEdit` sets the id and the dialog's `onClose` clears it. A deleted item makes the dialog disappear by itself. See [Edit text dialog](edit-text-dialog.md).
 - `ListHeaderComponent` is always `<CreationBox />`, which renders nothing while closed. Keeping the same component type means the text area never remounts and loses focus while typing.
-- Items: a [text item card](text-item-card.md) each, newest first.
+- Items: a [text item card](text-item-card.md) or an [image item card](image-item-card.md) each (by `item.type`), newest first. Editar opens the dialog that matches the type, once the image dialog exists (see [Edit image dialog](edit-image-dialog.md)).
 - `keyboardShouldPersistTaps="handled"`, so Crear and Cancelar work on the first tap while the keyboard is up.
 
 ## States

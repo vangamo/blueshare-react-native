@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 import { ItemsProvider } from '@/components/items-provider';
 import { useTimeline } from '@/hooks/use-timeline';
 import { createAppAdapters } from '@/items/infrastructure/app-adapters';
+import { bodyOf } from '@/test-utils/item-helpers';
+import { writeFixturePhoto } from '@/test-utils/node-photo-store';
 
 function wrapper({ children }: { children: ReactNode }) {
   return <ItemsProvider adapters={createAppAdapters()}>{children}</ItemsProvider>;
@@ -32,7 +34,7 @@ describe('useTimeline', () => {
     await act(async () => {
       await result.current.createText('  Segundo  ');
     });
-    expect(result.current.items.map((item) => item.body)).toEqual(['Segundo', 'Primero']);
+    expect(result.current.items.map(bodyOf)).toEqual(['Segundo', 'Primero']);
   });
 
   test('an edit and a deletion are reflected in items', async () => {
@@ -49,12 +51,35 @@ describe('useTimeline', () => {
     await act(async () => {
       await result.current.updateText(first.id, 'Primero editado');
     });
-    expect(result.current.items.map((item) => item.body)).toEqual(['Segundo', 'Primero editado']);
+    expect(result.current.items.map(bodyOf)).toEqual(['Segundo', 'Primero editado']);
 
     await act(async () => {
       await result.current.deleteItem(second.id);
     });
-    expect(result.current.items.map((item) => item.body)).toEqual(['Primero editado']);
+    expect(result.current.items.map(bodyOf)).toEqual(['Primero editado']);
+  });
+
+  test('an image is created first and updated in place', async () => {
+    const { result } = await renderHook(() => useTimeline(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    await act(async () => {
+      await result.current.createText('Texto');
+    });
+    let id = '';
+    await act(async () => {
+      const item = await result.current.createImage({
+        photo: { uri: writeFixturePhoto(), width: 4, height: 3, mimeType: 'image/png' },
+        altText: null,
+        caption: 'Verano',
+      });
+      id = item.id;
+    });
+    expect(result.current.items.map((item) => item.type)).toEqual(['image', 'text']);
+
+    await act(async () => {
+      await result.current.updateImage(id, { newPhoto: null, altText: 'Playa', caption: 'Verano' });
+    });
+    expect(result.current.items[0]).toMatchObject({ type: 'image', altText: 'Playa' });
   });
 
   test('without a provider it throws', async () => {

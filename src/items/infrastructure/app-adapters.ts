@@ -4,8 +4,9 @@
  */
 import { randomUUID } from 'expo-crypto';
 
-import type { Clock, IdGenerator } from '@/items/domain/ports';
+import type { Clock, IdGenerator, PhotoStore } from '@/items/domain/ports';
 
+import { createExpoPhotoStore } from './expo-photo-store';
 import { createExpoSqlDatabase } from './expo-sql-database';
 import type { SqlDatabase } from './sql-database';
 
@@ -13,6 +14,7 @@ export type AppAdapters = {
   db: SqlDatabase;
   ids: IdGenerator;
   clock: Clock;
+  photos: PhotoStore;
 };
 
 export function createAppAdapters(): AppAdapters {
@@ -20,5 +22,6 @@ export function createAppAdapters(): AppAdapters {
     db: createExpoSqlDatabase(),
     ids: { newId: () => randomUUID() },
     clock: { now: () => Date.now() },
+    photos: createExpoPhotoStore(),
   };
 }

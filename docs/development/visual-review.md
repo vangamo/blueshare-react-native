@@ -21,6 +21,19 @@ The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel di
 
 `src/__tests__/e2e/screenshots/`: `timeline` (empty timeline), `circles`, `events`, `title-focused`, and for the creation box and feed `box-choose` (placeholder, Guardar disabled), `box-list` (type list open), `box-texto` (Texto chosen), `box-write` (text step with two lines, keyboard closed) and `timeline-cards` (two text cards), and for the edit dialog `edit-open` ("Hola a todos." unchanged, Guardar disabled), `edit-changed` (" Nos vemos el domingo." added, keyboard closed), `edit-confirm` (deletion confirmation) and `timeline-edited` (the edited card in its place), each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
 
+## Image item references
+
+Added with the image items (`add-image-items`), approved by the user, phone portrait (Medium Phone, 1080×2400, density 420), in `-light` and `-dark` (16 images). They were taken in Expo Go with demo mode on, from an empty database with test photos (a 4:3 landscape photo, a tall 1:4 one, and a 4:3.37 photo of a drawing):
+
+- `image-card-wide`: a landscape photo with caption "La isla de las tempestades", filling the box
+- `image-card-tall`: a tall photo with the caption "Foto alta con pie", capped at 5:4 and centered on the backdrop
+- `image-card-plain`: a landscape photo with no caption (no gap before the actions)
+- `image-card-missing`: "⚠️ Imagen no disponible" in the photo area, with the caption and actions kept (taken by pointing `uriFor` at a missing folder, reverted afterwards)
+- `box-image-empty` and `box-image-photo`: the creation box image step without and with a photo
+- `edit-image-open` and `edit-image-confirm`: the image dialog and its deletion confirmation
+
+They change only with new approval. Phone landscape, tablet and the keyboard-open states have no image references yet.
+
 ## Layouts and references
 
 The references above are **phone portrait**. The adaptive layout adds phone landscape, tablet portrait and tablet landscape. Phone portrait must stay pixel-identical (apart from a blinking cursor), and that is checked with every visual change. The new layouts are reviewed against `sketches/mobile-landscape.png` and `sketches/tablet-portrait.png`: tablet landscape has no sketch and combines the tablet sizes with the landscape structure. Their references, approved by the user, are `timeline-cards`, `circles`, `box-write` and `edit-open`, each as `<shot>-<layout>-<mode>.png` with `<layout>` = `phone-landscape` (Medium Phone), `tablet-portrait` or `tablet-landscape` (Galaxy Tab A9+, 1200×1920 and 1920×1200 px at density 240), in light and dark: 24 images. The tablet ones were taken with `-gpu swiftshader_indirect`. They change only with new approval.

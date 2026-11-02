@@ -18,6 +18,11 @@ export function useContentStyle() {
     ...(landscape ? { paddingBottom: sizes.contentPadding + insets.bottom } : null),
     ...(frame.column === null
       ? null
-      : { width: columnWidth + 2 * sizes.contentPadding, alignSelf: 'center' as const }),
+      : {
+          // The side insets are padding too, so they count in the width: the content is
+          // exactly `columnWidth` wide, which the photo boxes are sized from.
+          width: columnWidth + 2 * sizes.contentPadding + insets.left + insets.right,
+          alignSelf: 'center' as const,
+        }),
   };
 }

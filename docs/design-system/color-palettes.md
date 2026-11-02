@@ -37,6 +37,7 @@ generated:
 | `overlay` | `rgba(15,23,42,0.5)` | `rgba(2,6,23,0.7)` | type list and edit dialog backdrop |
 | `danger` | `#b91c1c` | `#f87171` | "Borrar este texto" border and label, "Sí, borrar" background |
 | `onDanger` | `#ffffff` | `#0f172a` | "Sí, borrar" label |
+| `imageBackdrop` | `#e2e8f0` | `#1e293b` | box behind a photo (image card, image step and dialog), and the missing-photo message |
 
 ## Contrast rules (tested in `theme-test.ts`)
 
@@ -63,6 +64,9 @@ Checked pairs (light / dark):
 | Sí, borrar label (`onDanger` on `danger`) | 6.47 / 6.45 |
 | Borrar este texto label (`danger` on `surfaceMuted`) | 6.18 / 5.29 |
 | Borrar este texto border (`danger` on `creationBg`) | 5.99 / 5.71 |
+| Image caption (`textMuted` on `cardBg`) | 7.58 / 6.96 |
+| Alternative text hint (`textMuted` on `creationBg`) | 7.02 / 6.16 |
+| Missing photo message (`textMuted` on `imageBackdrop`) | 6.15 / 5.71 |
 
 ## Dark palette logic
 

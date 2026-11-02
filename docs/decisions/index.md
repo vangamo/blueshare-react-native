@@ -43,3 +43,9 @@ From the `add-text-items` change (its `design.md`, now in `openspec/changes/arch
 From the `edit-text-items` change (its `design.md`, now in `openspec/changes/archive/2026-11-02-edit-text-items/`). Its D1 and D2 (live and history tables) are in [Items schema](items-schema.md).
 
 * [Edit dialog](edit-dialog.md) - D5 to D7: local state, an RN `Modal` instead of a route, in-dialog deletion confirmation, and the `danger` colors.
+
+## add-image-items
+
+From the `add-image-items` change (its `design.md`). D1 and D4 are described in [Items module](../architecture/items-module.md), [Items schema](items-schema.md) and the image components.
+
+* [Shared edit dialog frame](shared-edit-dialog-frame.md) - D10: the text and image dialogs share `EditDialogFrame` and keep their own body state.

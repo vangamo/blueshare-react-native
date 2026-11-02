@@ -12,7 +12,7 @@ generated:
 
 # Text item card
 
-`TextItemCard({ item })`. The [Timeline feed](timeline-feed.md) renders one per text item.
+`TextItemCard({ item, onEdit })`. The [Timeline feed](timeline-feed.md) renders one per text item. The card frame and the Editar and Compartir row live in `item-card-frame.tsx` (`ItemCardFrame`, `CardActions`) and are shared with the [Image item card](image-item-card.md).
 
 ## Styles
 

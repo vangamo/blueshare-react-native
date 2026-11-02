@@ -2,7 +2,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   Frames,
+  Layout,
   Sizes,
+  Spacing,
   layoutFor,
   type DeviceKind,
   type Frame,
@@ -19,7 +21,20 @@ export type ShellLayout = {
   sizes: SizeSet;
   /** Width of the content column: the window minus side insets and padding, capped at the frame's column. */
   columnWidth: number;
+  /**
+   * Tallest photo box, so a whole image card (photo, caption line and actions) fits in the
+   * window below the header and tab bar. Never less than `Layout.imageMinHeight`.
+   */
+  imageMaxHeight: number;
 };
+
+/** Height of an image card around its photo: padding and border, the gap, a caption line and the actions. */
+function imageCardChrome(sizes: SizeSet): number {
+  const frame = 2 * (sizes.cardPadding + Layout.borderWidth);
+  const caption = Layout.photoGap + sizes.captionText * 1.5;
+  const actions = 2 * Spacing.md + Layout.hairlineWidth + sizes.actionHeight;
+  return frame + caption + actions;
+}
 
 /**
  * The layout for the current window (design D1, D2, D6), computed during render. Re-renders
@@ -40,6 +55,16 @@ export function useShellLayout(): ShellLayout {
     landscape: kind.endsWith('landscape'),
     frame,
     sizes,
+    imageMaxHeight: Math.max(
+      Layout.imageMinHeight,
+      height -
+        insets.top -
+        insets.bottom -
+        frame.headerHeight -
+        frame.tabBarHeight -
+        2 * sizes.contentPadding -
+        imageCardChrome(sizes),
+    ),
     columnWidth: frame.column === null ? available : Math.min(available, frame.column),
   };
 }

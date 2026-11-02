@@ -41,6 +41,29 @@ export const MIGRATIONS: readonly string[] = [
     FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
   );
   `,
+  // 3. Image items and their history (openspec add-image-items design D2). photo_file is
+  // a name relative to <documents>/images/, never an absolute path.
+  `
+  CREATE TABLE image_items (
+    item_id      TEXT PRIMARY KEY NOT NULL REFERENCES items (id) ON DELETE CASCADE,
+    photo_file   TEXT NOT NULL,
+    photo_width  INTEGER NOT NULL CHECK (photo_width > 0),
+    photo_height INTEGER NOT NULL CHECK (photo_height > 0),
+    alt_text     TEXT,
+    caption      TEXT
+  );
+  CREATE TABLE image_items_history (
+    item_id      TEXT NOT NULL,
+    counter      INTEGER NOT NULL,
+    photo_file   TEXT NOT NULL,
+    photo_width  INTEGER NOT NULL,
+    photo_height INTEGER NOT NULL,
+    alt_text     TEXT,
+    caption      TEXT,
+    PRIMARY KEY (item_id, counter),
+    FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
+  );
+  `,
 ];
 
 /** The schema version recorded in the database (0 for a new file). */

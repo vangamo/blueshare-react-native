@@ -29,19 +29,17 @@ describe('creationBoxReducer', () => {
     });
   });
 
-  test('confirmType goes to the write step only for text', () => {
+  test('confirmType goes to the write step for text and does nothing for event', () => {
     expect(run(open, chooseText, confirm).box).toEqual({
       step: 'write',
       text: '',
       saving: false,
       failed: false,
     });
-    for (const itemType of ['event', 'image'] as const) {
-      expect(run(open, { type: 'chooseType', itemType }, confirm).box).toEqual({
-        step: 'choose',
-        type: itemType,
-      });
-    }
+    expect(run(open, { type: 'chooseType', itemType: 'event' }, confirm).box).toEqual({
+      step: 'choose',
+      type: 'event',
+    });
     expect(run(open, confirm).box).toEqual({ step: 'choose', type: null });
   });
 
@@ -86,6 +84,70 @@ describe('creationBoxReducer', () => {
     const closed = initialCreationBoxState;
     for (const action of [chooseText, confirm, { type: 'setText', text: 'x' }, { type: 'saveStarted' }, { type: 'saveFailed' }, { type: 'close' }] as CreationAction[]) {
       expect(creationBoxReducer(closed, action)).toBe(closed);
+    }
+  });
+});
+
+describe('creationBoxReducer image step', () => {
+  const chooseImage: CreationAction = { type: 'chooseType', itemType: 'image' };
+  const photo = { uri: 'file:///cache/a.jpg', width: 400, height: 300, mimeType: 'image/jpeg' };
+  const other = { ...photo, uri: 'file:///cache/b.jpg' };
+  const emptyImage = {
+    step: 'image',
+    photo: null,
+    altText: '',
+    caption: '',
+    saving: false,
+    error: null,
+  };
+
+  test('confirmType with image opens the empty image step', () => {
+    expect(run(open, chooseImage, confirm).box).toEqual(emptyImage);
+  });
+
+  test('photoPicked replaces the photo and keeps the texts', () => {
+    const state = run(
+      open,
+      chooseImage,
+      confirm,
+      { type: 'photoPicked', photo },
+      { type: 'setAltText', text: 'Playa' },
+      { type: 'setCaption', text: 'Verano' },
+      { type: 'photoPicked', photo: other },
+    );
+    expect(state.box).toEqual({ ...emptyImage, photo: other, altText: 'Playa', caption: 'Verano' });
+  });
+
+  test('pickerFailed sets the error, and picking or typing clears it', () => {
+    const failed = run(open, chooseImage, confirm, { type: 'pickerFailed' });
+    expect(failed.box).toMatchObject({ error: 'picker' });
+    expect(creationBoxReducer(failed, { type: 'photoPicked', photo }).box).toMatchObject({ error: null });
+    expect(creationBoxReducer(failed, { type: 'setCaption', text: 'x' }).box).toMatchObject({ error: null });
+  });
+
+  test('saveStarted and saveFailed behave as in the write step', () => {
+    const saving = run(open, chooseImage, confirm, { type: 'photoPicked', photo }, { type: 'saveStarted' });
+    expect(saving.box).toMatchObject({ saving: true, photo });
+    const failed = creationBoxReducer(saving, { type: 'saveFailed' });
+    expect(failed.box).toMatchObject({ saving: false, error: 'save', photo });
+    expect(creationBoxReducer(failed, { type: 'setAltText', text: 'x' }).box).toMatchObject({ error: null });
+  });
+
+  test('close discards the photo and the texts', () => {
+    const state = run(open, chooseImage, confirm, { type: 'photoPicked', photo }, { type: 'close' });
+    expect(state.box).toEqual({ step: 'closed' });
+    expect(creationBoxReducer(state, open).box).toEqual({ step: 'choose', type: null });
+  });
+
+  test('image actions are ignored outside the image step', () => {
+    const write = run(open, chooseText, confirm);
+    for (const action of [
+      { type: 'photoPicked', photo },
+      { type: 'setAltText', text: 'x' },
+      { type: 'setCaption', text: 'x' },
+      { type: 'pickerFailed' },
+    ] as const) {
+      expect(creationBoxReducer(write, action)).toBe(write);
     }
   });
 });

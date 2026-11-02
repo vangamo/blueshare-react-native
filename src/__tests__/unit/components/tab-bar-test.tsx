@@ -110,6 +110,12 @@ describe('TabBar', () => {
     expect(tab('Timeline')).toHaveStyle({ width: frame.tabWidth, height: Sizes.phone.tabHeight });
   });
 
+  test('fixed-width tabs may shrink, so a bar narrower than its tabs never overflows the screen', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await renderRouter('./src/app');
+    expect(tab('Timeline')).toHaveStyle({ flexShrink: 1 });
+  });
+
   test('tablet portrait: at the bottom with the tablet sizes and 150-point tabs', async () => {
     setMockWindow(TEST_WINDOWS.tabletPortrait);
     await renderRouter('./src/app');

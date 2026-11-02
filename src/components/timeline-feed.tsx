@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 
 import { CreationBox } from '@/components/creation-box';
+import { EditImageDialog } from '@/components/edit-image-dialog';
 import { EditTextDialog } from '@/components/edit-text-dialog';
+import { ImageItemCard } from '@/components/image-item-card';
 import { TextItemCard } from '@/components/text-item-card';
 import { FontSize } from '@/constants/theme';
 import { useCreationBox } from '@/hooks/use-creation-box';
@@ -81,9 +83,12 @@ export function TimelineFeed() {
         testID="timeline-feed"
         data={status === 'error' ? [] : items}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TextItemCard item={item} onEdit={() => setEditingId(item.id)} />
-        )}
+        renderItem={({ item }) => {
+          const onEdit = () => setEditingId(item.id);
+          if (item.type === 'text') return <TextItemCard item={item} onEdit={onEdit} />;
+          if (item.type === 'image') return <ImageItemCard item={item} onEdit={onEdit} />;
+          return null;
+        }}
         // Always the same component type, so the text area never remounts (and loses
         // focus) while typing. It renders nothing while the box is closed.
         ListHeaderComponent={<CreationBox />}
@@ -92,8 +97,11 @@ export function TimelineFeed() {
         style={[styles.list, { backgroundColor: theme.backgroundMain }]}
         contentContainerStyle={contentStyle}
       />
-      {editing ? (
+      {editing?.type === 'text' ? (
         <EditTextDialog key={editing.id} item={editing} onClose={() => setEditingId(null)} />
+      ) : null}
+      {editing?.type === 'image' ? (
+        <EditImageDialog key={editing.id} item={editing} onClose={() => setEditingId(null)} />
       ) : null}
     </>
   );

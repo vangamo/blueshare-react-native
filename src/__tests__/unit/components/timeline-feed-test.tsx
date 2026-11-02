@@ -3,10 +3,12 @@ import { FlatList } from 'react-native';
 
 import { EMPTY_TIMELINE_MESSAGE, LOAD_ERROR_MESSAGE } from '@/components/timeline-feed';
 import { Colors, Frames, Sizes, Spacing } from '@/constants/theme';
+import { createItemsModule } from '@/items/application/items-module';
 import * as appAdapters from '@/items/infrastructure/app-adapters';
 import { FailingSqlDatabase } from '@/test-utils/failing-sql-database';
 import { GatedSqlDatabase } from '@/test-utils/gated-sql-database';
 import { TEST_INSETS, TEST_WINDOWS, setMockWindow } from '@/test-utils/test-values';
+import { writeFixturePhoto } from '@/test-utils/node-photo-store';
 import { journey } from '@/test-utils/timeline-journey';
 
 /** Makes the next app render use `wrap(db)` as its database. */
@@ -100,6 +102,29 @@ describe('TimelineFeed', () => {
     await journey.createText('Segundo');
     expect(journey.cardTexts()).toEqual(['Segundo', 'Primero']);
     expect(screen.queryByText(EMPTY_TIMELINE_MESSAGE)).toBeNull();
+  });
+
+  test('a feed mixing text and image items keeps the newest-first order', async () => {
+    const adapters = appAdapters.createAppAdapters();
+    const { store } = createItemsModule(adapters);
+    await store.createText('Primero');
+    await store.createImage({
+      photo: { uri: writeFixturePhoto(), width: 4, height: 3, mimeType: 'image/png' },
+      altText: null,
+      caption: 'Segundo',
+    });
+    await store.createText('Tercero');
+    jest.spyOn(appAdapters, 'createAppAdapters').mockReturnValue(adapters);
+
+    await renderRouter('./src/app');
+
+    expect(await screen.findByText('Tercero')).toBeOnTheScreen();
+    const order = screen
+      .getAllByTestId(/^(text|image)-item-card$/)
+      .map((card) => card.props.testID);
+    expect(order).toEqual(['text-item-card', 'image-item-card', 'text-item-card']);
+    expect(journey.cardTexts()).toEqual(['Tercero', 'Primero']);
+    expect(screen.getByText('Segundo')).toBeOnTheScreen();
   });
 
   test('scrolls to the top when the box opens', async () => {

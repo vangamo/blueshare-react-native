@@ -14,6 +14,8 @@ generated:
 
 `EditTextDialog({ item, onClose })`. The [Timeline feed](timeline-feed.md) renders it with `key={item.id}` while an item is being edited, so each open starts from the stored text. It reads `useTimeline().updateText` and `deleteItem`.
 
+**Shared frame:** the modal, title, buttons, confirmation step, busy and error state described below live in `EditDialogFrame` (`src/components/edit-dialog-frame.tsx`), shared with the [Edit image dialog](edit-image-dialog.md) ([decision](../decisions/shared-edit-dialog-frame.md)). `EditTextDialog` is only the body: it holds the text state and renders the text area. Its messages are still exported from this module.
+
 ## Structure and styles
 
 **Adaptive:** the box is `columnWidth` wide and centered (550 phone landscape, 500 tablet portrait, 600 tablet landscape), with padding, radius and text sizes from `sizes` (`cardPadding`, `cardRadius`, `boxTitle`, `cardText`). The scroll content pads for all four insets plus 16. On phones in landscape Android's full-screen editor may cover the dialog while typing. The values below are the phone set.
@@ -28,7 +30,7 @@ generated:
 
 ## State and behavior
 
-- A local `useReducer` (`step`, `text`, `busy`, `error`), started from `item.body`. There is no provider: the dialog is modal, so tabs can't change while it is open. The feed only keeps the id being edited.
+- The frame's `useReducer` (`step`, `busy`, `error`) and the text in `EditTextDialog`'s own `useState`, started from `item.body`. There is no provider: the dialog is modal, so tabs can't change while it is open. The feed only keeps the id being edited.
 - **Guardar** is enabled when the trimmed text is non-empty and differs from the stored text. It calls `updateText`, then `Keyboard.dismiss()` and `onClose`. The card updates in place.
 - **Borrar este texto** dismisses the keyboard and shows the confirm step. "Sí, borrar" calls `deleteItem`, then closes. "No, volver" returns to the edit step with the edited text.
 - A `busyRef` ignores a second tap before the "busy" render.

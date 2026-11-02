@@ -20,3 +20,15 @@ export class ItemNotFoundError extends Error {
     this.name = 'ItemNotFoundError';
   }
 }
+
+/** The alternative text or the caption of an image item is longer than its limit. */
+export class InvalidImageTextError extends Error {
+  constructor(
+    readonly field: 'altText' | 'caption',
+    readonly reason: 'too_long',
+    readonly maxLength: number,
+  ) {
+    super(`${field === 'altText' ? 'Alternative text' : 'Caption'} is longer than ${maxLength} characters.`);
+    this.name = 'InvalidImageTextError';
+  }
+}

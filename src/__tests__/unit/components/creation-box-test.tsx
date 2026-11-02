@@ -1,14 +1,20 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { Keyboard } from 'react-native';
+import { launchImageLibraryAsync } from 'expo-image-picker';
+import { AccessibilityInfo, Keyboard, Platform } from 'react-native';
 
 import { SAVE_ERROR_MESSAGE } from '@/components/creation-box';
-import { TEXT_MAX_LENGTH } from '@/constants/limits';
+import { ALT_TEXT_HINT, PICKER_ERROR_MESSAGE } from '@/components/image-fields';
+import { ALT_TEXT_MAX_LENGTH, CAPTION_MAX_LENGTH, TEXT_MAX_LENGTH } from '@/constants/limits';
 import { Colors, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import { createAppAdapters } from '@/items/infrastructure/app-adapters';
 import { CreationBoxHarness } from '@/test-utils/creation-box-harness';
 import { FailingSqlDatabase } from '@/test-utils/failing-sql-database';
 import { GatedSqlDatabase } from '@/test-utils/gated-sql-database';
+import { writeFixturePhoto } from '@/test-utils/node-photo-store';
 import { TEST_WINDOWS, setMockColorScheme, setMockWindow } from '@/test-utils/test-values';
+
+jest.mock('expo-image-picker', () => ({ launchImageLibraryAsync: jest.fn() }));
+const launch = jest.mocked(launchImageLibraryAsync);
 
 const button = (name: string) => screen.getByRole('button', { name });
 const textArea = () => screen.getByLabelText('Crear nuevo elemento de texto');
@@ -54,7 +60,7 @@ describe('CreationBox, choose step', () => {
     expect(button('Guardar')).toBeEnabled();
   });
 
-  test.each(['📅 Evento', '📷 Imagen'])('Guardar with %s keeps the choose step', async (label) => {
+  test.each(['📅 Evento'])('Guardar with %s keeps the choose step', async (label) => {
     await render(<CreationBoxHarness />);
     await open();
     await choose(label);
@@ -246,5 +252,241 @@ describe('CreationBox, tablet layout', () => {
       maxHeight: sizes.textAreaMax,
       fontSize: sizes.inputFont,
     });
+  });
+});
+
+describe('CreationBox, image step', () => {
+  beforeEach(() => launch.mockReset());
+
+  const altField = () => screen.getByLabelText('Texto alternativo');
+  const captionField = () => screen.getByLabelText('Pie de foto');
+  const storedImages = () => screen.queryAllByTestId('stored-item').map((node) => node.props.children);
+
+  function pickReturns(uri = writeFixturePhoto(), width = 4000, height = 3000) {
+    launch.mockResolvedValueOnce({
+      canceled: false,
+      assets: [{ uri, width, height, mimeType: 'image/png' }],
+    } as never);
+    return uri;
+  }
+
+  async function goToImageStep() {
+    await open();
+    await choose('📷 Imagen');
+    await fireEvent.press(button('Guardar'));
+  }
+
+  async function pickPhoto(uri?: string) {
+    pickReturns(uri);
+    await fireEvent.press(screen.getByRole('button', { name: /foto$/ }));
+    await screen.findByTestId('photo-preview');
+  }
+
+  test('Guardar with Imagen shows the image step with the keyboard closed and Crear disabled', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+
+    expect(screen.getByText('Crear nuevo elemento de imagen:')).toBeOnTheScreen();
+    expect(button('Elegir foto')).toBeOnTheScreen();
+    expect(altField()).toHaveProp('value', '');
+    expect(altField()).not.toHaveProp('autoFocus', true);
+    expect(captionField()).toHaveProp('value', '');
+    expect(captionField()).not.toHaveProp('autoFocus', true);
+    expect(screen.queryByTestId('photo-preview')).toBeNull();
+    expect(button('Cancelar')).toBeEnabled();
+    expect(button('Crear')).toBeDisabled();
+  });
+
+  test('picking shows the preview, and the button reads "Cambiar foto"', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    await pickPhoto();
+
+    expect(screen.getByRole('image', { name: 'Foto elegida' })).toBeOnTheScreen();
+    expect(button('Cambiar foto')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Elegir foto' })).toBeNull();
+    expect(launch).toHaveBeenCalledWith(expect.objectContaining({ mediaTypes: 'images' }));
+  });
+
+  test('a cancelled pick keeps the previous photo and the texts', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    await pickPhoto();
+    await fireEvent.changeText(captionField(), 'En el parque');
+
+    launch.mockResolvedValueOnce({ canceled: true, assets: null } as never);
+    await fireEvent.press(button('Cambiar foto'));
+    await waitFor(() => expect(launch).toHaveBeenCalledTimes(2));
+
+    expect(screen.getByTestId('photo-preview')).toBeOnTheScreen();
+    expect(button('Cambiar foto')).toBeOnTheScreen();
+    expect(captionField()).toHaveProp('value', 'En el parque');
+  });
+
+  test('replacing the photo keeps the typed texts', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    await pickPhoto();
+    await fireEvent.changeText(altField(), 'Una playa');
+    await fireEvent.changeText(captionField(), 'Verano');
+
+    const second = pickReturns(writeFixturePhoto('second.png'), 100, 400);
+    await fireEvent.press(button('Cambiar foto'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('photo-preview-image')).toHaveProp('source', [{ uri: second }]),
+    );
+    expect(altField()).toHaveProp('value', 'Una playa');
+    expect(captionField()).toHaveProp('value', 'Verano');
+  });
+
+  test('a picker error shows the message, announces it and a retry opens the picker', async () => {
+    const platform = Platform.OS;
+    Platform.OS = 'ios';
+    const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+    try {
+      await render(<CreationBoxHarness />);
+      await goToImageStep();
+      launch.mockRejectedValueOnce(new Error('no gallery'));
+      await fireEvent.press(button('Elegir foto'));
+
+      const message = await screen.findByText(PICKER_ERROR_MESSAGE);
+      expect(message).toHaveProp('accessibilityLiveRegion', 'polite');
+      expect(announce).toHaveBeenCalledWith(PICKER_ERROR_MESSAGE);
+      expect(button('Crear')).toBeDisabled();
+
+      await pickPhoto();
+      expect(screen.queryByText(PICKER_ERROR_MESSAGE)).toBeNull();
+      expect(launch).toHaveBeenCalledTimes(2);
+    } finally {
+      Platform.OS = platform;
+    }
+  });
+
+  test('Crear stays disabled with texts only, and is enabled with a photo', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    await fireEvent.changeText(altField(), 'Una playa');
+    await fireEvent.changeText(captionField(), 'Verano');
+    expect(button('Crear')).toBeDisabled();
+    await fireEvent.press(button('Crear'));
+    expect(storedImages()).toEqual([]);
+
+    await pickPhoto();
+    expect(button('Crear')).toBeEnabled();
+  });
+
+  test('Crear is enabled with a photo and empty fields', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    await pickPhoto();
+    expect(button('Crear')).toBeEnabled();
+  });
+
+  test('Crear saves the trimmed texts, dismisses the keyboard and closes the box', async () => {
+    const dismiss = jest.spyOn(Keyboard, 'dismiss');
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    await pickPhoto();
+    await fireEvent.changeText(captionField(), '  Taller de pintura  ');
+    await fireEvent.press(button('Crear'));
+
+    await waitFor(() => expect(screen.queryByTestId('creation-box')).toBeNull());
+    expect(storedImages()).toEqual(['Taller de pintura']);
+    expect(dismiss).toHaveBeenCalled();
+  });
+
+  test('a double tap creates one image item', async () => {
+    const adapters = createAppAdapters();
+    const db = new GatedSqlDatabase(adapters.db);
+    await render(<CreationBoxHarness adapters={{ ...adapters, db }} />);
+    await goToImageStep();
+    await pickPhoto();
+    await fireEvent.changeText(captionField(), 'Uno');
+    const before = db.transactions;
+
+    const release = db.hold();
+    await fireEvent.press(button('Crear'));
+    expect(button('Crear')).toBeDisabled();
+    await fireEvent.press(button('Crear'));
+    release();
+
+    await waitFor(() => expect(screen.queryByTestId('creation-box')).toBeNull());
+    expect(db.transactions - before).toBe(1);
+    expect(storedImages()).toEqual(['Uno']);
+  });
+
+  test('a failing save keeps the photo and fields, shows the message and allows a retry', async () => {
+    const adapters = createAppAdapters();
+    let fail = true;
+    const db = new FailingSqlDatabase(adapters.db, (sql) => fail && sql.includes('INSERT INTO image_items'));
+    await render(<CreationBoxHarness adapters={{ ...adapters, db }} />);
+    await goToImageStep();
+    await pickPhoto();
+    await fireEvent.changeText(altField(), 'Una playa');
+    await fireEvent.changeText(captionField(), 'Verano');
+    await fireEvent.press(button('Crear'));
+
+    const message = await screen.findByText(SAVE_ERROR_MESSAGE);
+    expect(message).toHaveProp('accessibilityLiveRegion', 'polite');
+    expect(screen.getByTestId('photo-preview')).toBeOnTheScreen();
+    expect(altField()).toHaveProp('value', 'Una playa');
+    expect(captionField()).toHaveProp('value', 'Verano');
+    expect(storedImages()).toEqual([]);
+    expect(button('Crear')).toBeEnabled();
+
+    fail = false;
+    await fireEvent.press(button('Crear'));
+    await waitFor(() => expect(screen.queryByTestId('creation-box')).toBeNull());
+    expect(storedImages()).toEqual(['Verano']);
+  });
+
+  test('Cancelar discards the draft, and reopening starts at the choose step', async () => {
+    const dismiss = jest.spyOn(Keyboard, 'dismiss');
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    await pickPhoto();
+    await fireEvent.changeText(captionField(), 'Borrador');
+    await fireEvent.press(button('Cancelar'));
+
+    expect(screen.queryByTestId('creation-box')).toBeNull();
+    expect(dismiss).toHaveBeenCalled();
+    await open();
+    expect(screen.getByText('Crear nuevo elemento:')).toBeOnTheScreen();
+    expect(storedImages()).toEqual([]);
+  });
+
+  test('the fields are limited, and the hint is read with the alternative text field', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    expect(altField()).toHaveProp('maxLength', ALT_TEXT_MAX_LENGTH);
+    expect(altField()).toHaveProp('multiline', true);
+    expect(altField()).toHaveProp('accessibilityHint', ALT_TEXT_HINT);
+    expect(captionField()).toHaveProp('maxLength', CAPTION_MAX_LENGTH);
+    expect(captionField()).toHaveStyle({
+      minHeight: Sizes.phone.controlHeight,
+      borderColor: Colors.light.primaryDark,
+      backgroundColor: Colors.light.cardBg,
+      fontSize: Sizes.phone.inputFont,
+    });
+    expect(screen.getByText('Texto alternativo')).toBeOnTheScreen();
+    expect(screen.getByText('Pie de foto')).toBeOnTheScreen();
+  });
+
+  test('the controls are at least 44 points tall and named by their text', async () => {
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    for (const name of ['Elegir foto', 'Cancelar', 'Crear']) {
+      expect(button(name)).toHaveStyle({ minHeight: Layout.touchTarget });
+    }
+    expect(button('Crear')).toBeDisabled();
+  });
+
+  test('uses the tablet sizes on a tablet', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    await render(<CreationBoxHarness />);
+    await goToImageStep();
+    expect(captionField()).toHaveStyle({ minHeight: Sizes.tablet.controlHeight });
+    expect(screen.getByText('Texto alternativo')).toHaveStyle({ fontSize: Sizes.tablet.fieldLabel });
   });
 });
