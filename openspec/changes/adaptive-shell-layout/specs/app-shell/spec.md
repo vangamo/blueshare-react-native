@@ -3,37 +3,37 @@
 ## ADDED Requirements
 
 ### Requirement: Layout follows the window size
-The shell SHALL use the tablet layout when the shorter side of the app window is at least 600 points. Otherwise it SHALL use the phone landscape layout when the window is less than 500 points tall, and the phone portrait layout in every other case. The layout SHALL depend only on the window size, not on the device model or a fixed orientation, and SHALL update while the app is open.
+The app SHALL use the tablet layout when the shorter side of the app window is at least 600 points. Otherwise it SHALL use the phone landscape layout when the window is less than 500 points tall, and the phone portrait layout in every other case. The layout SHALL depend only on the window size, not on the device model or a fixed orientation, and SHALL update while the app is open.
 
 #### Scenario: Phone held upright
 - **WHEN** the app window is 411 points wide and 914 points tall
-- **THEN** the shell uses the phone portrait layout
+- **THEN** the app uses the phone portrait layout
 
 #### Scenario: Phone turned sideways
 - **WHEN** the app window is 914 points wide and 411 points tall
-- **THEN** the shell uses the phone landscape layout
+- **THEN** the app uses the phone landscape layout
 
 #### Scenario: Tablet in portrait
 - **WHEN** the app window is 800 points wide and 1280 points tall
-- **THEN** the shell uses the tablet layout
+- **THEN** the app uses the tablet layout
 
 #### Scenario: Tablet in landscape
 - **WHEN** the app window is 1280 points wide and 800 points tall
-- **THEN** the shell uses the tablet layout, with the tabs in the footer at the bottom
+- **THEN** the app uses the tablet layout, with the tabs in the footer at the bottom
 
 #### Scenario: Narrow window on a tablet
 - **WHEN** the app runs in split screen in a window 400 points wide and 1280 points tall
-- **THEN** the shell uses the phone portrait layout
+- **THEN** the app uses the phone portrait layout
 
 #### Scenario: Rotating while the app is open
 - **WHEN** the user rotates a phone from portrait to landscape and back
-- **THEN** the shell switches to the phone landscape layout and then back to the phone portrait layout, without restarting the app
+- **THEN** the app switches to the phone landscape layout and then back to the phone portrait layout, without restarting
 
 ### Requirement: Tab row under the header on short windows
 In the phone landscape layout, the section tabs SHALL be shown in a 56-point row directly under the header, and no footer SHALL be shown. The row SHALL have the card background and a 2-point bottom border in the border color. Its tabs SHALL be centered as a group with 12 points between them, each 44 points tall, as wide as its label plus 16 points of padding on each side, with a 10-point corner radius, a 2-point border and a 14-point bold label.
 
 #### Scenario: Tabs move under the header
-- **WHEN** the shell uses the phone landscape layout
+- **WHEN** the app uses the phone landscape layout
 - **THEN** Timeline, Circles and Events appear in that order in a row right under the header, centered, and there is no footer at the bottom of the screen
 
 #### Scenario: Same tab behavior as the footer
@@ -44,29 +44,33 @@ In the phone landscape layout, the section tabs SHALL be shown in a 56-point row
 In the tablet layout, the footer SHALL be 80 points tall plus the bottom safe-area inset, with the card background color and a 2-point top border in the border color. It SHALL hold the Timeline, Circles and Events tabs, in that order, centered as a group with 16 points between them. Each tab SHALL be 150 points wide and 48 points tall, with a 12-point corner radius, a 2-point border and a 15-point bold label.
 
 #### Scenario: Footer on a tablet
-- **WHEN** the shell uses the tablet layout, in portrait or landscape
+- **WHEN** the app uses the tablet layout, in portrait or landscape
 - **THEN** the footer shows three 150-point tabs centered as a group, not stretched across the width
 
 ### Requirement: Header in the phone landscape and tablet layouts
 In the phone landscape layout, the header SHALL be 55 points tall plus the top inset, with 16 points of horizontal padding, and the title field SHALL be at most 300 points wide. In the tablet layout, the header SHALL be 75 points tall plus the top inset, with 24 points of horizontal padding, and the title field SHALL be at most 350 points wide. In both layouts the title field SHALL be centered between the menu button and the avatar.
 
 #### Scenario: Wide header
-- **WHEN** the shell uses the phone landscape or the tablet layout on a window wider than the title field's maximum width plus the menu button and avatar
+- **WHEN** the app uses the phone landscape or the tablet layout on a window wider than the title field's maximum width plus the menu button and avatar
 - **THEN** the title field stays at its maximum width, centered between the menu button and the avatar, with empty space on both sides
 
 ### Requirement: Create button in the phone landscape and tablet layouts
-In the phone landscape layout, the create button SHALL be 48×48 points with a 24-point `+`, and sit 20 points from the right edge and 15 points above the bottom edge of the safe area. In the tablet layout, it SHALL be 60×60 points with a 30-point `+`, and sit 28 points from the right edge of the safe area and 15 points above the top of the footer. Its look, label and behavior SHALL stay the same as in the phone portrait layout.
+In the phone landscape layout, the create button SHALL be 48×48 points with a 24-point `+`, and sit 20 points from the right edge and 15 points above the bottom edge of the safe area. In the tablet layout, it SHALL be 60×60 points with a 30-point `+`, and sit 28 points from the right edge of the safe area and 15 points above the top of the footer. Its look, label, visibility and actions SHALL stay the same as in the phone portrait layout.
 
 #### Scenario: Placement without a footer
-- **WHEN** the shell uses the phone landscape layout
-- **THEN** the create button floats in the bottom-right corner, 20 points from the right edge and 15 points above the bottom of the safe area, on top of the content
+- **WHEN** the app uses the phone landscape layout and the create button is shown
+- **THEN** it floats in the bottom-right corner, 20 points from the right edge and 15 points above the bottom of the safe area, on top of the content
 
 #### Scenario: Placement on a tablet
-- **WHEN** the shell uses the tablet layout
+- **WHEN** the app uses the tablet layout and the create button is shown
 - **THEN** the 60-point create button floats 28 points from the right edge and 15 points above the footer
 
+#### Scenario: Same visibility in every layout
+- **WHEN** the creation box is open on Timeline in the phone landscape or the tablet layout
+- **THEN** the create button is hidden, as in the phone portrait layout
+
 ### Requirement: Content column
-Section content SHALL sit in a column centered horizontally inside the content area. The column SHALL be at most 550 points wide in the phone layouts and at most 500 points wide in the tablet layout. The content area SHALL have 16 points of padding in the phone layouts and 24 points in the tablet layout. The space beside the column SHALL show the main background color and scroll with the content.
+Section content SHALL sit in a column centered horizontally inside the content area. The column SHALL be at most 550 points wide in the phone layouts and at most 500 points wide in the tablet layout. The content area SHALL have 16 points of padding in the phone layouts and 24 points in the tablet layout, plus the left and right safe-area insets. The space beside the column SHALL show the main background color and scroll with the content.
 
 #### Scenario: Wide window
 - **WHEN** a section is shown in the tablet layout on a window 1280 points wide
@@ -76,28 +80,44 @@ Section content SHALL sit in a column centered horizontally inside the content a
 - **WHEN** a section is shown in the phone portrait layout on a window 411 points wide
 - **THEN** the section content fills the width minus 16 points of padding on each side
 
+#### Scenario: Timeline in the column
+- **WHEN** Timeline shows the creation box and some cards in the phone landscape layout on a window 914 points wide
+- **THEN** the creation box, the cards and their action rows are all at most 550 points wide and centered
+
 ### Requirement: Layout changes keep the app state
-When the layout changes while the app is open, the shell SHALL keep the current section and the text in the title field. It SHALL NOT restart the app or return to Timeline.
+When the layout changes while the app is open, the app SHALL keep the current section, the text in the title field, an open creation box with its step, selected type and text, and an open edit dialog with its step and edited text. It SHALL NOT restart the app or return to Timeline.
 
 #### Scenario: Rotating on Circles with text typed
 - **WHEN** the user is on Circles, has typed "abuela" in the title field, and rotates the phone to landscape
 - **THEN** the Circles tab is still active in the row under the header, Circles is still shown, and the title field still holds "abuela"
 
+#### Scenario: Rotating with a draft in the creation box
+- **WHEN** the creation box is open in its text step holding "Mañana hay bingo" and the user rotates the device
+- **THEN** the creation box is still open in its text step with "Mañana hay bingo", and the create button stays hidden
+
+#### Scenario: Rotating with the edit dialog open
+- **WHEN** the edit dialog is open with an unsaved edit and the user rotates the device
+- **THEN** the dialog is still open in the same step with the same edited text, and the card keeps its stored text
+
 ## MODIFIED Requirements
 
 ### Requirement: Main sections as tabs
-The app SHALL provide three main sections, Timeline, Circles and Events, reachable from the section tabs (in the footer, or in the row under the header in the phone landscape layout). The app SHALL open on Timeline. Each section SHALL show a vertically scrollable content area with the main background color, laid out as described in "Content column", and a placeholder text naming the section.
+The app SHALL provide three main sections, Timeline, Circles and Events, reachable from the section tabs (in the footer, or in the row under the header in the phone landscape layout). The app SHALL open on Timeline. Each section SHALL show a vertically scrollable content area with the main background color, laid out as described in "Content column". Circles and Events SHALL show a placeholder text naming the section. Timeline SHALL show the timeline feed.
 
 #### Scenario: App opens on Timeline
 - **WHEN** the user launches the app
 - **THEN** the Timeline section is shown and the Timeline tab is active
 
 #### Scenario: Placeholder content per section
-- **WHEN** the user opens any of the three sections
+- **WHEN** the user opens Circles or Events
 - **THEN** the content area shows a placeholder text that identifies that section
 
+#### Scenario: Timeline shows the feed
+- **WHEN** the user opens Timeline
+- **THEN** the content area shows the timeline feed (its cards, or its empty message) and no placeholder text
+
 ### Requirement: Shell stays fixed around content
-The header SHALL stay at the top of the screen on every main section. The section tabs SHALL stay at the bottom in the footer, or directly under the header in the phone landscape layout. Section content SHALL be laid out and scroll only in the remaining space, never under the header or the tabs. The header, tabs and create button SHALL stay in place, without re-mounting or flickering, when the user switches sections.
+The header SHALL stay at the top of the screen on every main section. The section tabs SHALL stay at the bottom in the footer, or directly under the header in the phone landscape layout. Section content SHALL be laid out and scroll only in the remaining space, never under the header or the tabs. The header, tabs and create button SHALL stay in place, without re-mounting or flickering, when the user switches sections. The create button SHALL only show or hide as its own requirements state.
 
 #### Scenario: Scrolling content
 - **WHEN** the user scrolls a section whose content is taller than the space available
@@ -109,7 +129,7 @@ The header SHALL stay at the top of the screen on every main section. The sectio
 
 #### Scenario: Switching sections
 - **WHEN** the user switches from one section to another
-- **THEN** only the content area changes. The header, tabs and create button stay in place.
+- **THEN** only the content area changes. The header, tabs and create button stay in place, and the create button shows or hides only as "Create button hidden while creating" requires.
 
 ### Requirement: Safe-area aware header and footer
 The header SHALL be its layout's header height (70 points in the phone portrait layout) plus the device's top safe-area inset, with its controls placed below the inset. The footer, where shown, SHALL be its layout's footer height (75 points in the phone portrait layout) plus the bottom safe-area inset, with its buttons placed above the inset. The header, the tab row and the footer SHALL keep their controls clear of the left and right safe-area insets.
@@ -137,7 +157,7 @@ The title field SHALL be an editable single-line text field with a 2-point borde
 - **THEN** the title field shows "BlueShare" centered, in bold, with the strong-ink border
 
 #### Scenario: Tablet size
-- **WHEN** the shell uses the tablet layout
+- **WHEN** the app uses the tablet layout
 - **THEN** the title field is 46 points tall and its text is 17 points
 
 ### Requirement: Avatar
@@ -148,7 +168,7 @@ The header SHALL show a circular avatar with a 2-point strong-ink border, the av
 - **THEN** the avatar circle shows the `👵` emoji centered, and tapping it does nothing
 
 #### Scenario: Tablet size
-- **WHEN** the shell uses the tablet layout
+- **WHEN** the app uses the tablet layout
 - **THEN** the avatar is 46×46 points
 
 ### Requirement: Footer tab bar
@@ -170,7 +190,7 @@ Pressing a section tab, in the footer or in the row under the header, SHALL show
 - **THEN** Timeline stays shown and no error occurs
 
 ### Requirement: Floating create button
-On every main section, the app SHALL show a circular create button with a primary-blue background, a 3-point border, a blue shadow and a centered bold `+`, above the content. In the phone portrait layout it SHALL be 56×56 points with a 28-point `+`, and sit 20 points from the right edge of the safe area and 10 points above the top of the footer. It SHALL be announced as a button labeled "Create". Pressing it SHALL have no effect yet.
+On every main section, except Timeline while the creation box is open, the app SHALL show a circular create button with a primary-blue background, a 3-point border, a blue shadow and a centered bold `+`, above the content. In the phone portrait layout it SHALL be 56×56 points with a 28-point `+`, and sit 20 points from the right edge of the safe area and 10 points above the top of the footer. It SHALL be announced as a button labeled "Create".
 
 #### Scenario: Placement
 - **WHEN** any main section is shown in the phone portrait layout
@@ -178,7 +198,7 @@ On every main section, the app SHALL show a circular create button with a primar
 
 #### Scenario: Pressing the create button
 - **WHEN** the user taps the create button
-- **THEN** the button shows press feedback and nothing else happens
+- **THEN** the button shows press feedback and does what "Create button action per section" defines for the current section: on Timeline the creation box opens, and on Circles and Events nothing else happens
 
 #### Scenario: Screen reader
 - **WHEN** a screen reader focuses the create button
