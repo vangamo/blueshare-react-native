@@ -13,5 +13,5 @@ Project knowledge for BlueShare, split into small linked files with one topic ea
 * [Design system](design-system/index.md) - Design tokens, light and dark palettes, sizes and the theme module that serves them.
 * [Components](components/index.md) - One page per component: the shell, the creation box, the timeline feed and cards, and the providers.
 * [Decisions](decisions/index.md) - Technical decisions, with the alternatives that were rejected and why, grouped by OpenSpec change.
-* [Specs](specs/index.md) - Capabilities already specified and implemented (app-shell, app-theming, app-platform, item-creation, item-storage, timeline-feed).
+* [Specs](specs/index.md) - Capabilities already specified and implemented (adaptive-layout, app-shell, app-theming, app-platform, item-creation, item-editing, item-storage, timeline-feed).
 * [Development](development/index.md) - Commands, Expo rules, dependencies, conventions, linting, testing, device checks and the OpenSpec workflow.

@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { FontSize, FontWeight, Layout, Radius, Spacing } from '@/constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { FontWeight, Layout, Radius, Spacing } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import type { ItemType } from '@/hooks/use-timeline';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -25,6 +28,8 @@ type TypeSelectProps = {
  */
 export function TypeSelect({ value, onChange }: TypeSelectProps) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const { frame, sizes, columnWidth } = useShellLayout();
   const [open, setOpen] = useState(false);
   const selected = TYPE_OPTIONS.find((option) => option.type === value);
   const valueText = selected?.label ?? TYPE_SELECT_PLACEHOLDER;
@@ -40,13 +45,16 @@ export function TypeSelect({ value, onChange }: TypeSelectProps) {
         onPress={() => setOpen(true)}
         style={({ pressed }) => [
           styles.field,
-          { backgroundColor: theme.cardBg, borderColor: theme.primaryDark },
+          {
+            minHeight: sizes.controlHeight, backgroundColor: theme.cardBg, borderColor: theme.primaryDark },
           pressed && styles.pressed,
         ]}>
-        <Text style={[styles.fieldText, { color: theme.textMain }]} numberOfLines={1}>
+        <Text
+          style={[styles.fieldText, { fontSize: sizes.inputFont, color: theme.textMain }]}
+          numberOfLines={1}>
           {valueText}
         </Text>
-        <Text style={[styles.chevron, { color: theme.textMain }]}>▾</Text>
+        <Text style={[styles.chevron, { fontSize: sizes.inputFont, color: theme.textMain }]}>▾</Text>
       </Pressable>
 
       <Modal
@@ -57,7 +65,16 @@ export function TypeSelect({ value, onChange }: TypeSelectProps) {
         navigationBarTranslucent
         onRequestClose={close}
         testID="type-select-list">
-        <View style={styles.modalRoot}>
+        <View
+          style={[
+            styles.modalRoot,
+            {
+              paddingTop: insets.top + Spacing.xxl,
+              paddingBottom: insets.bottom + Spacing.xxl,
+              paddingLeft: insets.left + Spacing.xxl,
+              paddingRight: insets.right + Spacing.xxl,
+            },
+          ]}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Cerrar lista"
@@ -66,7 +83,11 @@ export function TypeSelect({ value, onChange }: TypeSelectProps) {
           />
           <View
             accessibilityRole="radiogroup"
-            style={[styles.sheet, { backgroundColor: theme.cardBg, borderColor: theme.borderColor }]}>
+            style={[
+              styles.sheet,
+              { backgroundColor: theme.cardBg, borderColor: theme.borderColor },
+              frame.column === null ? null : { width: columnWidth, alignSelf: 'center' },
+            ]}>
             {TYPE_OPTIONS.map((option) => {
               const checked = option.type === value;
               return (
@@ -81,12 +102,17 @@ export function TypeSelect({ value, onChange }: TypeSelectProps) {
                   }}
                   style={({ pressed }) => [
                     styles.option,
+                    { minHeight: sizes.optionRow },
                     checked && { backgroundColor: theme.creationBg },
                     pressed && styles.pressed,
                   ]}>
-                  <Text style={[styles.optionText, { color: theme.textMain }]}>{option.label}</Text>
+                  <Text style={[styles.optionText, { fontSize: sizes.inputFont, color: theme.textMain }]}>
+                    {option.label}
+                  </Text>
                   {checked ? (
-                    <Text style={[styles.optionText, { color: theme.textMain }]}>✓</Text>
+                    <Text style={[styles.optionText, { fontSize: sizes.inputFont, color: theme.textMain }]}>
+                      ✓
+                    </Text>
                   ) : null}
                 </Pressable>
               );
@@ -100,7 +126,6 @@ export function TypeSelect({ value, onChange }: TypeSelectProps) {
 
 const styles = StyleSheet.create({
   field: {
-    minHeight: Layout.touchTarget,
     borderWidth: Layout.borderWidth,
     borderRadius: Layout.controlRadius,
     paddingHorizontal: Spacing.md,
@@ -110,18 +135,15 @@ const styles = StyleSheet.create({
   },
   fieldText: {
     flex: 1,
-    fontSize: FontSize.bodyLarge,
     fontWeight: FontWeight.medium,
   },
   chevron: {
-    fontSize: FontSize.bodyLarge,
     fontWeight: FontWeight.bold,
     marginLeft: Spacing.sm,
   },
   modalRoot: {
     flex: 1,
     justifyContent: 'center',
-    padding: Spacing.xxl,
   },
   sheet: {
     borderWidth: Layout.borderWidth,
@@ -130,14 +152,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   option: {
-    minHeight: Layout.optionRowHeight,
     paddingHorizontal: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   optionText: {
-    fontSize: FontSize.bodyLarge,
     fontWeight: FontWeight.medium,
   },
   pressed: {

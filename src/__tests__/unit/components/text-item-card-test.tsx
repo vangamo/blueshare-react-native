@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { TextItemCard } from '@/components/text-item-card';
-import { Colors, Layout, Radius, Spacing } from '@/constants/theme';
+import { Colors, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import type { TimelineItem } from '@/hooks/use-timeline';
-import { setMockColorScheme } from '@/test-utils/test-values';
+import { TEST_WINDOWS, setMockColorScheme, setMockWindow } from '@/test-utils/test-values';
 
 const ITEM: TimelineItem = {
   id: 'id-1',
@@ -39,7 +39,7 @@ describe('TextItemCard', () => {
       expect(screen.getByTestId('text-item-body')).toHaveStyle({
         color: colors.textSecondary,
         fontSize: 15,
-        lineHeight: Layout.cardTextLineHeight,
+        lineHeight: Sizes.phone.cardLineHeight,
       });
       expect(screen.getByRole('button', { name: 'Editar' }).parent).toHaveStyle({
         borderTopColor: colors.divider,
@@ -85,5 +85,24 @@ describe('TextItemCard', () => {
     expect(onEdit).not.toHaveBeenCalled();
     expect(screen.getByText(ITEM.body)).toBeOnTheScreen();
     expect(screen.getAllByRole('button')).toHaveLength(2);
+  });
+});
+
+describe('TextItemCard, tablet layout', () => {
+  test.each(['tabletPortrait', 'tabletLandscape'] as const)('uses the tablet sizes in %s', async (window) => {
+    setMockWindow(TEST_WINDOWS[window]);
+    await render(<TextItemCard item={ITEM} onEdit={() => {}} />);
+    const sizes = Sizes.tablet;
+    expect(screen.getByTestId('text-item-card')).toHaveStyle({
+      padding: sizes.cardPadding,
+      borderRadius: sizes.cardRadius,
+      marginBottom: sizes.itemGap,
+    });
+    expect(screen.getByTestId('text-item-body')).toHaveStyle({
+      fontSize: sizes.cardText,
+      lineHeight: sizes.cardLineHeight,
+    });
+    expect(screen.getByRole('button', { name: 'Editar' })).toHaveStyle({ minHeight: sizes.actionHeight });
+    expect(screen.getByText('Editar')).toHaveStyle({ fontSize: sizes.actionLabel });
   });
 });

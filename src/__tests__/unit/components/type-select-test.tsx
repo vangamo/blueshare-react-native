@@ -2,8 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useState } from 'react';
 
 import { TYPE_SELECT_PLACEHOLDER, TypeSelect } from '@/components/type-select';
-import { Colors, Layout } from '@/constants/theme';
+import { Colors, Frames, Layout, Sizes } from '@/constants/theme';
 import type { ItemType } from '@/hooks/use-timeline';
+import { TEST_INSETS, TEST_WINDOWS, setMockWindow } from '@/test-utils/test-values';
 
 function Harness({ initial = null }: { initial?: ItemType | null }) {
   const [value, setValue] = useState<ItemType | null>(initial);
@@ -49,7 +50,7 @@ describe('TypeSelect', () => {
       '📷 Imagen',
     ]);
     for (const option of options) {
-      expect(option).toHaveStyle({ minHeight: Layout.optionRowHeight });
+      expect(option).toHaveStyle({ minHeight: Sizes.phone.optionRow });
     }
   });
 
@@ -83,5 +84,29 @@ describe('TypeSelect', () => {
     await fireEvent(screen.getByTestId('type-select-list'), 'requestClose');
     expect(screen.queryByRole('radio')).toBeNull();
     expect(field()).toHaveAccessibilityValue({ text: '📝 Texto' });
+  });
+});
+
+describe('TypeSelect, other layouts', () => {
+  test('tablet: taller field and 60-point rows', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    await render(<Harness />);
+    expect(field()).toHaveStyle({ minHeight: Sizes.tablet.controlHeight });
+    await fireEvent.press(field());
+    for (const option of screen.getAllByRole('radio')) {
+      expect(option).toHaveStyle({ minHeight: Sizes.tablet.optionRow });
+    }
+  });
+
+  test('phone landscape: the list is the content column wide, centered, clear of the insets', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await render(<Harness />);
+    await fireEvent.press(field());
+    const sheet = screen.getAllByRole('radio')[0].parent!;
+    expect(sheet).toHaveStyle({ width: Frames['phone-landscape'].column, alignSelf: 'center' });
+    expect(sheet.parent).toHaveStyle({
+      paddingTop: TEST_INSETS.top + 24,
+      paddingBottom: TEST_INSETS.bottom + 24,
+    });
   });
 });

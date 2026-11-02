@@ -6,7 +6,7 @@ tags: [product, roadmap, planning]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T12:00:00Z
+  at: 2026-11-02T18:00:00Z
 ---
 
 # Roadmap
@@ -41,6 +41,13 @@ The OpenSpec change `edit-text-items` (branch `02-text-items`, archived 2026-11-
 - new `danger` and `on_danger` colors for the deletion buttons
 
 Specs: [item-editing](../specs/item-editing.md) (new), and changes to [item-storage](../specs/item-storage.md), [timeline-feed](../specs/timeline-feed.md) and [app-theming](../specs/app-theming.md).
+
+The OpenSpec change `adaptive-layout` (branch `01bb-adaptable-layout`, 28/28 tasks, archived 2026-11-02 in `openspec/changes/archive/2026-11-02-adaptive-layout/`):
+- the app runs on phones and tablets in any orientation, with four layouts chosen from the window size
+- phone and tablet size sets, a content column, safe areas on every side, and the tab bar under the header in landscape
+- a rotation keeps the section, draft, open dialog and focused field
+
+Specs: [adaptive-layout](../specs/adaptive-layout.md). Decisions: [Adaptive layout](../decisions/adaptive-layout.md), [Tab bar stays in one slot](../decisions/tab-bar-single-slot.md).
 
 ## Next in Phase 1
 

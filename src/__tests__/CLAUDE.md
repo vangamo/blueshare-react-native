@@ -4,5 +4,5 @@ Before writing or changing tests, read `docs/development/testing.md`.
 
 - `unit/{components,constants,hooks,items}/<name>-test.ts(x)` holds one module per file (`unit/items/` mirrors `src/items/`). `e2e/` holds whole-app journeys through `renderRouter('./src/app')`.
 - Shared mocks and helpers go in `src/test-utils/`, never in here. Storage tests run real SQL on `NodeSqlDatabase`; wrap it in `FailingSqlDatabase` or `GatedSqlDatabase` for failures and in-progress saves. Safe-area insets are fixed (`TEST_INSETS`), and `setMockColorScheme('dark')` forces dark mode.
-- Assert with `Colors`, `Layout` and `TEST_INSETS`, never literals. No snapshots, `.only` or `.skip`.
-- `e2e/screenshots/` holds the **user-approved** device references. Replace them only through the `visual-review` skill, and only after the user approves the new UI.
+- Assert with `Colors`, `Layout`, `Sizes`, `Frames`, `TEST_INSETS` and `TEST_WINDOWS`, never literals. Tests start in phone portrait; switch layouts with `act(() => setMockWindow(TEST_WINDOWS.…))`. No snapshots, `.only` or `.skip`.
+- `e2e/screenshots/` holds the **user-approved** device references (phone portrait without a suffix, the other layouts with `-<layout>`). Replace them only through the `visual-review` skill, and only after the user approves the new UI.

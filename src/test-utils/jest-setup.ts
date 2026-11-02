@@ -1,4 +1,4 @@
-import { setMockColorScheme } from '@/test-utils/test-values';
+import { resetMockWindow, setMockColorScheme } from '@/test-utils/test-values';
 
 // Fixed safe-area insets, so size and position checks are predictable.
 jest.mock('react-native-safe-area-context', () => {
@@ -15,6 +15,18 @@ jest.mock('react-native-safe-area-context', () => {
 jest.mock('@/hooks/use-color-scheme', () => ({
   useColorScheme: () => jest.requireActual('@/test-utils/test-values').getMockColorScheme(),
 }));
+
+// The window size comes from this hook. Jest's own window (750×1334) would count as a
+// tablet, so tests start in phone portrait and switch with setMockWindow().
+jest.mock('@/hooks/use-window-size', () => {
+  const { useSyncExternalStore } = jest.requireActual('react');
+  return {
+    useWindowSize: () => {
+      const values = jest.requireActual('@/test-utils/test-values');
+      return useSyncExternalStore(values.subscribeMockWindow, values.getMockWindow);
+    },
+  };
+});
 
 // The app's database and IDs come from expo-sqlite and expo-crypto. Jest gets a fresh
 // in-memory node:sqlite database per call (so tests never share data), UUIDs from
@@ -34,6 +46,7 @@ jest.mock('@/items/infrastructure/app-adapters', () => ({
 
 afterEach(() => {
   setMockColorScheme('light');
+  resetMockWindow();
   // Undo jest.spyOn() (Keyboard, BackHandler, createAppAdapters…) so tests never stack spies.
   jest.restoreAllMocks();
 });

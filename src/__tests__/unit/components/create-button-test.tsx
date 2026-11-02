@@ -1,7 +1,7 @@
 import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 
-import { Colors, Layout } from '@/constants/theme';
-import { TEST_INSETS, setMockColorScheme } from '@/test-utils/test-values';
+import { Colors, Frames, Sizes } from '@/constants/theme';
+import { TEST_INSETS, TEST_WINDOWS, setMockColorScheme, setMockWindow } from '@/test-utils/test-values';
 
 function createButton() {
   return screen.getByRole('button', { name: 'Create' });
@@ -21,7 +21,7 @@ describe('CreateButton', () => {
       borderRadius: 28,
       borderWidth: 3,
       right: 20,
-      bottom: Layout.footerHeight + TEST_INSETS.bottom + 10,
+      bottom: Frames['phone-portrait'].tabBarHeight + TEST_INSETS.bottom + 10,
     });
     expect(screen.getByText('+')).toHaveStyle({ fontSize: 28, fontWeight: '700' });
   });
@@ -69,5 +69,39 @@ describe('CreateButton', () => {
       borderColor: colors.cardBg,
     });
     expect(screen.getByText('+')).toHaveStyle({ color: colors.onPrimary });
+  });
+
+  test('phone landscape: 16 above the bottom inset, with no tab bar below', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await renderRouter('./src/app');
+    expect(createButton()).toHaveStyle({
+      width: Sizes.phone.fab,
+      height: Sizes.phone.fab,
+      right: Sizes.phone.fabRight + TEST_INSETS.right,
+      bottom: TEST_INSETS.bottom + Frames['phone-landscape'].fabBottom,
+    });
+  });
+
+  test('tablet portrait: tablet size, 28 from the right and 16 above the tab bar', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    await renderRouter('./src/app');
+    expect(createButton()).toHaveStyle({
+      width: Sizes.tablet.fab,
+      height: Sizes.tablet.fab,
+      borderRadius: Sizes.tablet.fab / 2,
+      right: Sizes.tablet.fabRight + TEST_INSETS.right,
+      bottom:
+        Frames['tablet-portrait'].tabBarHeight + TEST_INSETS.bottom + Frames['tablet-portrait'].fabBottom,
+    });
+    expect(screen.getByText('+')).toHaveStyle({ fontSize: Sizes.tablet.fabFont });
+  });
+
+  test('tablet landscape keeps the tablet size, above the bottom inset', async () => {
+    setMockWindow(TEST_WINDOWS.tabletLandscape);
+    await renderRouter('./src/app');
+    expect(createButton()).toHaveStyle({
+      width: Sizes.tablet.fab,
+      bottom: TEST_INSETS.bottom + Frames['tablet-landscape'].fabBottom,
+    });
   });
 });

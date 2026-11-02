@@ -20,11 +20,19 @@ adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 120
 adb shell am broadcast -a com.android.systemui.demo -e command network -e mobile hide
 ```
 
+**Phone portrait must not change.** The existing references in `src/__tests__/e2e/screenshots/` (no layout suffix) are phone portrait. This change keeps them: every comparison must give 0 differing pixels, apart from a blinking text cursor (a few hundred pixels in the `box-write` and `edit-changed` shots).
+
 ## 2. Capture the set (into the scratchpad, not the repo)
 
 For `light` and `dark` (`adb shell cmd uimode night no|yes`, then wait about 3 s):
 - `timeline-<mode>`, `circles-<mode>`, `events-<mode>`: tap each tab, wait about 2 s, run `adb exec-out screencap -p > <name>.png`.
 - `title-focused-<mode>`: tap the title field, type `abuela`, capture, then press back. Clear the text before the second mode, because the field keeps its text on blur.
+
+For the data-dependent shots, use the data in `docs/development/visual-review.md` (Capture notes): an empty database for the empty-state and light box shots, then the two cards "Hoy hemos jugado al parchis.\nManana hay bingo en el centro." (older) and "Hola a todos." (newer) for the cards, dark box and edit shots. Restart Expo Go after creating cards before capturing the dark box shots.
+
+### Other layouts (phone landscape, tablet portrait, tablet landscape)
+
+Rotate (`run-on-emulator` skill) and capture, in `light` and `dark`, with the two cards in the database: `timeline-cards-<layout>-<mode>`, `circles-<layout>-<mode>`, `box-write-<layout>-<mode>` (creation box text step; in phone landscape close the full-screen editor with DONE first) and `edit-open-<layout>-<mode>`, where `<layout>` is `phone-landscape`, `tablet-portrait` or `tablet-landscape`. Phone landscape runs on the Medium Phone and the tablet layouts on `Galaxy_Tab_A9_Plus`. These have no pixel references until the user approves them (step 5), so review them against `sketches/mobile-landscape.png` and `sketches/tablet-portrait.png` (step 4). Tablet landscape has no sketch: check that it combines the tablet sizes with the landscape structure.
 
 ## 3. Compare with the approved references
 
@@ -32,10 +40,12 @@ Mask the status bar and Expo Go's "Tools" bubble, which are not part of the app:
 
 ```bash
 R=src/__tests__/e2e/screenshots
-mask(){ convert "$1" -fill black -draw "rectangle 0,0 1079,80" -draw "rectangle 30,1740 190,1980" "$2"; }
+mask(){ magick "$1" -fill black -draw "rectangle 0,0 1079,80" -draw "rectangle 0,1650 220,2150" -draw "rectangle 930,1500 1079,1950" "$2"; }
 mask $R/<name>.png ref.png; mask <name>.png new.png
 compare -metric AE -fuzz 2% ref.png new.png diff.png   # prints differing pixels; 0 = identical
 ```
+
+The second rectangle is Expo Go's gear bubble (it sits slightly differently from run to run) and the third its purple side bubble. Masks for the other layouts (px, status bar first): phone landscape 2400×1080: `0,0 2399,80`, gear `0,700 220,900`, side bubble `2250,560 2399,850`; tablet 1200×1920 (portrait) or 1920×1200 (landscape): `0,0 W,40`, gear `0,925 120,1650`. Check where the bubbles are in a screenshot before masking, since a stray tap can drag them.
 
 For the focused-field shots, compare only the header crop (`-crop 1080x260+0+0`), because the keyboard varies.
 

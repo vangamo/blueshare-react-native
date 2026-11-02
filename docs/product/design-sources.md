@@ -19,7 +19,7 @@ Everything lives in `sketches/` and is **reference only**. Never edit it to chan
 | `mobile-portrait.html` | The HTML prototype (Spanish UI, 380×780 frame). **Source of truth** for the shell's sizes and colors. |
 | `mobile-portrait.png`, `header-mobile-portrait.png`, `footer-mobile-portrait.png` | Renders of the prototype, used in the [visual review](../development/visual-review.md). |
 | `design_system.json` | The original design tokens. Kept unchanged. The app reads a corrected copy, see [Design tokens](../design-system/design-tokens.md). |
-| `mobile-landscape.html`, `tablet-portrait.html` | Landscape and tablet mocks. Out of scope: the app is phone-only and portrait-only. |
+| `mobile-landscape.html`, `tablet-portrait.html` | Landscape and tablet mocks, now in scope ([Adaptive layout](../decisions/adaptive-layout.md)). Phone landscape follows the first and tablet portrait the second, wherever they allow 44-point targets. Tablet landscape has no mock: it is derived from the tablet sizes with the landscape structure. |
 | `BlueShare-Mobile-Portrait-*.excalidraw/.png/.svg` | The first wireframe. |
 | `Screenshot_*_com.adoptaunabuelo.app.webp` | Screenshots of another app, used as inspiration. |
 

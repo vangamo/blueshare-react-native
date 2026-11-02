@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 
-import { FontSize, FontWeight, Layout } from '@/constants/theme';
+import { FontWeight, Layout } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useTheme } from '@/hooks/use-theme';
 
 type BoxButtonProps = {
@@ -23,6 +24,7 @@ type BoxButtonProps = {
  */
 export function BoxButton({ label, variant, disabled = false, onPress, style }: BoxButtonProps) {
   const theme = useTheme();
+  const { sizes } = useShellLayout();
   const variantStyle = {
     primary: { backgroundColor: theme.primaryBlueHover },
     secondary: {
@@ -53,27 +55,24 @@ export function BoxButton({ label, variant, disabled = false, onPress, style }: 
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
+        { minHeight: sizes.controlHeight },
         variantStyle,
         disabled && styles.disabled,
         pressed && styles.pressed,
         style,
       ]}>
-      <Text style={[styles.label, { color: labelColor }]}>
-        {label}
-      </Text>
+      <Text style={[styles.label, { fontSize: sizes.buttonLabel, color: labelColor }]}>{label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: Layout.touchTarget,
     borderRadius: Layout.controlRadius,
     alignItems: 'center',
     justifyContent: 'center',
   },
   label: {
-    fontSize: FontSize.body,
     fontWeight: FontWeight.bold,
   },
   disabled: {

@@ -2,10 +2,11 @@ import { fireEvent, renderRouter, screen, waitFor } from 'expo-router/testing-li
 import { FlatList } from 'react-native';
 
 import { EMPTY_TIMELINE_MESSAGE, LOAD_ERROR_MESSAGE } from '@/components/timeline-feed';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Frames, Sizes, Spacing } from '@/constants/theme';
 import * as appAdapters from '@/items/infrastructure/app-adapters';
 import { FailingSqlDatabase } from '@/test-utils/failing-sql-database';
 import { GatedSqlDatabase } from '@/test-utils/gated-sql-database';
+import { TEST_INSETS, TEST_WINDOWS, setMockWindow } from '@/test-utils/test-values';
 import { journey } from '@/test-utils/timeline-journey';
 
 /** Makes the next app render use `wrap(db)` as its database. */
@@ -33,6 +34,29 @@ describe('TimelineFeed', () => {
     await renderRouter('./src/app');
     expect(screen.getByTestId('timeline-feed')).toHaveProp('contentContainerStyle', {
       padding: Spacing.lg,
+    });
+  });
+
+  test('phone landscape: a 550-point column plus padding, centered, clear of the bottom inset', async () => {
+    setMockWindow(TEST_WINDOWS.phoneLandscape);
+    await renderRouter('./src/app');
+    const pad = Sizes.phone.contentPadding;
+    expect(screen.getByTestId('timeline-feed')).toHaveProp('contentContainerStyle', {
+      padding: pad,
+      paddingBottom: pad + TEST_INSETS.bottom,
+      width: Frames['phone-landscape'].column! + 2 * pad,
+      alignSelf: 'center',
+    });
+  });
+
+  test('tablet portrait: a 500-point column with the tablet padding', async () => {
+    setMockWindow(TEST_WINDOWS.tabletPortrait);
+    await renderRouter('./src/app');
+    const pad = Sizes.tablet.contentPadding;
+    expect(screen.getByTestId('timeline-feed')).toHaveProp('contentContainerStyle', {
+      padding: pad,
+      width: Frames['tablet-portrait'].column! + 2 * pad,
+      alignSelf: 'center',
     });
   });
 

@@ -7,7 +7,7 @@ resource: ../../openspec/specs/item-creation/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T16:55:28Z
+  at: 2026-11-02T18:00:00Z
 ---
 
 # item-creation (implemented)
@@ -16,7 +16,7 @@ Full text: `openspec/specs/item-creation/spec.md`. From the change `add-text-ite
 
 | Requirement | Summary | Implemented in |
 | --- | --- | --- |
-| Creation box opens at the top of the Timeline | `+` on Timeline opens the box above every item, in the choose step, and scrolls the feed to the top. | [Timeline feed](../components/timeline-feed.md), [Creation box provider](../components/creation-box-provider.md) |
+| Creation box opens at the top of the Timeline | `+` on Timeline opens the box above every item, in the choose step, and scrolls the feed to the top, so it is fully visible below the header and the top tab bar. | [Timeline feed](../components/timeline-feed.md), [Creation box provider](../components/creation-box-provider.md) |
 | Creation box appearance | 2-point dashed primary-blue border, `creationBg`, radius 16, padding 16, 14-point bold title. | [Creation box](../components/creation-box.md) |
 | Type select shows the chosen type | ≥ 44 tall, strong-ink border, card background. "Selecciona una opción" until a type is chosen, then a `▾`. | [Type select](../components/type-select.md) |
 | Choosing a type | A list with "📅 Evento", "📝 Texto", "📷 Imagen" (rows ≥ 44). The placeholder is not an option. | same |

@@ -14,7 +14,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BoxButton } from '@/components/box-button';
 import { BoxTextArea } from '@/components/box-text-area';
-import { FontSize, FontWeight, Layout, Radius, Spacing } from '@/constants/theme';
+import { FontSize, FontWeight, Layout, Spacing } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useTheme } from '@/hooks/use-theme';
 import { useTimeline } from '@/hooks/use-timeline';
 import type { TextItem } from '@/items/domain/text-item';
@@ -67,6 +68,7 @@ type EditTextDialogProps = {
 export function EditTextDialog({ item, onClose }: EditTextDialogProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { sizes, columnWidth } = useShellLayout();
   const { updateText, deleteItem } = useTimeline();
   const [state, dispatch] = useReducer(reducer, {
     step: 'edit',
@@ -127,15 +129,30 @@ export function EditTextDialog({ item, onClose }: EditTextDialogProps) {
       <View style={[styles.overlay, { backgroundColor: theme.overlay }]}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={[styles.content, { paddingTop: insets.top + Spacing.lg }]}>
+          contentContainerStyle={[
+            styles.content,
+            {
+              paddingTop: insets.top + Spacing.lg,
+              paddingBottom: insets.bottom + Spacing.lg,
+              paddingLeft: insets.left + Spacing.lg,
+              paddingRight: insets.right + Spacing.lg,
+            },
+          ]}>
           <View
             accessibilityViewIsModal
             style={[
               styles.box,
-              { backgroundColor: theme.creationBg, borderColor: theme.primaryBlue },
+              {
+                width: columnWidth,
+                borderRadius: sizes.cardRadius,
+                padding: sizes.cardPadding,
+                backgroundColor: theme.creationBg, borderColor: theme.primaryBlue,
+              },
             ]}>
             <View style={styles.header}>
-              <Text accessibilityRole="header" style={[styles.title, { color: theme.textMain }]}>
+              <Text
+                accessibilityRole="header"
+                style={[styles.title, { fontSize: sizes.boxTitle, color: theme.textMain }]}>
                 {confirming ? '¿Borrar este texto?' : 'Editar elemento de texto:'}
               </Text>
               <Pressable
@@ -149,7 +166,7 @@ export function EditTextDialog({ item, onClose }: EditTextDialogProps) {
 
             {confirming ? (
               <>
-                <Text style={[styles.message, { color: theme.textMain }]}>
+                <Text style={{ fontSize: sizes.cardText, color: theme.textMain }}>
                   Desaparecerá de tu línea de tiempo.
                 </Text>
                 {state.error ? <ErrorMessage message={errorMessage} /> : null}
@@ -211,11 +228,12 @@ export function EditTextDialog({ item, onClose }: EditTextDialogProps) {
 
 function ErrorMessage({ message }: { message: string }) {
   const theme = useTheme();
+  const { sizes } = useShellLayout();
   return (
     <Text
       accessibilityLiveRegion="polite"
       accessibilityRole="alert"
-      style={[styles.error, { color: theme.textMain }]}>
+      style={[styles.error, { fontSize: sizes.boxTitle, color: theme.textMain }]}>
       {message}
     </Text>
   );
@@ -226,13 +244,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.lg,
+    // Centers the column box; the padding for the insets is set inline.
+    alignItems: 'center',
   },
   box: {
     borderWidth: Layout.borderWidth,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
     gap: Layout.creationGap,
   },
   header: {
@@ -243,7 +259,6 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontSize: FontSize.small,
     fontWeight: FontWeight.bold,
   },
   closeButton: {
@@ -256,11 +271,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.titleCard,
     fontWeight: FontWeight.bold,
   },
-  message: {
-    fontSize: FontSize.body,
-  },
   error: {
-    fontSize: FontSize.small,
     fontWeight: FontWeight.bold,
   },
   buttons: {

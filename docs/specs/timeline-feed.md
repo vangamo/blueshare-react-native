@@ -7,7 +7,7 @@ resource: ../../openspec/specs/timeline-feed/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T12:00:00Z
+  at: 2026-11-02T18:00:00Z
 ---
 
 # timeline-feed (implemented)
@@ -16,7 +16,7 @@ Full text: `openspec/specs/timeline-feed/spec.md`. From the change `add-text-ite
 
 | Requirement | Summary | Implemented in |
 | --- | --- | --- |
-| Items newest first | Not-deleted items by creation time, newest first. An edited item keeps its place. 16-point padding. The creation box sits above the first item. | [Timeline feed](../components/timeline-feed.md) |
+| Items newest first | Not-deleted items by creation time, newest first. An edited item keeps its place. The layout's content padding (16 on phones), inside the centered content column (550, 500 or 600 outside phone portrait). The last card scrolls fully above the bottom bar or safe area. The creation box sits above the first item. | [Timeline feed](../components/timeline-feed.md) |
 | New items appear right away | A saved item is the first card at once, with no reload. | timeline store in [Items module](../architecture/items-module.md) |
 | Text card appearance | Card background, 2-point border, radius 16, padding 16, soft shadow. Full text in 15-point secondary color, line height 1.5. | [Text item card](../components/text-item-card.md) |
 | Text card actions | A divider, then "Editar" and "Compartir" on the right, ≥ 44 tall, 14-point bold. | same |

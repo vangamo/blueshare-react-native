@@ -6,6 +6,7 @@ Before editing or adding a component, read:
 - The component's own page in `docs/components/`, if one exists. It lists its spec and its test file.
 
 Rules:
+- Sizes that vary by device or orientation come from `useShellLayout()` (`sizes`, `frame`, `columnWidth`), inline like colors. Never hard-code them or read the window size directly (`docs/design-system/layout-sizes.md`).
 - Use kebab-case files and named exports. Never hard-code colors or sizes: add tokens instead (`docs/design-system/design-tokens.md`).
 - Every change needs tests in `src/__tests__/unit/components/` (`docs/development/testing.md`).
 - After a visual change, run the `visual-review` skill.

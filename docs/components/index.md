@@ -4,7 +4,7 @@ All components are in `src/components/`. Each is a named export that reads its c
 
 * [App header](app-header.md) - Fixed top bar with the menu button, the title/search field and the avatar.
 * [Title search field](title-search-field.md) - Shows "BlueShare" at rest and becomes a search input on focus.
-* [Footer tab bar](footer-tab-bar.md) - Custom JS tab bar with the Timeline, Circles and Events tabs.
+* [Tab bar](tab-bar.md) - Custom JS tab bar with the Timeline, Circles and Events tabs, at the bottom in portrait and at the top in landscape.
 * [Create button](create-button.md) - Floating round `+` button above the footer. Opens the creation box on Timeline.
 * [Placeholder screen](placeholder-screen.md) - Scrollable placeholder body for Circles and Events.
 * [Items provider](items-provider.md) - Creates the items module once and shares the timeline store through `useTimeline()`.

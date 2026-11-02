@@ -16,6 +16,9 @@ generated:
 
 ## Structure and styles
 
+**Adaptive:** the box is `columnWidth` wide and centered (550 phone landscape, 500 tablet portrait, 600 tablet landscape), with padding, radius and text sizes from `sizes` (`cardPadding`, `cardRadius`, `boxTitle`, `cardText`). The scroll content pads for all four insets plus 16. On phones in landscape Android's full-screen editor may cover the dialog while typing. The values below are the phone set.
+
+
 - A React Native `Modal` (`transparent`, `fade`, translucent status and navigation bars, like the [type select](type-select.md)) over an `overlay`-colored `View`. The overlay is **not** pressable: tapping outside does nothing.
 - A `ScrollView` (`keyboardShouldPersistTaps="handled"`) puts the box at `insets.top + Spacing.lg` from the top, so the keyboard, which rises from the bottom, doesn't cover it. "Borrar este texto" can be reached by scrolling.
 - Box: `creationBg`, a 2-point **solid** `primaryBlue` border (the creation box's is dashed), `Radius.lg`, `Spacing.lg` padding, `Layout.creationGap` between children, `accessibilityViewIsModal`.

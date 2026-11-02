@@ -2,24 +2,37 @@ import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { FontSize, FontWeight, Layout } from '@/constants/theme';
+import { FontWeight, Layout } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useTheme } from '@/hooks/use-theme';
 
-/** Footer navigation drawn in place of the default JS tab bar (Timeline, Circles, Events). */
-export function FooterTabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
+/**
+ * Tab navigation drawn in place of the default JS tab bar (Timeline, Circles, Events).
+ * At the bottom in portrait, and in landscape drawn at the top of the navigator: it stays
+ * in the navigator's bottom slot either way (see the root layout).
+ */
+export function TabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { landscape, frame, sizes } = useShellLayout();
+  const stretch = frame.tabWidth === 'stretch';
+  const bottomInset = landscape ? 0 : insets.bottom;
 
   return (
     <View
       accessibilityRole="tablist"
       style={[
         styles.bar,
+        landscape ? styles.barTop : null,
         {
-          height: Layout.footerHeight + insets.bottom,
-          paddingBottom: insets.bottom,
+          height: frame.tabBarHeight + bottomInset,
+          paddingBottom: bottomInset,
+          paddingLeft: Layout.tabBarPaddingHorizontal + insets.left,
+          paddingRight: Layout.tabBarPaddingHorizontal + insets.right,
           backgroundColor: theme.cardBg,
-          borderTopColor: theme.borderColor,
+          ...(landscape
+            ? { borderBottomWidth: Layout.borderWidth, borderBottomColor: theme.borderColor }
+            : { borderTopWidth: Layout.borderWidth, borderTopColor: theme.borderColor }),
         },
       ]}>
       {state.routes.map((route, index) => {
@@ -46,6 +59,8 @@ export function FooterTabBar({ state, descriptors, emitter, navigateToTab }: Bot
             onPress={onPress}
             style={({ pressed }) => [
               styles.tab,
+              stretch ? styles.tabStretch : { width: frame.tabWidth },
+              { height: sizes.tabHeight },
               focused
                 ? {
                     backgroundColor: theme.primaryBlueHover,
@@ -55,7 +70,7 @@ export function FooterTabBar({ state, descriptors, emitter, navigateToTab }: Bot
                 : { backgroundColor: theme.surfaceMuted, borderColor: theme.borderDark },
               pressed && styles.pressed,
             ]}>
-            <Text style={[styles.label, { color: focused ? theme.onPrimary : theme.textSecondary }]}>
+            <Text style={[styles.label, { fontSize: sizes.tabLabel, color: focused ? theme.onPrimary : theme.textSecondary }]}>
               {label}
             </Text>
           </Pressable>
@@ -69,12 +84,18 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Layout.footerPaddingHorizontal,
-    borderTopWidth: Layout.borderWidth,
+    justifyContent: 'center',
+  },
+  barTop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
+  tabStretch: {
+    flex: 1,
   },
   tab: {
-    flex: 1,
-    height: Layout.touchTarget,
     marginHorizontal: Layout.tabMarginHorizontal,
     borderRadius: Layout.controlRadius,
     borderWidth: Layout.borderWidth,
@@ -82,7 +103,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontSize: FontSize.small,
     fontWeight: FontWeight.bold,
   },
   pressed: {

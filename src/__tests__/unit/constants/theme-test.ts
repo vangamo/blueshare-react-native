@@ -1,5 +1,6 @@
-import { Colors, NavigationThemes, type ThemeColor } from '@/constants/theme';
+import { Colors, Frames, Layout, NavigationThemes, Sizes, layoutFor, type ThemeColor } from '@/constants/theme';
 import { contrastRatio } from '@/test-utils/contrast';
+import { TEST_WINDOWS } from '@/test-utils/test-values';
 
 type Pair = { fg: ThemeColor; bg: ThemeColor; min: number; use: string };
 
@@ -69,5 +70,70 @@ describe('navigation themes', () => {
       text: palette.textMain,
       border: palette.borderColor,
     });
+  });
+});
+
+describe('layoutFor', () => {
+  test.each([
+    [TEST_WINDOWS.phonePortrait, 'phone-portrait'],
+    [TEST_WINDOWS.phoneLandscape, 'phone-landscape'],
+    [TEST_WINDOWS.tabletPortrait, 'tablet-portrait'],
+    [TEST_WINDOWS.tabletLandscape, 'tablet-landscape'],
+  ] as const)('%j is %s', ({ width, height }, kind) => {
+    expect(layoutFor(width, height)).toBe(kind);
+  });
+
+  test('a short side of 599 is a phone and 600 a tablet', () => {
+    expect(layoutFor(599, 1000)).toBe('phone-portrait');
+    expect(layoutFor(600, 1000)).toBe('tablet-portrait');
+    expect(layoutFor(1000, 599)).toBe('phone-landscape');
+    expect(layoutFor(1000, 600)).toBe('tablet-landscape');
+  });
+
+  test('a square window is portrait, and a split-screen tablet window is a phone', () => {
+    expect(layoutFor(700, 700)).toBe('tablet-portrait');
+    expect(layoutFor(500, 744)).toBe('phone-portrait');
+  });
+});
+
+describe('Sizes', () => {
+  test('the phone set holds the phone portrait values (regression guard)', () => {
+    expect(Sizes.phone).toMatchObject({
+      fieldHeight: 42,
+      fab: 56,
+      cardText: 15,
+      cardLineHeight: 22.5,
+      menuButton: 44,
+      avatar: 42,
+      optionRow: 56,
+      textAreaMin: 96,
+      textAreaMax: 200,
+    });
+    expect(Frames['phone-portrait']).toMatchObject({
+      headerHeight: 70,
+      tabBarHeight: 75,
+      tabBarPosition: 'bottom',
+      tabWidth: 'stretch',
+      fabBottom: 10,
+    });
+  });
+
+  test('every tablet size is at least its phone size', () => {
+    for (const key of Object.keys(Sizes.phone) as (keyof typeof Sizes.phone)[]) {
+      expect(Sizes.tablet[key]).toBeGreaterThanOrEqual(Sizes.phone[key]);
+    }
+  });
+
+  test.each(['phone', 'tablet'] as const)('%s controls are at least the touch target', (device) => {
+    const sizes = Sizes[device];
+    for (const height of [
+      sizes.menuButton,
+      sizes.tabHeight,
+      sizes.actionHeight,
+      sizes.controlHeight,
+      sizes.optionRow,
+    ]) {
+      expect(height).toBeGreaterThanOrEqual(Layout.touchTarget);
+    }
   });
 });

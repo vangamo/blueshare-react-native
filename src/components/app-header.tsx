@@ -2,21 +2,26 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TitleSearchField } from '@/components/title-search-field';
-import { FontSize, FontWeight, Layout, Spacing } from '@/constants/theme';
+import { FontWeight, Layout, Spacing } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useTheme } from '@/hooks/use-theme';
 
 /** Fixed header: menu button, title/search field and avatar. Rendered once by the root layout. */
 export function AppHeader() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { frame, sizes } = useShellLayout();
 
   return (
     <View
       style={[
         styles.header,
         {
-          height: Layout.headerHeight + insets.top,
+          height: frame.headerHeight + insets.top,
           paddingTop: insets.top,
+          paddingHorizontal: sizes.headerPaddingHorizontal,
+          paddingLeft: sizes.headerPaddingHorizontal + insets.left,
+          paddingRight: sizes.headerPaddingHorizontal + insets.right,
           backgroundColor: theme.cardBg,
           borderBottomColor: theme.borderColor,
         },
@@ -28,19 +33,40 @@ export function AppHeader() {
         onPress={() => {}}
         style={({ pressed }) => [
           styles.menu,
-          { backgroundColor: theme.creationBg, borderColor: theme.primaryBlue },
+          {
+            minWidth: sizes.menuButton,
+            minHeight: sizes.menuButton,
+            backgroundColor: theme.creationBg, borderColor: theme.primaryBlue,
+          },
           pressed && styles.pressed,
         ]}>
-        <Text style={[styles.menuGlyph, { color: theme.primaryBlue }]}>≡</Text>
+        <Text style={[styles.menuGlyph, { fontSize: sizes.menuGlyph, color: theme.primaryBlue }]}>≡</Text>
       </Pressable>
 
-      <TitleSearchField style={styles.title} />
+      <TitleSearchField
+        style={[
+          styles.title,
+          // Auto margins center a field that stops growing at its maximum width.
+          frame.titleMaxWidth === null
+            ? null
+            : { maxWidth: frame.titleMaxWidth, marginHorizontal: 'auto' },
+        ]}
+      />
 
       <View
         accessible
         accessibilityLabel="Profile"
-        style={[styles.avatar, { backgroundColor: theme.avatarBg, borderColor: theme.primaryDark }]}>
-        <Text style={styles.avatarEmoji}>👵</Text>
+        style={[
+          styles.avatar,
+          {
+            width: sizes.avatar,
+            height: sizes.avatar,
+            borderRadius: sizes.avatar / 2,
+            backgroundColor: theme.avatarBg,
+            borderColor: theme.primaryDark,
+          },
+        ]}>
+        <Text style={{ fontSize: sizes.avatarEmoji }}>👵</Text>
       </View>
     </View>
   );
@@ -50,19 +76,15 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
     borderBottomWidth: Layout.borderWidth,
   },
   menu: {
-    minWidth: Layout.touchTarget,
-    minHeight: Layout.touchTarget,
     borderWidth: Layout.borderWidth,
     borderRadius: Layout.controlRadius,
     alignItems: 'center',
     justifyContent: 'center',
   },
   menuGlyph: {
-    fontSize: FontSize.titleCard,
     fontWeight: FontWeight.bold,
   },
   title: {
@@ -70,15 +92,9 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
   },
   avatar: {
-    width: Layout.avatarSize,
-    height: Layout.avatarSize,
-    borderRadius: Layout.avatarSize / 2,
     borderWidth: Layout.borderWidth,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  avatarEmoji: {
-    fontSize: Layout.avatarEmojiSize,
   },
   pressed: {
     opacity: 0.7,

@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { FontSize, FontWeight, Layout, Radius, Spacing } from '@/constants/theme';
+import { FontWeight, Layout, Radius, Spacing } from '@/constants/theme';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import type { TimelineItem } from '@/hooks/use-timeline';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -11,6 +12,7 @@ type CardActionProps = {
 
 function CardAction({ label, onPress }: CardActionProps) {
   const theme = useTheme();
+  const { sizes } = useShellLayout();
   return (
     <Pressable
       accessibilityRole="button"
@@ -18,10 +20,10 @@ function CardAction({ label, onPress }: CardActionProps) {
       onPress={onPress}
       style={({ pressed }) => [
         styles.action,
-        { backgroundColor: theme.surfaceMuted, borderColor: theme.borderDark },
+        { minHeight: sizes.actionHeight, backgroundColor: theme.surfaceMuted, borderColor: theme.borderDark },
         pressed && styles.pressed,
       ]}>
-      <Text style={[styles.actionLabel, { color: theme.textMain }]}>{label}</Text>
+      <Text style={[styles.actionLabel, { fontSize: sizes.actionLabel, color: theme.textMain }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -32,6 +34,7 @@ function CardAction({ label, onPress }: CardActionProps) {
  */
 export function TextItemCard({ item, onEdit }: { item: TimelineItem; onEdit: () => void }) {
   const theme = useTheme();
+  const { sizes } = useShellLayout();
 
   return (
     <View
@@ -39,12 +42,19 @@ export function TextItemCard({ item, onEdit }: { item: TimelineItem; onEdit: () 
       style={[
         styles.card,
         {
+          borderRadius: sizes.cardRadius,
+          padding: sizes.cardPadding,
+          marginBottom: sizes.itemGap,
           backgroundColor: theme.cardBg,
           borderColor: theme.borderColor,
           boxShadow: `0 2px 6px ${theme.cardShadow}`,
         },
       ]}>
-      <Text testID="text-item-body" style={[styles.body, { color: theme.textSecondary }]}>
+      <Text
+        testID="text-item-body"
+        style={[
+          { fontSize: sizes.cardText, lineHeight: sizes.cardLineHeight, color: theme.textSecondary },
+        ]}>
         {item.body}
       </Text>
       <View style={[styles.actions, { borderTopColor: theme.divider }]}>
@@ -59,13 +69,6 @@ export function TextItemCard({ item, onEdit }: { item: TimelineItem; onEdit: () 
 const styles = StyleSheet.create({
   card: {
     borderWidth: Layout.borderWidth,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    marginBottom: Spacing.lg,
-  },
-  body: {
-    fontSize: FontSize.body,
-    lineHeight: Layout.cardTextLineHeight,
   },
   actions: {
     flexDirection: 'row',
@@ -76,7 +79,6 @@ const styles = StyleSheet.create({
     borderTopWidth: Layout.hairlineWidth,
   },
   action: {
-    minHeight: Layout.touchTarget,
     paddingHorizontal: Spacing.md,
     borderWidth: Layout.hairlineWidth,
     borderRadius: Radius.sm,
@@ -84,7 +86,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionLabel: {
-    fontSize: FontSize.small,
     fontWeight: FontWeight.bold,
   },
   pressed: {
