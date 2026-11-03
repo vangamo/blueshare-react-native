@@ -1,4 +1,4 @@
-/** The kinds of item a user can create. Events cannot be created yet. */
+/** The kinds of item a user can create. */
 export type ItemType = 'text' | 'image' | 'event';
 
 /** Fields every item records, whatever its type. Times are UTC milliseconds. */

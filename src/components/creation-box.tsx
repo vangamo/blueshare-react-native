@@ -3,6 +3,7 @@ import { AccessibilityInfo, Keyboard, Platform, StyleSheet, Text, View } from 'r
 
 import { BoxButton } from '@/components/box-button';
 import { BoxTextArea } from '@/components/box-text-area';
+import { EventFields } from '@/components/event-fields';
 import { ImageFields } from '@/components/image-fields';
 import { TypeSelect } from '@/components/type-select';
 import { FontWeight, Layout } from '@/constants/theme';
@@ -16,14 +17,15 @@ export const SAVE_ERROR_MESSAGE = '⚠️ No se pudo guardar. Inténtalo de nuev
 /**
  * Inline box at the top of the Timeline for creating an item. Choose step: type
  * select, Cancelar and Guardar. Write step (Texto): text area, Cancelar and Crear.
- * Image step (Imagen): photo, alternative text and caption, Cancelar and Crear.
+ * Image step (Imagen): photo, alternative text and caption, Cancelar and Crear. Event
+ * step (Evento): photos, title, category and description, Cancelar and Crear.
  * Renders nothing while closed. Its state lives in `CreationBoxProvider`.
  */
 export function CreationBox() {
   const theme = useTheme();
   const { sizes } = useShellLayout();
   const { box, dispatch } = useCreationBox();
-  const { createText, createImage } = useTimeline();
+  const { createText, createImage, createEvent } = useTimeline();
   // Guards against a second tap landing before the "saving" render.
   const savingRef = useRef(false);
 
@@ -77,7 +79,6 @@ export function CreationBox() {
             label="Guardar"
             variant="primary"
             disabled={box.type === null}
-            // Texto and Imagen move on; Evento does nothing yet.
             onPress={() => dispatch({ type: 'confirmType' })}
             style={styles.button}
           />
@@ -119,6 +120,58 @@ export function CreationBox() {
               if (!photo) return;
               void save(() =>
                 createImage({ photo, altText: box.altText, caption: box.caption }),
+              );
+            }}
+            style={styles.button}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  if (box.step === 'event') {
+    const { photos, title, category, description } = box;
+    const canCreateEvent =
+      photos.length >= 1 && title.trim().length > 0 && category.trim().length > 0 && !box.saving;
+    return (
+      <View style={boxStyle} testID="creation-box">
+        <Text style={titleStyle}>Crear nuevo elemento de evento:</Text>
+        <EventFields
+          photos={photos}
+          title={title}
+          category={category}
+          description={description}
+          onPhotosAdded={(added) => dispatch({ type: 'photosAdded', photos: added })}
+          onPhotoRemoved={(key) => dispatch({ type: 'photoRemoved', key })}
+          onTitleChange={(text) => dispatch({ type: 'setTitle', text })}
+          onCategoryChange={(text) => dispatch({ type: 'setCategory', text })}
+          onDescriptionChange={(text) => dispatch({ type: 'setDescription', text })}
+          onPickerFailed={() => dispatch({ type: 'pickerFailed' })}
+          pickerFailed={box.error === 'picker'}
+        />
+        {box.error === 'save' ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            style={[styles.error, { fontSize: sizes.boxTitle, color: theme.textMain }]}>
+            {SAVE_ERROR_MESSAGE}
+          </Text>
+        ) : null}
+        <View style={styles.buttons}>
+          <BoxButton label="Cancelar" variant="secondary" onPress={cancel} style={styles.button} />
+          <BoxButton
+            label="Crear"
+            variant="primary"
+            disabled={!canCreateEvent}
+            onPress={() => {
+              void save(() =>
+                createEvent({
+                  // The step only holds picked photos; they are copied now.
+                  photos: photos.flatMap((draft) => (draft.kind === 'picked' ? [draft.photo] : [])),
+                  title,
+                  category,
+                  description,
+                }),
               );
             }}
             style={styles.button}

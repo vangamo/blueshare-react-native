@@ -54,15 +54,4 @@ describe('creating a text item', () => {
     expect(textArea()).toHaveProp('value', 'Mañana hay bingo');
     expect(screen.queryByRole('button', { name: 'Create' })).toBeNull();
   });
-
-  test('Evento with Guardar does nothing', async () => {
-    await renderRouter('./src/app');
-    await journey.openBox();
-    await journey.chooseType('📅 Evento');
-    await fireEvent.press(button('Guardar'));
-
-    expect(screen.getByText('Crear nuevo elemento:')).toBeOnTheScreen();
-    expect(button('Crear nuevo elemento')).toHaveAccessibilityValue({ text: '📅 Evento' });
-    expect(cardTexts()).toEqual([]);
-  });
 });

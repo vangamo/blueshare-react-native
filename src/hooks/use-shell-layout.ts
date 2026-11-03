@@ -26,6 +26,11 @@ export type ShellLayout = {
    * window below the header and tab bar. Never less than `Layout.imageMinHeight`.
    */
   imageMaxHeight: number;
+  /**
+   * Side of an event card's square photo tiles: two tiles and part of a third fit the
+   * card's content width (`Layout.eventTilePeek`), never more than `imageMaxHeight`.
+   */
+  eventTileSize: number;
 };
 
 /** Height of an image card around its photo: padding and border, the gap, a caption line and the actions. */
@@ -34,6 +39,11 @@ function imageCardChrome(sizes: SizeSet): number {
   const caption = Layout.photoGap + sizes.captionText * 1.5;
   const actions = 2 * Spacing.md + Layout.hairlineWidth + sizes.actionHeight;
   return frame + caption + actions;
+}
+
+/** Width inside an event card: padding on both sides, the right border and the left accent bar. */
+function eventInnerWidth(columnWidth: number, sizes: SizeSet): number {
+  return columnWidth - 2 * sizes.cardPadding - Layout.borderWidth - Layout.accentBarWidth;
 }
 
 /**
@@ -48,6 +58,17 @@ export function useShellLayout(): ShellLayout {
   const frame = Frames[kind];
   const sizes = Sizes[device];
   const available = width - insets.left - insets.right - 2 * sizes.contentPadding;
+  const columnWidth = frame.column === null ? available : Math.min(available, frame.column);
+  const imageMaxHeight = Math.max(
+    Layout.imageMinHeight,
+    height -
+      insets.top -
+      insets.bottom -
+      frame.headerHeight -
+      frame.tabBarHeight -
+      2 * sizes.contentPadding -
+      imageCardChrome(sizes),
+  );
 
   return {
     kind,
@@ -55,16 +76,11 @@ export function useShellLayout(): ShellLayout {
     landscape: kind.endsWith('landscape'),
     frame,
     sizes,
-    imageMaxHeight: Math.max(
-      Layout.imageMinHeight,
-      height -
-        insets.top -
-        insets.bottom -
-        frame.headerHeight -
-        frame.tabBarHeight -
-        2 * sizes.contentPadding -
-        imageCardChrome(sizes),
+    imageMaxHeight,
+    columnWidth,
+    eventTileSize: Math.min(
+      (eventInnerWidth(columnWidth, sizes) - 2 * Layout.eventTileGap) / Layout.eventTilePeek,
+      imageMaxHeight,
     ),
-    columnWidth: frame.column === null ? available : Math.min(available, frame.column),
   };
 }

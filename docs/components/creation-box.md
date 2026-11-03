@@ -1,7 +1,7 @@
 ---
 type: Component
 title: Creation box
-description: Inline box at the top of the Timeline for creating an item: a choose step (type select, Cancelar, Guardar) and, for Texto, a write step (text area, Cancelar, Crear).
+description: Inline box at the top of the Timeline for creating an item: a choose step (type select, Cancelar, Guardar) and a step per type: write (Texto), image (Imagen) and event (Evento), each with Cancelar and Crear.
 tags: [component, creation-box, items]
 resource: ../../src/components/creation-box.tsx
 status: stable
@@ -12,7 +12,7 @@ generated:
 
 # Creation box
 
-`CreationBox`, no props. The [Timeline feed](timeline-feed.md) renders it as the list header while the box is open. It reads [the creation box state](creation-box-provider.md) and `useTimeline().createText` and `createImage`, and renders nothing while closed.
+`CreationBox`, no props. The [Timeline feed](timeline-feed.md) renders it as the list header while the box is open. It reads [the creation box state](creation-box-provider.md) and `useTimeline().createText`, `createImage` and `createEvent`, and renders nothing while closed.
 
 ## Styles
 
@@ -20,14 +20,14 @@ generated:
 
 
 - Box: 2-point **dashed** `primaryBlue` border, `creationBg`, `Radius.lg` (16), `Spacing.lg` padding and bottom margin, `Layout.creationGap` (10) between children.
-- Title: 14-point bold `textMain` ("Crear nuevo elemento:" or "Crear nuevo elemento de texto:").
+- Title: 14-point bold `textMain` ("Crear nuevo elemento:", "Crear nuevo elemento de texto:", "Crear nuevo elemento de imagen:" or "Crear nuevo elemento de evento:").
 - Buttons: a row of two [box buttons](box-button.md), each `flex: 1`, `Layout.creationGap` apart. Cancelar on the left.
 - Text area: the shared `BoxTextArea` (`src/components/box-text-area.tsx`, also used by the [edit dialog](edit-text-dialog.md)): multi-line, `Layout.textAreaMinHeight` (96) to `Layout.textAreaMaxHeight` (200), then it scrolls inside. 2-point `primaryDark` border, `Layout.controlRadius`, `cardBg`, 16-point `textMain`, `textAlignVertical="top"`, `maxLength={TEXT_MAX_LENGTH}`.
 - Save error: 14-point bold `textMain` on `creationBg`.
 
 ## Behavior
 
-- **Choose step:** the [type select](type-select.md). Guardar is disabled until a type is chosen. With Texto it moves to the write step, with Imagen to the image step; with Evento it does nothing yet.
+- **Choose step:** the [type select](type-select.md). Guardar is disabled until a type is chosen. With Texto it moves to the write step, with Imagen to the image step and with Evento to the event step.
 - **Write step:** the text area has `maxLength={TEXT_MAX_LENGTH}`, `autoFocus` and the label "Crear nuevo elemento de texto". It mounts only when entering the step, so returning from another tab does not refocus it or open the keyboard.
 - **Crear** is disabled while the text is blank (`text.trim()` empty) and while saving. It calls `createText`, then `Keyboard.dismiss()` and `close`. A ref guard ignores a second tap that lands before the "saving" render.
 - **Failed save:** `saveFailed`. The text stays, "⚠️ No se pudo guardar. Inténtalo de nuevo." shows with `accessibilityLiveRegion="polite"` (Android) and `AccessibilityInfo.announceForAccessibility` (iOS), and Crear stays usable to retry. Typing hides the message.
@@ -35,13 +35,18 @@ generated:
   - The photo button calls `usePickPhoto()`: no permission prompt, a cancelled pick changes nothing, and picking again keeps the typed texts. A picker error dispatches `pickerFailed`, and "⚠️ No se pudo abrir la galería. Inténtalo de nuevo." shows with a live region (and `announceForAccessibility` on iOS). Pressing the button again retries.
   - **Crear** is disabled until a photo is chosen (texts alone don't enable it) and while saving. It calls `createImage({ photo, altText, caption })`, which copies the photo and trims the texts. A ref guard ignores a second tap. A failed save keeps the photo and the fields and shows "⚠️ No se pudo guardar. Inténtalo de nuevo.".
   - The draft holds the picker's cache URI. The copy into app storage happens only on Crear.
-- **Cancelar** dismisses the keyboard and dispatches `close`: the type, text, photo and texts are discarded, and the next open starts at the choose step.
+- **Event step** (title "Crear nuevo elemento de evento:", no keyboard on entry): the shared [`EventFields`](event-fields.md) shows the thumbnails, the "Elegir fotos" or "Añadir fotos" button, the gallery and limit messages, "Título", "Categoría" with its four suggestions, and "Descripción". Then Cancelar and Crear.
+  - **Crear** is enabled only with at least one photo and a title and a category that are not only whitespace, and not while saving; the description doesn't count. It calls `createEvent({ photos, title, category, description })`, which validates, copies each photo in order and trims the texts. A ref guard ignores a second tap. A failed save keeps the photos and fields and shows "⚠️ No se pudo guardar. Inténtalo de nuevo.".
+  - The draft holds the picker's cache URIs. Nothing is copied until Crear, so Cancelar copies nothing.
+- **Cancelar** dismisses the keyboard and dispatches `close`: the type, text, photos and fields are discarded, and the next open starts at the choose step.
 - The Android back button acts like Cancelar while the box is on screen; that listener lives in the [Timeline feed](timeline-feed.md).
 
 ## Tests
 
-`src/__tests__/unit/components/creation-box-test.tsx`, through `CreationBoxHarness` (`src/test-utils/creation-box-harness.tsx`): Guardar enabled per type, Evento and Imagen staying, Texto moving on, the box style in both palettes, Crear disabled for blank text, `maxLength`, saving and closing, a double tap creating one item (with `GatedSqlDatabase`), a failing save keeping the text and retrying (with `FailingSqlDatabase`), and Cancelar discarding.
+`src/__tests__/unit/components/creation-box-test.tsx`, through `CreationBoxHarness` (`src/test-utils/creation-box-harness.tsx`): Guardar enabled per type, Texto moving on, the box style in both palettes, Crear disabled for blank text, `maxLength`, saving and closing, a double tap creating one item (with `GatedSqlDatabase`), a failing save keeping the text and retrying (with `FailingSqlDatabase`), and Cancelar discarding.
 
 The image step is covered in the same file (`describe('CreationBox, image step')`) with `expo-image-picker` mocked: the step, picking, cancelling, replacing, picker errors, Crear's rule, saving, a double tap, a failing save, Cancelar, the limits and hint, and the tablet sizes.
+
+The event step has its own `describe('CreationBox, event step')`, with the picker mocked through `pickedResult()` (`src/test-utils/picker-assets.ts`): the empty step, picking several and adding at the end with a smaller `selectionLimit`, a cancelled pick, eight plus four keeping ten with the announced limit message, removing the middle and the only photo, a picker error and retry, Crear's rule, a suggestion replacing the category, saving trimmed texts and ordered photos, a double tap, a failing save, Cancelar copying nothing, the limits and styles, the screen reader order (`readingOrder()` from `src/test-utils/accessibility-order.ts`), 44-point controls and tablet sizes. Android back with an event draft is covered by the e2e journey `create-event-item-test.tsx`, since the back listener lives in the feed.
 
 Spec: [item-creation](../specs/item-creation.md). Decisions: [Text limit](../decisions/text-limit.md), [Spanish copy and labels](../decisions/spanish-copy-labels.md).

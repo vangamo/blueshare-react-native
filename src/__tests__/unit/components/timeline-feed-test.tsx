@@ -127,6 +127,30 @@ describe('TimelineFeed', () => {
     expect(screen.getByText('Segundo')).toBeOnTheScreen();
   });
 
+  test('a feed mixing text, image and event items keeps the newest-first order', async () => {
+    const adapters = appAdapters.createAppAdapters();
+    const { store } = createItemsModule(adapters);
+    const photo = () => ({ uri: writeFixturePhoto(), width: 4, height: 3, mimeType: 'image/png' });
+    await store.createEvent({ photos: [photo(), photo()], title: 'Viaje', category: 'Familia', description: null });
+    await store.createText('Texto');
+    await store.createImage({ photo: photo(), altText: null, caption: 'Imagen' });
+    await store.createEvent({ photos: [photo()], title: 'Bingo', category: 'Amigos', description: 'Ganó Pepa' });
+    jest.spyOn(appAdapters, 'createAppAdapters').mockReturnValue(adapters);
+
+    await renderRouter('./src/app');
+
+    expect(await screen.findByText('Bingo')).toBeOnTheScreen();
+    const order = screen
+      .getAllByTestId(/^(text|image|event)-item-card$/)
+      .map((card) => card.props.testID);
+    expect(order).toEqual(['event-item-card', 'image-item-card', 'text-item-card', 'event-item-card']);
+    expect(screen.getAllByTestId('event-item-title').map((title) => title.props.children)).toEqual([
+      'Bingo',
+      'Viaje',
+    ]);
+    expect(screen.getAllByTestId('event-photo-tile')).toHaveLength(3);
+  });
+
   test('scrolls to the top when the box opens', async () => {
     const scrollToOffset = jest.spyOn(FlatList.prototype, 'scrollToOffset');
     await renderRouter('./src/app');

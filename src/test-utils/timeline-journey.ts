@@ -9,9 +9,11 @@ export const journey = {
 
   /** Image card captions, top to bottom. */
   imageCaptions: () => screen.queryAllByTestId('image-item-caption').map((node) => node.props.children),
-  /** The card kinds, top to bottom: 'text-item-card' or 'image-item-card'. */
+  /** Event card titles, top to bottom. */
+  eventTitles: () => screen.queryAllByTestId('event-item-title').map((node) => node.props.children),
+  /** The card kinds, top to bottom: 'text-item-card', 'image-item-card' or 'event-item-card'. */
   cardKinds: () =>
-    screen.queryAllByTestId(/^(text|image)-item-card$/).map((node) => node.props.testID),
+    screen.queryAllByTestId(/^(text|image|event)-item-card$/).map((node) => node.props.testID),
 
   async openBox() {
     await fireEvent.press(journey.button('Create'));
@@ -31,6 +33,12 @@ export const journey = {
   async startImage() {
     await journey.openBox();
     await journey.chooseType('📷 Imagen');
+    await fireEvent.press(journey.button('Guardar'));
+  },
+
+  async startEvent() {
+    await journey.openBox();
+    await journey.chooseType('📅 Evento');
     await fireEvent.press(journey.button('Guardar'));
   },
 

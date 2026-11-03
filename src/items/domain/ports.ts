@@ -1,3 +1,4 @@
+import type { EventItem } from './event-item';
 import type { ImageItem } from './image-item';
 import type { TextItem } from './text-item';
 import type { TimelineItem } from './timeline-item';
@@ -8,6 +9,8 @@ export interface ItemRepository {
   saveText(item: TextItem): Promise<void>;
   /** Stores the common record and the photo reference and texts together, or nothing at all. */
   saveImage(item: ImageItem): Promise<void>;
+  /** Stores the common record, the texts and every photo row in order together, or nothing at all. */
+  saveEvent(item: EventItem): Promise<void>;
   /** Items that are not deleted, newest first. */
   listTimeline(): Promise<TimelineItem[]>;
   /** A live text item by id, or `null` when it doesn't exist or was deleted. */
@@ -26,6 +29,14 @@ export interface ItemRepository {
    * @throws ItemNotFoundError when no live item has `item.id`.
    */
   updateImage(item: ImageItem): Promise<void>;
+  /** A live event item by id with its photos in order, or `null` when it doesn't exist or was deleted. */
+  findEvent(id: string): Promise<EventItem | null>;
+  /**
+   * Archives the stored version with its photo list, then stores `item`'s texts, photo
+   * list and update time, in one transaction.
+   * @throws ItemNotFoundError when no live item has `item.id`.
+   */
+  updateEvent(item: EventItem): Promise<void>;
   /**
    * Archives the stored version with `deletedAt`, then removes the live rows, in one
    * transaction.

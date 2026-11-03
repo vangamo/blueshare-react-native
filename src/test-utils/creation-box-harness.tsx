@@ -5,9 +5,17 @@ import { CreationBoxProvider } from '@/components/creation-box-provider';
 import { ItemsProvider } from '@/components/items-provider';
 import { useCreationBox } from '@/hooks/use-creation-box';
 import { useTimeline } from '@/hooks/use-timeline';
+import type { TimelineItem } from '@/items/domain/timeline-item';
 import type { AppAdapters } from '@/items/infrastructure/app-adapters';
 
-/** Test-only controls: "Abrir" opens the box; the timeline bodies are listed by testID. */
+/** What the harness lists for each stored item: a text's body, an image's caption, an event's title. */
+function summary(item: TimelineItem): string {
+  if (item.type === 'text') return item.body;
+  if (item.type === 'image') return item.caption ?? '';
+  return item.title;
+}
+
+/** Test-only controls: "Abrir" opens the box; the stored items are listed by testID. */
 function Controls() {
   const { dispatch } = useCreationBox();
   const { items } = useTimeline();
@@ -18,7 +26,7 @@ function Controls() {
       </Pressable>
       {items.map((item) => (
         <Text key={item.id} testID="stored-item">
-          {item.type === 'text' ? item.body : (item.caption ?? '')}
+          {summary(item)}
         </Text>
       ))}
     </>

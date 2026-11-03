@@ -38,6 +38,12 @@ const PAIRS: Pair[] = [
   { fg: 'textMuted', bg: 'cardBg', min: TEXT, use: 'image card caption' },
   { fg: 'textMuted', bg: 'creationBg', min: TEXT, use: 'alternative text hint' },
   { fg: 'textMuted', bg: 'imageBackdrop', min: TEXT, use: 'missing photo message' },
+  // Event items (event-items design D12).
+  { fg: 'badgeText', bg: 'badgeBg', min: TEXT, use: 'category badge' },
+  { fg: 'textMain', bg: 'cardBg', min: TEXT, use: 'event title' },
+  { fg: 'textMain', bg: 'surfaceMuted', min: TEXT, use: 'category suggestion labels and photo remove glyph' },
+  { fg: 'primaryDark', bg: 'creationBg', min: LARGE_OR_UI, use: 'category suggestion border' },
+  { fg: 'primaryDark', bg: 'surfaceMuted', min: LARGE_OR_UI, use: 'photo remove button border' },
 ];
 
 describe('palettes', () => {
@@ -115,12 +121,21 @@ describe('Sizes', () => {
       captionText: 14,
       fieldLabel: 14,
       fieldHint: 14,
+      eventTitle: 17,
+      badgeText: 14,
+      thumbColumns: 3,
     });
     expect(Layout).toMatchObject({
       photoRadius: 12,
       photoGap: 8,
       imageMinHeight: 120,
       imageMaxRatio: 1.25,
+      accentBarWidth: 6,
+      eventTileGap: 10,
+      eventTilePeek: 2.4,
+      badgePaddingH: 10,
+      badgePaddingV: 4,
+      thumbRemoveInset: 4,
     });
     expect(Frames['phone-portrait']).toMatchObject({
       headerHeight: 70,
@@ -129,6 +144,10 @@ describe('Sizes', () => {
       tabWidth: 'stretch',
       fabBottom: 10,
     });
+  });
+
+  test('tablets get larger event titles and badges and four thumbnails per row', () => {
+    expect(Sizes.tablet).toMatchObject({ eventTitle: 19, badgeText: 15, thumbColumns: 4 });
   });
 
   test('every tablet size is at least its phone size', () => {

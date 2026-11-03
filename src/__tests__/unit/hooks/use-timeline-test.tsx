@@ -82,6 +82,39 @@ describe('useTimeline', () => {
     expect(result.current.items[0]).toMatchObject({ type: 'image', altText: 'Playa' });
   });
 
+  test('an event is created first and updated in place', async () => {
+    const { result } = await renderHook(() => useTimeline(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    await act(async () => {
+      await result.current.createText('Texto');
+    });
+    const photo = () => ({ uri: writeFixturePhoto(), width: 4, height: 3, mimeType: 'image/png' });
+    let id = '';
+    await act(async () => {
+      const item = await result.current.createEvent({
+        photos: [photo(), photo()],
+        title: 'Viaje',
+        category: 'Familia',
+        description: null,
+      });
+      id = item.id;
+    });
+    expect(result.current.items.map((item) => item.type)).toEqual(['event', 'text']);
+    const [event] = result.current.items;
+    const stored = event.type === 'event' ? event.photos : [];
+
+    await act(async () => {
+      await result.current.updateEvent(id, {
+        photos: [{ kind: 'stored', photo: stored[1] }],
+        title: 'Viaje',
+        category: 'Amigos',
+        description: null,
+      });
+    });
+    expect(result.current.items[0]).toMatchObject({ type: 'event', category: 'Amigos', photos: [stored[1]] });
+    expect(result.current.items[1]).toMatchObject({ type: 'text' });
+  });
+
   test('without a provider it throws', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     await expect(renderHook(() => useTimeline())).rejects.toThrow(/inside ItemsProvider/);

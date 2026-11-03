@@ -19,7 +19,7 @@ generated:
 - `design_tokens.colors`: the light palette (snake_case keys, `#rrggbb` or `rgba()`).
 - `design_tokens.colors_dark`: the dark palette, with **exactly the same keys**.
 - `design_tokens.typography.sizes` and `weights`, `spacing`, `border_radius`: `"12px"` strings, and `"50%"` for the pill radius.
-- `device_sizes` and `components`: **reference only**. They describe the HTML mock (header, footer, FAB, creation box, feed cards) and are not read by code. Use `components.creation_box` and `feed_cards` when you build those features.
+- `device_sizes` and `components`: **reference only**. They describe the HTML mock (header, footer, FAB, creation box, feed cards) and are not read by code. Use `components.creation_box` and `feed_cards` when you build those features. The `feed_cards.event_card` note (2px `primary_dark` border, 6px `primary_blue` left bar, badge colors) is followed by the event card, except its carousel of 110×90 tiles: the user asked for square, cropped tiles sized so the next one peeks out (`event-items` design D11), which replaces that note.
 
 ## Differences from `sketches/design_system.json`
 

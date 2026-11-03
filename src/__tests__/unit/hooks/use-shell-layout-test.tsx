@@ -105,4 +105,50 @@ describe('useShellLayout', () => {
       expect(result.current.imageMaxHeight).not.toBe(portrait);
     });
   });
+
+  describe('eventTileSize', () => {
+    const WINDOWS = [
+      ['phonePortrait', 'phone'],
+      ['phoneLandscape', 'phone'],
+      ['tabletPortrait', 'tablet'],
+      ['tabletLandscape', 'tablet'],
+    ] as const;
+
+    test.each(WINDOWS)('%s fits two tiles and part of a third, capped by imageMaxHeight', async (window, device) => {
+      setMockWindow(TEST_WINDOWS[window]);
+      const { result } = await renderHook(() => useShellLayout());
+      const { columnWidth, imageMaxHeight, eventTileSize } = result.current;
+      const sizes = Sizes[device];
+      const inner = columnWidth - 2 * sizes.cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+
+      expect(eventTileSize).toBeCloseTo(
+        Math.min((inner - 2 * Layout.eventTileGap) / Layout.eventTilePeek, imageMaxHeight),
+      );
+      expect(eventTileSize).toBeLessThanOrEqual(imageMaxHeight);
+      // Two whole tiles and their gaps fit, a third doesn't.
+      expect(2 * eventTileSize + 2 * Layout.eventTileGap).toBeLessThan(inner);
+    });
+
+    test('is about 133 points on the 411-point test phone and about 118 on a 375-point phone', async () => {
+      const { result } = await renderHook(() => useShellLayout());
+      expect(result.current.eventTileSize).toBeCloseTo(132.9, 0);
+
+      await act(async () => setMockWindow({ width: 375, height: 812 }));
+      expect(result.current.eventTileSize).toBeGreaterThan(110);
+      expect(result.current.eventTileSize).toBeLessThan(125);
+    });
+
+    test('phone landscape is capped by imageMaxHeight', async () => {
+      setMockWindow(TEST_WINDOWS.phoneLandscape);
+      const { result } = await renderHook(() => useShellLayout());
+      expect(result.current.eventTileSize).toBe(result.current.imageMaxHeight);
+    });
+
+    test('changes when the window changes', async () => {
+      const { result } = await renderHook(() => useShellLayout());
+      const portrait = result.current.eventTileSize;
+      await act(async () => setMockWindow(TEST_WINDOWS.phoneLandscape));
+      expect(result.current.eventTileSize).not.toBe(portrait);
+    });
+  });
 });

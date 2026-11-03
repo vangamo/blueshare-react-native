@@ -1,5 +1,6 @@
 import { ItemNotFoundError } from '@/items/domain/errors';
-import type { ImageItem } from '@/items/domain/image-item';
+import type { EventItem } from '@/items/domain/event-item';
+import type { ImageItem, StoredPhoto } from '@/items/domain/image-item';
 import type { TextItem } from '@/items/domain/text-item';
 import { migrate } from '@/items/infrastructure/migrations';
 import { SqliteItemRepository } from '@/items/infrastructure/sqlite-item-repository';
@@ -342,15 +343,226 @@ describe('SqliteItemRepository image items', () => {
       ItemNotFoundError,
     );
   });
+});
 
-  test('an event item still cannot be archived', async () => {
+const photo = (file: string): StoredPhoto => ({
+  file,
+  width: 400,
+  height: 300,
+});
+const [P1, P2, P3] = [photo('p1.jpg'), { file: 'p2.png', width: 30, height: 90 }, photo('p3.jpg')];
+
+function eventItem(id: string, createdAt: number, overrides: Partial<EventItem> = {}): EventItem {
+  return {
+    id,
+    type: 'event',
+    createdAt,
+    updatedAt: createdAt,
+    deletedAt: null,
+    title: 'Viaje',
+    category: 'Familia',
+    description: null,
+    photos: [P1, P2],
+    ...overrides,
+  };
+}
+
+async function eventHistory(db: NodeSqlDatabase, id: string) {
+  const versions = await db.getAll<{
+    counter: number;
+    title: string;
+    category: string;
+    description: string | null;
+    deleted_at: number | null;
+  }>(
+    `SELECT h.counter, e.title, e.category, e.description, h.deleted_at
+     FROM items_history h JOIN event_items_history e ON e.item_id = h.item_id AND e.counter = h.counter
+     WHERE h.item_id = ? ORDER BY h.counter`,
+    [id],
+  );
+  const photos = await db.getAll<{ counter: number; photo_file: string }>(
+    `SELECT counter, photo_file FROM event_item_photos_history WHERE item_id = ? ORDER BY counter, position`,
+    [id],
+  );
+  return versions.map((version) => ({
+    ...version,
+    photos: photos.filter((row) => row.counter === version.counter).map((row) => row.photo_file),
+  }));
+}
+
+describe('SqliteItemRepository event items', () => {
+  test('saves, finds and lists an event with its photos in order', async () => {
+    const { repository } = await setup();
+    const item = eventItem('e', 1000, {
+      photos: [P3, P1, P2],
+      description: 'Genial',
+    });
+    await repository.saveEvent(item);
+
+    expect(await repository.findEvent('e')).toEqual(item);
+    expect(await repository.listTimeline()).toEqual([item]);
+  });
+
+  test('lists events with text and image items, newest first, each with its own photos', async () => {
+    const { repository } = await setup();
+    const first = eventItem('e1', 1000, { photos: [P2] });
+    const second = eventItem('e2', 4000, { photos: [P3, P1] });
+    await repository.saveEvent(first);
+    await repository.saveText(textItem('t', 'Uno', 2000));
+    await repository.saveImage(imageItem('i', 3000));
+    await repository.saveEvent(second);
+
+    const items = await repository.listTimeline();
+    expect(items.map((item) => item.id)).toEqual(['e2', 'i', 't', 'e1']);
+    expect(items[0]).toEqual(second);
+    expect(items[3]).toEqual(first);
+  });
+
+  test('the order survives reopening the database', async () => {
+    const { db } = await setup();
+    await new SqliteItemRepository(db).saveEvent(eventItem('e', 1000, { photos: [P3, P1, P2] }));
+
+    const reopened = new SqliteItemRepository(db);
+    expect((await reopened.findEvent('e'))?.photos).toEqual([P3, P1, P2]);
+  });
+
+  test('findEvent returns null for other types, unknown ids and deleted events', async () => {
+    const { repository } = await setup();
+    await repository.saveText(textItem('t', 'Uno', 1000));
+    await repository.saveEvent(eventItem('e', 2000));
+    await repository.deleteItem('e', 3000);
+
+    expect(await repository.findEvent('t')).toBeNull();
+    expect(await repository.findEvent('zzz')).toBeNull();
+    expect(await repository.findEvent('e')).toBeNull();
+    await repository.saveEvent(eventItem('e2', 4000));
+    expect(await repository.findText('e2')).toBeNull();
+    expect(await repository.findImage('e2')).toBeNull();
+  });
+
+  test('update rewrites the photo list in place and the item keeps its feed position', async () => {
+    const { repository } = await setup();
+    const item = eventItem('e', 1000);
+    await repository.saveEvent(item);
+    await repository.saveText(textItem('t', 'Después', 2000));
+    const edited: EventItem = {
+      ...item,
+      photos: [P2, P3],
+      category: 'Amigos',
+      description: 'Nuevo',
+      updatedAt: 3000,
+    };
+
+    await repository.updateEvent(edited);
+
+    expect(await repository.findEvent('e')).toEqual(edited);
+    expect((await repository.listTimeline()).map((i) => i.id)).toEqual(['t', 'e']);
+  });
+
+  test('history: a photo removed and one added, then deleted, gives versions 1 and 2 in order', async () => {
     const { db, repository } = await setup();
-    await db.run(
-      'INSERT INTO items (id, type, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?)',
-      ['e', 'event', 1, 1, null],
+    const item = eventItem('e', 1000, { photos: [P1, P2] });
+    await repository.saveEvent(item);
+    await repository.updateEvent({
+      ...item,
+      photos: [P2, P3],
+      updatedAt: 2000,
+    });
+
+    await repository.deleteItem('e', 3000);
+
+    expect(await eventHistory(db, 'e')).toEqual([
+      {
+        counter: 1,
+        title: 'Viaje',
+        category: 'Familia',
+        description: null,
+        deleted_at: null,
+        photos: ['p1.jpg', 'p2.png'],
+      },
+      {
+        counter: 2,
+        title: 'Viaje',
+        category: 'Familia',
+        description: null,
+        deleted_at: 3000,
+        photos: ['p2.png', 'p3.jpg'],
+      },
+    ]);
+  });
+
+  test('deletion removes the event and photo rows and keeps the history', async () => {
+    const { db, repository } = await setup();
+    await repository.saveEvent(eventItem('e', 1000));
+
+    await repository.deleteItem('e', 2000);
+
+    expect(await repository.listTimeline()).toEqual([]);
+    expect(await db.getAll('SELECT id FROM items')).toEqual([]);
+    expect(await db.getAll('SELECT item_id FROM event_items')).toEqual([]);
+    expect(await db.getAll('SELECT item_id FROM event_item_photos')).toEqual([]);
+    expect((await eventHistory(db, 'e'))[0].photos).toEqual(['p1.jpg', 'p2.png']);
+  });
+
+  test('a failing photo insert leaves no items or event_items row', async () => {
+    const { db } = await setup();
+    let photoInserts = 0;
+    const failing = new SqliteItemRepository(
+      new FailingSqlDatabase(
+        db,
+        (sql) => sql.includes('INSERT INTO event_item_photos') && ++photoInserts === 2,
+      ),
     );
 
-    await expect(repository.deleteItem('e', 2000)).rejects.toThrow(/Cannot archive/);
-    expect(await db.getAll('SELECT id FROM items')).toEqual([{ id: 'e' }]);
+    await expect(failing.saveEvent(eventItem('e', 1000))).rejects.toThrow(/Injected failure/);
+
+    expect(await db.getAll('SELECT id FROM items')).toEqual([]);
+    expect(await db.getAll('SELECT item_id FROM event_items')).toEqual([]);
+    expect(await db.getAll('SELECT item_id FROM event_item_photos')).toEqual([]);
+  });
+
+  test('a failing update leaves the item, its photos and its history unchanged', async () => {
+    const { db } = await setup();
+    const item = eventItem('e', 1000);
+    await new SqliteItemRepository(db).saveEvent(item);
+    const failing = new SqliteItemRepository(
+      new FailingSqlDatabase(db, (sql) => sql.includes('INSERT INTO event_item_photos ')),
+    );
+
+    await expect(
+      failing.updateEvent({
+        ...item,
+        title: 'Otro',
+        photos: [P3],
+        updatedAt: 2000,
+      }),
+    ).rejects.toThrow(/Injected failure/);
+
+    expect(await new SqliteItemRepository(db).findEvent('e')).toEqual(item);
+    expect(await eventHistory(db, 'e')).toEqual([]);
+  });
+
+  test('an event row with no photos is hidden from the feed', async () => {
+    const { db, repository } = await setup();
+    await repository.saveText(textItem('t', 'Uno', 1000));
+    await db.run(
+      'INSERT INTO items (id, type, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?)',
+      ['e', 'event', 2000, 2000, null],
+    );
+    await db.run(
+      'INSERT INTO event_items (item_id, title, category, description) VALUES (?, ?, ?, ?)',
+      ['e', 'Viaje', 'Familia', null],
+    );
+
+    expect((await repository.listTimeline()).map((item) => item.id)).toEqual(['t']);
+    expect(await repository.findEvent('e')).toBeNull();
+  });
+
+  test('an unknown id throws ItemNotFoundError', async () => {
+    const { db, repository } = await setup();
+    await expect(repository.updateEvent(eventItem('zzz', 1000))).rejects.toBeInstanceOf(
+      ItemNotFoundError,
+    );
+    expect(await db.getAll('SELECT item_id FROM items_history')).toEqual([]);
   });
 });

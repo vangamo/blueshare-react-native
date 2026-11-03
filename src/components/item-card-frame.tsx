@@ -40,8 +40,18 @@ export function CardActions({ onEdit }: { onEdit: () => void }) {
   );
 }
 
+type ItemCardFrameProps = {
+  testID: string;
+  /**
+   * The event card's look: a strong-ink border and a primary-blue bar along the left edge
+   * (`Layout.accentBarWidth`), drawn as a wider left border inside the rounded corners.
+   */
+  accent?: boolean;
+  children: ReactNode;
+};
+
 /** The card every item type shares: background, border, radius, padding, shadow and spacing. */
-export function ItemCardFrame({ testID, children }: { testID: string; children: ReactNode }) {
+export function ItemCardFrame({ testID, accent = false, children }: ItemCardFrameProps) {
   const theme = useTheme();
   const { sizes } = useShellLayout();
   return (
@@ -56,6 +66,11 @@ export function ItemCardFrame({ testID, children }: { testID: string; children: 
           backgroundColor: theme.cardBg,
           borderColor: theme.borderColor,
           boxShadow: `0 2px 6px ${theme.cardShadow}`,
+        },
+        accent && {
+          borderColor: theme.primaryDark,
+          borderLeftWidth: Layout.accentBarWidth,
+          borderLeftColor: theme.primaryBlue,
         },
       ]}>
       {children}

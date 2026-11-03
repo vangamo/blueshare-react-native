@@ -42,7 +42,9 @@ Components read `Sizes` and `Frames` through `useShellLayout()` and pass them in
 | `textAreaMin` / `textAreaMax` | 96 / 200 | 104 / 240 | text area: about three lines, then grows and scrolls |
 | `placeholderTitle` / `placeholderBody` | 18 / 15 | 20 / 16 | placeholder screens |
 | `captionText` | 14 | 15 | image card caption (italic) |
-| `fieldLabel` / `fieldHint` | 14 / 14 | 15 / 15 | labels and hints of the image fields |
+| `fieldLabel` / `fieldHint` | 14 / 14 | 15 / 15 | labels and hints of the image and event fields |
+| `eventTitle` / `badgeText` | 17 / 14 | 19 / 15 | event card title (bold) and category badge (bold) |
+| `thumbColumns` | 3 | 4 | thumbnails per row in the event step and dialog |
 
 Tablet values come from the tablet portrait mock, rounded up to 44-point targets. `textAreaMin/Max` and `optionRow` on tablets are not in the mock: they are scaled to the larger font and tuned in the visual review. After the visual review on the tablet emulator the tablet values were kept as listed (no tuning was needed for the text area heights or the option rows). Tablet landscape has no mock, so it combines the tablet sizes with the landscape structure.
 
@@ -58,6 +60,8 @@ Tablet values come from the tablet portrait mock, rounded up to 44-point targets
 Bar heights are added to the safe-area insets. `columnWidth` (from `useShellLayout()`) is the window minus the side insets and twice `contentPadding`, capped at the frame's column.
 
 `imageMaxHeight` (also from `useShellLayout()`) is the tallest photo box, so a whole image card fits below the header and tab bar: window height, minus the top and bottom insets, `headerHeight`, `tabBarHeight`, twice `contentPadding` and the card chrome (card padding and border, `photoGap`, one caption line of `captionText × 1.5`, and the action row), never less than `Layout.imageMinHeight` (120). On the test windows the floor wins in phone landscape (363 points high). Each photo box is then `min(width × h / w, width × imageMaxRatio, imageMaxHeight)` tall.
+
+`eventTileSize` (also from `useShellLayout()`) is the side of an event card's square photo tiles: `min((eventInnerWidth − 2 × eventTileGap) / eventTilePeek, imageMaxHeight)`, where `eventInnerWidth = columnWidth − 2 × cardPadding − borderWidth − accentBarWidth`. Two tiles and 40% of a third fit the card. That is about 118 points on a 375-point phone and about 133 on the 411-point test phone. In phone landscape the cap wins (120 on the test window). The event step and dialog thumbnails use `thumbColumns` per row instead, sized from the box's inner width.
 
 ## `Layout` (fixed values)
 
@@ -76,6 +80,11 @@ Bar heights are added to the safe-area insets. `columnWidth` (from `useShellLayo
 | `photoGap` | 8 | space between photo, caption and actions |
 | `imageMinHeight` | 120 | floor of the photo box height |
 | `imageMaxRatio` | 1.25 | tallest photo box, as a multiple of its width |
+| `accentBarWidth` | 6 | primary-blue bar on the event card's left edge |
+| `eventTileGap` | 10 | space between event photo tiles |
+| `eventTilePeek` | 2.4 | tiles that fit the event card's width (two whole, 40% of the third) |
+| `badgePaddingH` / `badgePaddingV` | 10 / 4 | inner space of the category badge |
+| `thumbRemoveInset` | 4 | how far the remove button sits inside a thumbnail's corner |
 
 A value from the HTML that is not a design token belongs in `Sizes`, `Frames` or `Layout`, never inline.
 

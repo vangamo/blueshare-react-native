@@ -32,3 +32,22 @@ export class InvalidImageTextError extends Error {
     this.name = 'InvalidImageTextError';
   }
 }
+
+/** A field of an event item breaks its rule: a blank or over-long text, or a photo count outside 1 to the limit. */
+export class InvalidEventError extends Error {
+  constructor(
+    readonly field: 'title' | 'category' | 'description' | 'photos',
+    readonly reason: 'blank' | 'too_long' | 'too_few' | 'too_many',
+    readonly limit: number,
+  ) {
+    super(InvalidEventError.describe(field, reason, limit));
+    this.name = 'InvalidEventError';
+  }
+
+  private static describe(field: string, reason: string, limit: number): string {
+    if (reason === 'blank') return `Event ${field} is blank.`;
+    if (reason === 'too_long') return `Event ${field} is longer than ${limit} characters.`;
+    if (reason === 'too_few') return `An event needs at least ${limit} photo.`;
+    return `An event holds at most ${limit} photos.`;
+  }
+}

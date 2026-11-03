@@ -245,3 +245,93 @@ describe('timeline store image items', () => {
     expect(store.getSnapshot().items).toEqual([]);
   });
 });
+
+describe('timeline store event items', () => {
+  const photo = () => ({ uri: writeFixturePhoto(), width: 400, height: 300, mimeType: 'image/png' });
+  const input = (title = 'Viaje') => ({
+    photos: [photo(), photo()],
+    title,
+    category: 'Familia',
+    description: null,
+  });
+  const types = (store: TimelineStore) => store.getSnapshot().items.map((item) => item.type);
+
+  test('createEvent waits for the load and puts the new item first', async () => {
+    const db = new NodeSqlDatabase();
+    await storeOn(db).createText('Viejo');
+
+    const store = storeOn(db); // not subscribed yet
+    const created = await store.createEvent(input());
+
+    expect(store.getSnapshot().status).toBe('ready');
+    expect(types(store)).toEqual(['event', 'text']);
+    expect(store.getSnapshot().items[0]).toEqual(created);
+  });
+
+  test('updateEvent replaces the item in place and keeps its index', async () => {
+    const store = storeOn(new NodeSqlDatabase());
+    const first = await store.createEvent(input('Uno'));
+    await store.createText('Dos');
+    const listener = jest.fn();
+    store.subscribe(listener);
+
+    const updated = await store.updateEvent(first.id, {
+      photos: [{ kind: 'stored', photo: first.photos[1] }],
+      title: 'Uno',
+      category: 'Amigos',
+      description: null,
+    });
+
+    expect(types(store)).toEqual(['text', 'event']);
+    expect(store.getSnapshot().items[1]).toEqual(updated);
+    expect(updated).toMatchObject({ category: 'Amigos', photos: [first.photos[1]] });
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  test('an unchanged updateEvent keeps the same snapshot object', async () => {
+    const store = storeOn(new NodeSqlDatabase());
+    const item = await store.createEvent(input('Uno'));
+    const before = store.getSnapshot();
+
+    await store.updateEvent(item.id, {
+      photos: item.photos.map((stored) => ({ kind: 'stored', photo: stored })),
+      title: ' Uno ',
+      category: 'Familia ',
+      description: '  ',
+    });
+
+    expect(store.getSnapshot()).toBe(before);
+  });
+
+  test('a failed createEvent rejects and leaves the snapshot unchanged', async () => {
+    const inner = new NodeSqlDatabase();
+    const store = storeOn(new FailingSqlDatabase(inner, (sql) => sql.includes('INSERT INTO event_items')));
+    await loaded(store);
+    const before = store.getSnapshot();
+
+    await expect(store.createEvent(input())).rejects.toThrow(/Injected failure/);
+
+    expect(store.getSnapshot()).toBe(before);
+  });
+
+  test('a failed updateEvent rejects and leaves the snapshot unchanged', async () => {
+    const inner = new NodeSqlDatabase();
+    const store = storeOn(new FailingSqlDatabase(inner, (sql) => sql.includes('UPDATE event_items')));
+    const item = await store.createEvent(input('Uno'));
+    const before = store.getSnapshot();
+
+    await expect(
+      store.updateEvent(item.id, { photos: [], title: 'Uno', category: 'Familia', description: null }),
+    ).rejects.toThrow(/at least 1 photo/);
+    await expect(
+      store.updateEvent(item.id, {
+        photos: item.photos.map((stored) => ({ kind: 'stored', photo: stored })),
+        title: 'Otro',
+        category: 'Familia',
+        description: null,
+      }),
+    ).rejects.toThrow(/Injected failure/);
+
+    expect(store.getSnapshot()).toBe(before);
+  });
+});

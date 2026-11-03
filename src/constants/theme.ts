@@ -93,6 +93,17 @@ export const Layout = {
   imageMinHeight: 120,
   /** Tallest photo box, as a multiple of its width. */
   imageMaxRatio: 1.25,
+  /** Width of the primary-blue bar on the left edge of an event card. */
+  accentBarWidth: 6,
+  /** Space between the photo tiles of an event card. */
+  eventTileGap: 10,
+  /** How many tiles fit the event card's width: two whole tiles and 40% of the third. */
+  eventTilePeek: 2.4,
+  /** Inner space of a category badge. */
+  badgePaddingH: 10,
+  badgePaddingV: 4,
+  /** How far the remove button sits inside a thumbnail's top right corner. */
+  thumbRemoveInset: 4,
 } as const;
 
 export type LayoutKind = 'phone-portrait' | 'phone-landscape' | 'tablet-portrait' | 'tablet-landscape';
@@ -135,6 +146,10 @@ export type SizeSet = {
   captionText: number;
   fieldLabel: number;
   fieldHint: number;
+  eventTitle: number;
+  badgeText: number;
+  /** Thumbnails per row in the event step and dialog. */
+  thumbColumns: number;
 };
 
 /** The phone set is today's phone portrait look (sketches/mobile-portrait.html). */
@@ -172,6 +187,9 @@ export const Sizes: Record<DeviceKind, SizeSet> = {
     captionText: 14,
     fieldLabel: 14,
     fieldHint: 14,
+    eventTitle: 17,
+    badgeText: 14,
+    thumbColumns: 3,
   },
   // From sketches/tablet-portrait.html, rounded up to 44-point targets. The text area
   // and option row values are not in the mock and are tuned in the visual review.
@@ -208,6 +226,9 @@ export const Sizes: Record<DeviceKind, SizeSet> = {
     captionText: 15,
     fieldLabel: 15,
     fieldHint: 15,
+    eventTitle: 19,
+    badgeText: 15,
+    thumbColumns: 4,
   },
 };
 
