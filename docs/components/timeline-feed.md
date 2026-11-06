@@ -1,13 +1,13 @@
 ---
 type: Component
 title: Timeline feed
-description: The Timeline section: a FlatList with the creation box as its header and text and image cards newest first, plus the empty, loading and error states, scroll to top and the Android back button.
+description: The Timeline section: a FlatList with the creation box as its header and text, image and event cards newest first, plus the empty, loading and error states, scroll to top and the Android back button.
 tags: [component, timeline, feed, list]
 resource: ../../src/components/timeline-feed.tsx
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T12:00:00Z
+  at: 2026-11-06T12:00:00Z
 ---
 
 # Timeline feed

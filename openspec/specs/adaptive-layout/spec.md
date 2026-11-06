@@ -52,6 +52,10 @@ Component sizes and font sizes SHALL depend only on whether the layout is a phon
 - **WHEN** a tablet layout is used
 - **THEN** image captions, field labels and the alternative text hint are 15 points, the caption field is at least 48 points tall with 17-point text, and the photo button is at least 48 points tall with a 16-point label
 
+#### Scenario: Event items on a tablet
+- **WHEN** a tablet layout is used
+- **THEN** event titles are 19 points, category badges are 15 points, the event title and category fields are at least 48 points tall with 17-point text, the category suggestions and photo remove buttons are at least 48 points tall, and the event step and dialog show four thumbnails per row instead of three
+
 #### Scenario: Same sizes in both orientations
 - **WHEN** the user rotates a phone, or a tablet
 - **THEN** the card text, the title field and the create button keep the same size in both orientations
@@ -130,7 +134,7 @@ The header, the tab bar, the create button and the section content SHALL stay cl
 - **THEN** its "Cancelar" and "Crear" buttons can be scrolled fully above the gesture bar
 
 ### Requirement: Rotation keeps the user's place
-Rotating the device, or any other change of the window size, SHALL NOT reset what the user is doing. The current section, the feed's scroll position, the creation box with its step, type, text, chosen photo, alternative text and caption, the open edit dialog with its edited content and any newly picked photo, and the focused text field with its open keyboard SHALL be kept. Focus SHALL NOT move to another field.
+Rotating the device, or any other change of the window size, SHALL NOT reset what the user is doing. The current section, the feed's scroll position, the creation box with its step, type, text, chosen photos, alternative text, caption, title, category and description, the open edit dialog with its edited content and any newly picked or removed photos, and the focused text field with its open keyboard SHALL be kept. Focus SHALL NOT move to another field.
 
 #### Scenario: Typing in the creation box
 - **WHEN** the user is typing "Hola" in the creation box with the keyboard open and rotates the phone, then rotates it back
@@ -148,6 +152,14 @@ Rotating the device, or any other change of the window size, SHALL NOT reset wha
 - **WHEN** the image dialog shows a newly picked, unsaved photo and the user rotates the device
 - **THEN** the dialog still shows the new photo and the edited fields, in its current step
 
+#### Scenario: Event step with photos
+- **WHEN** the event step shows three chosen photos, a typed title and a category, and the user rotates the device
+- **THEN** the event step still shows the same three photos in the same order and the same fields, with the thumbnails resized to the new layout
+
+#### Scenario: Event dialog with removed photos
+- **WHEN** the event dialog shows an event with one photo removed and one added, not yet saved, and the user rotates the device
+- **THEN** the dialog still shows the same photos in the same order and the edited fields, in its current step
+
 #### Scenario: Draft on another section
 - **WHEN** a draft is pending on Timeline, the user rotates the device on Circles and returns to Timeline
 - **THEN** the creation box shows the draft in the same step
@@ -162,9 +174,17 @@ In the phone landscape layout, the app SHALL let the system show its full-screen
 #### Scenario: Typing in the full-screen editor
 - **WHEN** the user types "nunca" in the creation box through the full-screen editor in phone landscape and presses the editor's done key
 - **THEN** the editor closes, the creation box shows the text with "nunca", and the text area keeps its focus
+
 ### Requirement: Maximum image height follows the layout
 The maximum height of a photo on a card or in a preview SHALL be computed for the current layout and window, and SHALL be updated as soon as the layout or the window size changes, without changing which photo or item is shown.
 
 #### Scenario: Rotating with a tall photo on screen
 - **WHEN** a card with a tall photo is shown in phone portrait and the user rotates to phone landscape
 - **THEN** the photo is shown smaller, whole, so that the photo, its caption line and its actions fit in the visible content area
+
+### Requirement: Event photo tile size follows the layout
+The side of an event card's photo tiles SHALL be computed for the current layout and window, so that two tiles and part of a third fit in the card's content width. When that side is larger than the layout's maximum image height, the side SHALL be the maximum image height instead. It SHALL be updated as soon as the layout or the window size changes, without changing which photos or items are shown.
+
+#### Scenario: Rotating with an event on screen
+- **WHEN** an event card with five photos is shown in phone portrait and the user rotates to phone landscape
+- **THEN** the tiles are resized for the new card width, still square, still no taller than the maximum image height, and the same photos are shown in the same order

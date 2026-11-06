@@ -1,19 +1,19 @@
 ---
 type: Overview
 title: Roadmap
-description: BlueShare is built in four phases. Phase 1 (core layout and main feed) has delivered the app shell and text items, and image and event items are next.
+description: BlueShare is built in four phases. Phase 1 (core layout and main feed) has delivered the app shell and text, image and event items, and locations for image and event items are next.
 tags: [product, roadmap, planning]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T21:00:00Z
+  at: 2026-11-06T12:00:00Z
 ---
 
 # Roadmap
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 1 | Core layout and main feed | Shell, text items, image items and Editar done. Event items and Compartir not started. |
+| 1 | Core layout and main feed | Shell, text, image and event items and Editar done. Item locations next. Compartir waits for Phase 4. |
 | 2 | Circles (contacts management) | Not started |
 | 3 | User events management | Not started |
 | 4 | Bluetooth sharing | Not started |
@@ -49,11 +49,21 @@ The OpenSpec change `adaptive-layout` (branch `01bb-adaptable-layout`, 28/28 tas
 
 Specs: [adaptive-layout](../specs/adaptive-layout.md). Decisions: [Adaptive layout](../decisions/adaptive-layout.md), [Tab bar stays in one slot](../decisions/tab-bar-single-slot.md).
 
+The OpenSpec change `add-image-items` (branch `03-image-items`, 36/36 tasks, archived 2026-11-02 in `openspec/changes/archive/2026-11-02-add-image-items/`):
+- "📷 Imagen" picks one photo with optional alternative text and caption, copied into app storage
+- image cards show the photo whole, and the image dialog changes or deletes it
+
+The OpenSpec change `event-items` (branch `04-event-items`, 28/28 tasks, archived 2026-11-06 in `openspec/changes/archive/2026-11-06-event-items/`):
+- "📅 Evento" opens an event step: 1 to 10 photos picked several at a time, a title, a category with suggestions and an optional description
+- event cards with a deep-blue accent bar, a category badge and a sideways row of square photo tiles; an event dialog to change photos and texts or delete it
+- schema v4: event and ordered photo tables with their history twins
+
+Specs: changes to [item-creation](../specs/item-creation.md), [item-editing](../specs/item-editing.md), [item-storage](../specs/item-storage.md), [timeline-feed](../specs/timeline-feed.md), [adaptive-layout](../specs/adaptive-layout.md) and [app-theming](../specs/app-theming.md). Decision: [Event items](../decisions/event-items.md).
+
 ## Next in Phase 1
 
-- Image items are done (creation step, card, edit dialog; photos copied into app storage). Locations for image items are the next change, `add-item-locations`.
-- Event items: their creation step (Guardar with "📅 Evento" does nothing yet) and their cards, using the reserved tokens (`badgeBg`, `badgeText`, `backgroundBody`) and the `feed_cards` component notes in the [design tokens](../design-system/design-tokens.md). Each type gets its own table ([Items schema](../decisions/items-schema.md)).
-- "Compartir" on text and image cards waits for Phase 4. Editar on event items comes with that type.
+- Locations for image and event items: the next change, `add-item-locations` (nullable location columns added to `image_items` and `event_items`).
+- "Compartir" on text, image and event cards waits for Phase 4.
 - The side menu ([app header](../components/app-header.md)) and search ([title search field](../components/title-search-field.md)).
 
 ## Workflow follow-ups

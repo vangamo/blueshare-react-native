@@ -49,3 +49,9 @@ From the `edit-text-items` change (its `design.md`, now in `openspec/changes/arc
 From the `add-image-items` change (its `design.md`). D1 and D4 are described in [Items module](../architecture/items-module.md), [Items schema](items-schema.md) and the image components.
 
 * [Shared edit dialog frame](shared-edit-dialog-frame.md) - D10: the text and image dialogs share `EditDialogFrame` and keep their own body state.
+
+## event-items
+
+From the `event-items` change (its `design.md`, now in `openspec/changes/archive/2026-11-06-event-items/`). D2 and D3 (event and photo tables) are in [Items schema](items-schema.md), D10's keyboard handling in [Shared edit dialog frame](shared-edit-dialog-frame.md), and D7, D8, D12 and D13 in the event component and design-system pages.
+
+* [Event items](event-items.md) - D1, D6, D11: a separate event type with an ordered photo list, picking several photos at once, and the card's sideways row of square tiles with a peeking tile.
