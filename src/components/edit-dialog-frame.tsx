@@ -2,6 +2,7 @@ import { useReducer, useRef, type ReactNode } from 'react';
 import {
   AccessibilityInfo,
   Keyboard,
+  KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
@@ -143,97 +144,104 @@ export function EditDialogFrame({
       testID={testID}>
       {/* Not pressable: tapping the overlay does nothing. */}
       <View style={[styles.overlay, { backgroundColor: theme.overlay }]}>
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={[
-            styles.content,
-            {
-              paddingTop: insets.top + Spacing.lg,
-              paddingBottom: insets.bottom + Spacing.lg,
-              paddingLeft: insets.left + Spacing.lg,
-              paddingRight: insets.right + Spacing.lg,
-            },
-          ]}>
-          <View
-            accessibilityViewIsModal
-            style={[
-              styles.box,
+        {/* Android draws edge to edge, so the modal does not shrink for the keyboard. The
+            scroll area ends above it instead, so every field and button stays reachable. */}
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={styles.overlay}
+          testID="edit-dialog-keyboard-area">
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={[
+              styles.content,
               {
-                width: columnWidth,
-                borderRadius: sizes.cardRadius,
-                padding: sizes.cardPadding,
-                backgroundColor: theme.creationBg,
-                borderColor: theme.primaryBlue,
+                paddingTop: insets.top + Spacing.lg,
+                paddingBottom: insets.bottom + Spacing.lg,
+                paddingLeft: insets.left + Spacing.lg,
+                paddingRight: insets.right + Spacing.lg,
               },
             ]}>
-            <View style={styles.header}>
-              <Text
-                accessibilityRole="header"
-                style={[styles.title, { fontSize: sizes.boxTitle, color: theme.textMain }]}>
-                {confirming ? confirmTitle : title}
-              </Text>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Cerrar"
-                onPress={close}
-                style={({ pressed }) => [styles.closeButton, pressed && styles.pressed]}>
-                <Text style={[styles.closeGlyph, { color: theme.textMain }]}>✕</Text>
-              </Pressable>
-            </View>
-
-            {confirming ? (
-              <>
-                <Text style={{ fontSize: sizes.cardText, color: theme.textMain }}>
-                  Desaparecerá de tu línea de tiempo.
+            <View
+              accessibilityViewIsModal
+              style={[
+                styles.box,
+                {
+                  width: columnWidth,
+                  borderRadius: sizes.cardRadius,
+                  padding: sizes.cardPadding,
+                  backgroundColor: theme.creationBg,
+                  borderColor: theme.primaryBlue,
+                },
+              ]}>
+              <View style={styles.header}>
+                <Text
+                  accessibilityRole="header"
+                  style={[styles.title, { fontSize: sizes.boxTitle, color: theme.textMain }]}>
+                  {confirming ? confirmTitle : title}
                 </Text>
-                {state.error ? <ErrorMessage message={errorMessage} /> : null}
-                <View style={styles.buttons}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Cerrar"
+                  onPress={close}
+                  style={({ pressed }) => [styles.closeButton, pressed && styles.pressed]}>
+                  <Text style={[styles.closeGlyph, { color: theme.textMain }]}>✕</Text>
+                </Pressable>
+              </View>
+
+              {confirming ? (
+                <>
+                  <Text style={{ fontSize: sizes.cardText, color: theme.textMain }}>
+                    Desaparecerá de tu línea de tiempo.
+                  </Text>
+                  {state.error ? <ErrorMessage message={errorMessage} /> : null}
+                  <View style={styles.buttons}>
+                    <BoxButton
+                      label="No, volver"
+                      variant="secondary"
+                      onPress={() => dispatch({ type: 'backToEdit' })}
+                      style={styles.button}
+                    />
+                    <BoxButton
+                      label="Sí, borrar"
+                      variant="danger"
+                      disabled={state.busy}
+                      onPress={() => {
+                        void run(onDelete, 'delete');
+                      }}
+                      style={styles.button}
+                    />
+                  </View>
+                </>
+              ) : (
+                <>
+                  {children({ clearError: () => dispatch({ type: 'clearError' }) })}
+                  {state.error ? <ErrorMessage message={errorMessage} /> : null}
+                  <View style={styles.buttons}>
+                    <BoxButton label="Cancelar" variant="secondary" onPress={close} style={styles.button} />
+                    <BoxButton
+                      label="Guardar"
+                      variant="primary"
+                      disabled={!canSave || state.busy}
+                      onPress={() => {
+                        void run(onSave, 'save');
+                      }}
+                      style={styles.button}
+                    />
+                  </View>
+                  <View style={[styles.divider, { backgroundColor: theme.divider }]} />
                   <BoxButton
-                    label="No, volver"
-                    variant="secondary"
-                    onPress={() => dispatch({ type: 'backToEdit' })}
-                    style={styles.button}
-                  />
-                  <BoxButton
-                    label="Sí, borrar"
-                    variant="danger"
-                    disabled={state.busy}
+                    label={deleteLabel}
+                    variant="dangerOutline"
                     onPress={() => {
-                      void run(onDelete, 'delete');
+                      Keyboard.dismiss();
+                      dispatch({ type: 'askDelete' });
                     }}
-                    style={styles.button}
                   />
-                </View>
-              </>
-            ) : (
-              <>
-                {children({ clearError: () => dispatch({ type: 'clearError' }) })}
-                {state.error ? <ErrorMessage message={errorMessage} /> : null}
-                <View style={styles.buttons}>
-                  <BoxButton label="Cancelar" variant="secondary" onPress={close} style={styles.button} />
-                  <BoxButton
-                    label="Guardar"
-                    variant="primary"
-                    disabled={!canSave || state.busy}
-                    onPress={() => {
-                      void run(onSave, 'save');
-                    }}
-                    style={styles.button}
-                  />
-                </View>
-                <View style={[styles.divider, { backgroundColor: theme.divider }]} />
-                <BoxButton
-                  label={deleteLabel}
-                  variant="dangerOutline"
-                  onPress={() => {
-                    Keyboard.dismiss();
-                    dispatch({ type: 'askDelete' });
-                  }}
-                />
-              </>
-            )}
-          </View>
-        </ScrollView>
+                </>
+              )}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );

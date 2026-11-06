@@ -11,7 +11,7 @@ generated:
 
 # Shared edit dialog frame (add-image-items D10)
 
-**Decision:** `EditDialogFrame` (`src/components/edit-dialog-frame.tsx`) holds everything around an edit dialog's fields: the `Modal` and overlay, the `ScrollView` and column width, the title and close button, the edit step (the body, Cancelar and Guardar, a divider and the deletion button), the confirmation step, busy and error state, the double-tap guard, the Android back button and the error announcements. It takes `title`, `deleteLabel`, `confirmTitle`, `canSave`, `onSave`, `onDelete`, `onClose` and a render-prop body.
+**Decision:** `EditDialogFrame` (`src/components/edit-dialog-frame.tsx`) holds everything around an edit dialog's fields: the `Modal` and overlay, the `ScrollView` (inside a `KeyboardAvoidingView`, so it ends above the keyboard) and column width, the title and close button, the edit step (the body, Cancelar and Guardar, a divider and the deletion button), the confirmation step, busy and error state, the double-tap guard, the Android back button and the error announcements. It takes `title`, `deleteLabel`, `confirmTitle`, `canSave`, `onSave`, `onDelete`, `onClose` and a render-prop body.
 
 - `EditTextDialog` is the text body (one text state), `EditImageDialog` the image body (`newPhoto`, `altText`, `caption`), and `EditEventDialog` the event body (`photos` drafts, `title`, `category`, `description`, added by `event-items`). The event dialog needed no change to the frame.
 - **The body's state stays in the body's component**, outside the frame, so it survives the confirmation step ("No, volver" keeps the edit).

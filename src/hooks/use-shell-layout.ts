@@ -27,8 +27,8 @@ export type ShellLayout = {
    */
   imageMaxHeight: number;
   /**
-   * Side of an event card's square photo tiles: two tiles and part of a third fit the
-   * card's content width (`Layout.eventTilePeek`), never more than `imageMaxHeight`.
+   * Side of an event card's square photo tiles: whole tiles and 40% of the next fit the card's
+   * content width (`Layout.eventTilePeek`), never more than `imageMaxHeight`.
    */
   eventTileSize: number;
 };
@@ -44,6 +44,20 @@ function imageCardChrome(sizes: SizeSet): number {
 /** Width inside an event card: padding on both sides, the right border and the left accent bar. */
 function eventInnerWidth(columnWidth: number, sizes: SizeSet): number {
   return columnWidth - 2 * sizes.cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+}
+
+/**
+ * Side of an event card's square tiles: whole tiles and part of the next fill the card
+ * (`Layout.eventTilePeek`, two whole tiles and 40% of a third). When that would be taller than
+ * `imageMaxHeight` (phone landscape), the row holds one more whole tile at a smaller size, so a
+ * tile always peeks out to show there are more photos.
+ */
+function eventTileSide(innerWidth: number, imageMaxHeight: number): number {
+  const part = Layout.eventTilePeek % 1;
+  for (let whole = Math.floor(Layout.eventTilePeek); ; whole++) {
+    const side = (innerWidth - whole * Layout.eventTileGap) / (whole + part);
+    if (side <= imageMaxHeight) return side;
+  }
 }
 
 /**
@@ -78,9 +92,6 @@ export function useShellLayout(): ShellLayout {
     sizes,
     imageMaxHeight,
     columnWidth,
-    eventTileSize: Math.min(
-      (eventInnerWidth(columnWidth, sizes) - 2 * Layout.eventTileGap) / Layout.eventTilePeek,
-      imageMaxHeight,
-    ),
+    eventTileSize: eventTileSide(eventInnerWidth(columnWidth, sizes), imageMaxHeight),
   };
 }

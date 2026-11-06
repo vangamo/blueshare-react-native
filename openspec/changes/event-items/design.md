@@ -12,7 +12,7 @@ For the motivation, see `proposal.md` (Why). The requirements are in `specs/`: d
   - `ItemCardFrame` and `CardActions` are shared by the text and image cards. `TimelineFeed` picks the card and the dialog on `item.type`.
   - `BoxTextField`, `BoxTextArea`, `FieldLabel` and `BoxButton` exist. `BoxTextField` has a 2-point `primaryDark` border on `cardBg`.
 - **Layout:** `useShellLayout()` returns `sizes`, `columnWidth` and `imageMaxHeight`. `PhotoPreview` computes its inner width as `columnWidth − 2·(cardPadding + borderWidth)`.
-- **Tokens:** `badge_bg` and `badge_text` already exist in both palettes and are unused. `design-system.json` `components.feed_cards.event_card` describes a 2px `#0f172a` highlight border (our `primary_dark`), a 6px `#0084ff` left accent bar (our `primary_blue`), the badge colors and a carousel of 110×90 tiles. The user asked for square tiles instead, which overrides the 110×90 note.
+- **Tokens:** `badge_bg` and `badge_text` already exist in both palettes and are unused. `design-system.json` `components.feed_cards.event_card` describes a 2px `#0f172a` highlight border (our `primary_dark`), a 6px `#0084ff` left accent bar (our `primary_blue`; the user chose `primary_blue_deep` instead, see D11), the badge colors and a carousel of 110×90 tiles. The user asked for square tiles instead, which overrides the 110×90 note.
 - **Facts checked for this change (SDK 58 docs, to be re-checked against the installed types in task 1):**
   - `expo-image-picker` `allowsMultipleSelection` works on Android and iOS 14+, and is mutually exclusive with `allowsEditing`.
   - `selectionLimit` works on Android and iOS 14+. **`0` means the system maximum**, so the app must never pass `0` to mean "none left".
@@ -24,7 +24,7 @@ For the motivation, see `proposal.md` (Why). The requirements are in `specs/`: d
     | --- | --- | --- |
     | `badgeText` on `badgeBg` (category) | 5.17 | 8.71 |
     | `textMain` on `cardBg` (event title) | 17.85 | 16.30 |
-    | `primaryBlue` on `cardBg` (accent bar, decorative) | 3.66 | 6.80 |
+    | `primaryBlueDeep` on `cardBg` (accent bar, ≥ 3:1) | 6.80 | 11.97 |
 - **Assumptions from the exploration**, proposed and not yet confirmed by the user:
   - the limits: 120, 24 and 2000 characters, and 10 photos (D9)
   - the four category suggestions (D7)
@@ -184,13 +184,15 @@ Copies run one after another, not in parallel. That keeps the rollback list simp
 - `canSave` = valid (at least one photo, title and category not blank) and changed. "Changed" means the photo keys differ from the stored file list in order, or any picked entry is present, or a trimmed text differs.
 - `onSave` maps the drafts to `EventPhotoInput[]` and calls `updateEvent`. Rendered with `key={item.id}`, like the other dialogs.
 - The frame's `ScrollView` already covers "Event dialog scrolls inside". It is checked with 10 photos in phone landscape.
+- **Keyboard (tuned on the device, task 11.2):** Android draws edge to edge, so neither the screen nor a translucent `Modal` shrinks for the keyboard. With 10 photos the event dialog's Descripción, Guardar and "Borrar este evento" stayed behind the keyboard, and in the event step the focused Título did too. `EditDialogFrame` now wraps its `ScrollView` in a `KeyboardAvoidingView` with `behavior="padding"` (the Expo keyboard guide's advice; `react-native-keyboard-controller` is not in Expo Go), and `TimelineFeed` wraps its `FlatList` in one with `keyboardVerticalOffset = insets.top + frame.headerHeight`, the screen's top. The text and image dialogs get the same fix through the shared frame. A custom hook based on `measureInWindow` was tried and dropped: in Expo Go it measures from below the status bar while the keyboard's `screenY` is in screen coordinates, so it fell 24 points short.
+- **Thumbnail grid (tuned on the device, task 11.2):** a row of exactly `innerWidth` wrapped its last thumbnail on the 411-point phone (2 per row instead of 3), from float rounding in the layout. The side keeps one device pixel free and is rounded down to whole device pixels.
 
 ### D11. The event card
 
-- **Frame:** `ItemCardFrame` gets an optional `accent` prop. When it is set, the frame uses a `primaryDark` border and `borderLeftWidth: Layout.accentBarWidth` (6) in `primaryBlue`. RN draws per-side border colors with the card's rounded corners, which matches the sketch's bar inside the curve. The visual review confirms it on Android and adjusts if needed (Open Questions).
+- **Frame:** `ItemCardFrame` gets an optional `accent` prop. When it is set, the frame uses a `primaryDark` border and `borderLeftWidth: Layout.accentBarWidth` (6) in `primaryBlueDeep`. The user chose the deep blue over the sketch's `primary_blue` so that the bar clearly sets event cards apart; it contrasts 6.80 / 11.97 with the card, and the pair is in the contrast tests. RN draws per-side border colors with the card's rounded corners, which matches the sketch's bar inside the curve. The visual review confirms it on Android and adjusts if needed (Open Questions).
 - **Header:** a row with the title (`Text`, `accessibilityRole="header"`, `flex: 1`, bold, `sizes.eventTitle`, `textMain`) and `CategoryBadge`. The badge has `flexShrink: 0` and `alignSelf: 'flex-start'`, `badgeBg` and `badgeText`, bold `sizes.badgeText`, `Radius.pill`, and `Layout.badgePaddingH/V`. Its accessibility label is "Categoría: <category>".
 - **Photo row:** a horizontal `ScrollView` (at most 10 children, so no virtualization is needed), with `showsHorizontalScrollIndicator={false}` and a `Layout.eventTileGap` (10) gap. Each tile is an `EventPhotoTile`: a `View` of `tileSize` square on `imageBackdrop`, with `expo-image` `contentFit="cover"`. `onError` switches it to the "⚠️ Imagen no disponible" text, using local state set from an event, as `PhotoPreview` does. Label: "Foto N de M de <title>".
-- **Tile size:** `useShellLayout()` adds `eventTileSize`: `min((eventInnerWidth − 2·eventTileGap) / Layout.eventTilePeek, imageMaxHeight)`, with `eventTilePeek = 2.4` (two tiles and 40% of a third). Here `eventInnerWidth = columnWidth − 2·cardPadding − borderWidth − accentBarWidth`. That gives about 116 points on a 375-point phone, close to the sketch.
+- **Tile size:** `useShellLayout()` adds `eventTileSize`: `(eventInnerWidth − 2·eventTileGap) / Layout.eventTilePeek`, with `eventTilePeek = 2.4` (two tiles and 40% of a third). Here `eventInnerWidth = columnWidth − 2·cardPadding − borderWidth − accentBarWidth`. That gives about 116 points on a 375-point phone, close to the sketch. **Tuned on the device (task 11.2):** the first version capped the side at `imageMaxHeight`. In phone landscape the cap (120) made exactly four tiles fill the 510-point row, so nothing peeked out. When the side would pass `imageMaxHeight`, the row now holds one more whole tile at a smaller size, keeping the 40% peek: `side = (eventInnerWidth − n·eventTileGap) / (n + 0.4)` for the smallest `n ≥ 2` with `side ≤ imageMaxHeight`. Phone landscape shows four tiles of about 107 points and a peek; the other layouts keep two tiles (133, 180 and 221 points on the test phone and the tablet).
 - **Description:** like a text card's body (`sizes.cardText`, `cardLineHeight`, `textSecondary`), after `Layout.photoGap`.
 - **Actions:** the shared `CardActions`.
 - `TimelineFeed` renders `EventItemCard` for `type === 'event'` and `EditEventDialog` for an event `editing` item.
@@ -202,7 +204,7 @@ Copies run one after another, not in parallel. That keeps the rollback list simp
 
 ### D12. Tokens and sizes
 
-- **No new color roles.** The card uses `primaryDark`, `primaryBlue`, `badgeBg`, `badgeText`, `imageBackdrop`, `textMain`, `textSecondary` and `textMuted`.
+- **No new color roles.** The card uses `primaryDark`, `primaryBlueDeep`, `badgeBg`, `badgeText`, `imageBackdrop`, `textMain`, `textSecondary` and `textMuted`.
 - **New contrast pairs in `theme-test.ts`** (both palettes):
   - `badgeText` on `badgeBg` ≥ 4.5
   - `textMain` on `surfaceMuted` for the suggestion labels and the `✕`
@@ -239,11 +241,11 @@ The picker, save, delete and missing-photo messages reuse the existing ones. Acc
 
 ## Risks / Trade-offs
 
-- [**Photo order on Android:** the docs only promise the tapped order on iOS 15+ (`orderedSelection`).] → Accepted. The order is the picker's, and the user can remove a photo and add it again to move it to the end. The device check records what the Android picker does. Reordering is a non-goal.
+- [**Photo order on Android:** the docs only promise the tapped order on iOS 15+ (`orderedSelection`).] → Checked on Android 37 (system photo picker): it numbers the photos as they are tapped and returns them in that order, and it honors `selectionLimit` (taps past the limit are ignored). Accepted. The order is the picker's, and the user can remove a photo and add it again to move it to the end. The device check records what the Android picker does. Reordering is a non-goal.
 - [**`selectionLimit` ignored by some pickers.**] → The code truncates and shows the limit message, as the spec requires. Tested with a mock that returns too many.
-- [**Ten originals at once:** copying 30 to 120 MB can take a few seconds, and decoding ten full-size photos in a row can use a lot of memory.] → Copies run one after another while Crear shows as busy. `expo-image` decodes to the view size. The device check times a 10-photo save and scrolls a feed of events. Resizing stays a later change (known limitations).
+- [**Ten originals at once:** copying 30 to 120 MB can take a few seconds, and decoding ten full-size photos in a row can use a lot of memory.] → Copies run one after another while Crear shows as busy. Measured on the tablet emulator: ten 4000×3000 JPEGs (49 MB) saved in under 0.42 s; the picker's own copy before the step shows them took about 4 s. `expo-image` decodes to the view size. The device check times a 10-photo save and scrolls a feed of events. Resizing stays a later change (known limitations).
 - [**A horizontal row inside the vertical feed:** gestures could clash, and TalkBack might not scroll to off-screen tiles.] → `ScrollView` handles the axis lock. TalkBack scrolls focused children into view on Android. Both are checked on the device (task 12). If needed, each tile gets `onAccessibilityAction` focus handling.
-- [**Strong border plus accent bar** may render differently on iOS and Android with rounded corners.] → Checked in the visual review. The fallback is an absolutely positioned bar inside a clipped container.
+- [**Strong border plus accent bar** may render differently on iOS and Android with rounded corners.] → Checked on Android: drawn correctly with `borderLeftWidth`. iOS is not checked yet. The fallback is an absolutely positioned bar inside a clipped container.
 - [**Orphan files** if the app is killed between the copies and the transaction.] → Unreferenced files, harmless, covered by the future cleanup (as for image items).
 - [**Old builds opening a v4 database.**] → `migrate()` does nothing above its step count. Old code already returns `null` for event rows, so they are hidden there, not lost.
 - [**Storage keeps growing:** removed photos keep their files for the history.] → Same trade-off as image items, already in known limitations.
@@ -255,5 +257,5 @@ The picker, save, delete and missing-photo messages reuse the existing ones. Acc
 
 ## Open Questions
 
-- The exact `eventTilePeek`, the badge padding and the tablet `eventTitle` size are tuned in the visual review. None of them changes the specs.
-- Whether the accent bar is drawn with `borderLeftWidth` or with a clipped inner view, depending on how Android draws it (D11).
+- The exact `eventTilePeek`, the badge padding and the tablet `eventTitle` size are tuned in the visual review. None of them changes the specs. `eventTilePeek` stays 2.4; the tile size gained the extra-tile rule in phone landscape (D11).
+- ~~Whether the accent bar is drawn with `borderLeftWidth` or with a clipped inner view.~~ Settled on the Android emulator: `borderLeftWidth` follows the rounded corners and meets the strong border cleanly, so no clipped view is needed (D11).

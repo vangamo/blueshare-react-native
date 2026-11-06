@@ -24,6 +24,7 @@ generated:
 - `ListHeaderComponent` is always `<CreationBox />`, which renders nothing while closed. Keeping the same component type means the text area never remounts and loses focus while typing.
 - Items: a [text item card](text-item-card.md), an [image item card](image-item-card.md) or an [event item card](event-item-card.md) each (by `item.type`), newest first. Editar opens the dialog that matches the type ([Edit text dialog](edit-text-dialog.md), [Edit image dialog](edit-image-dialog.md), [Edit event dialog](edit-event-dialog.md)). The event card's horizontal photo row is a `ScrollView` nested in the feed's `FlatList`; the scroll view locks the axis, so swiping sideways scrolls the row and swiping up or down scrolls the feed.
 - `keyboardShouldPersistTaps="handled"`, so Crear and Cancelar work on the first tap while the keyboard is up.
+- The list sits in a `KeyboardAvoidingView` (`behavior="padding"`, `keyboardVerticalOffset = insets.top + frame.headerHeight`, test ID `timeline-keyboard-area`). Android draws edge to edge, so the screen does not shrink for the keyboard; the padding ends the list above it, and Android scrolls the focused field of a tall creation box (the event step with ten photos) into view. The offset is the screen's top, because the view compares its own frame with the keyboard's position on screen; in landscape the tab bar's padding is inside the screen, so the same offset works.
 
 ## States
 

@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Device testing
-description: What a machine needs to run BlueShare on an Android emulator, the reference device profile for screenshots, and the device checks already passed.
+description: What a machine needs to run BlueShare on an Android emulator, the reference device profile for screenshots, the device checks already passed, and how to push test photos with this machine's adb.
 tags: [device, android, emulator, expo-go, adb]
 status: stable
 generated:
@@ -79,5 +79,23 @@ Checked on the Medium Phone and on the Galaxy Tab A9+ emulator, Expo Go 58, with
 - **Tablet portrait (800×1224) and landscape (1280×744):** cards are 500 and 600 points wide, centered; the tabs are 150 points wide, centered, at the bottom in portrait and under the header in landscape; the title field is at most 350 and 400 points; the create button is 60 points. Typing in the creation box, the edit dialog, the title field and a draft on Circles all survived rotation in both directions.
 - **TalkBack:** the user checked phone landscape and tablet portrait by ear and found it correct, although the accessibility tree lists the tab bar after the content in landscape (the bar stays in the navigator's bottom slot).
 - **Not checked:** iOS.
+
+### Event items (change `event-items`)
+
+Checked on both emulators, Expo Go 58, Android 37:
+- **Picker:** the Android system photo picker numbers photos in the order they are tapped and returns them in that order, and it honors `selectionLimit` (taps past it are ignored). Photos with EXIF orientation 6 show upright in the picker, the thumbnails and the card.
+- **Save time:** ten 4000×3000 JPEGs (49 MB) save in under 0.42 s from Crear to the card. The picker copies them first, which takes about 4 s before the step shows them.
+- **Persistence:** existing v3 data loads after migration step 4, and an event survives a force-stop of Expo Go.
+- **Layouts:** event tiles are 133 points on the phone in portrait, four tiles of about 107 in phone landscape, 180 and 221 on the tablet, always with part of the next tile showing. The row scrolls sideways inside the feed, and a vertical swipe on it scrolls the feed. Phone portrait shows three thumbnails per row in the step and the dialog, the tablet four.
+- **Keyboard:** in every layout the focused field of the event step and the event dialog scrolls into view above the keyboard, and Crear, Guardar and "Borrar este evento" can be reached and work on the first tap. Phone landscape uses Android's full-screen editor.
+- **TalkBack:** the user checked by ear the card heading, badge and tile labels, reaching the off-screen tiles, the thumbnails and "Quitar foto N" buttons in the step and the dialog, the suggestions and the limit message, and found them all correct.
+
+### Test photos and adb on this machine
+
+- `adb` here is the snap package, which cannot read files under `/tmp`, so `adb push` from the scratchpad fails. Stream instead: `adb shell "cat > /sdcard/Pictures/events/a.jpg" < a.jpg`, then `adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/events/a.jpg` so the picker lists it. `adb shell touch -t YYYYMMDDhhmm.ss` sets the date, which orders the picker's grid.
+- The snap `adb` cannot reach the emulator console either. Stop an emulator with `"$ANDROID_HOME/platform-tools/adb" -s emulator-5554 emu kill`.
+- ImageMagick writes no EXIF block for `-orient`. To make an EXIF orientation 6 test photo, insert an APP1 segment with the Orientation tag after the JPEG's SOI marker (a few lines of Python).
+- In the picker, each photo is a node named "Photo taken on <date>". On the phone the sheet opens half height and the selection bar covers its bottom row once a photo is picked: drag the handle up first (`adb shell input swipe 540 665 540 150 500`), then tap. Its confirm button is "Done".
+- `measureInWindow` in Expo Go measures from below the status bar, while keyboard events give `screenY` in screen coordinates.
 
 Screenshot comparison: [Visual review](visual-review.md).

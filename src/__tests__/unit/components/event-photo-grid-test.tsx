@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { PixelRatio } from 'react-native';
 
 import {
   EventPhotoGrid,
@@ -80,13 +81,17 @@ describe('EventPhotoGrid', () => {
     const style = Object.assign({}, ...[cell.props.style].flat());
     expect(style.width).toBe(style.height);
     expect(sizes.thumbColumns).toBe(columns);
-    // Columns and gaps fill the row exactly.
+    // The side is whole device pixels. Columns and gaps fill the row but always leave at
+    // least one device pixel free (a row of exactly the box's width wraps on Android), and
+    // at most one pixel per column more.
+    const scale = PixelRatio.get();
+    expect(Number.isInteger(style.width * scale)).toBe(true);
     const total = sizes.thumbColumns * style.width + (sizes.thumbColumns - 1) * Layout.creationGap;
+    const inner =
+      Math.min(window.width - 2 * sizes.contentPadding, column) - 2 * (sizes.cardPadding + Layout.borderWidth);
     expect(grid).toHaveStyle({ flexWrap: 'wrap' });
-    expect(total).toBeCloseTo(
-      Math.min(window.width - 2 * sizes.contentPadding, column) -
-        2 * (sizes.cardPadding + Layout.borderWidth),
-    );
+    expect(inner - total).toBeGreaterThanOrEqual(1 / scale);
+    expect(inner - total).toBeLessThan((sizes.thumbColumns + 1) / scale);
   });
 
   test('"Quitar foto N" removes the right photo', async () => {

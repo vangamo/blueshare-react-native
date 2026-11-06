@@ -47,7 +47,7 @@ describe('EventItemCard', () => {
   describe.each(['light', 'dark'] as const)('%s palette', (scheme) => {
     beforeEach(() => setMockColorScheme(scheme));
 
-    test('has the card frame with a strong border and a primary-blue bar on the left', async () => {
+    test('has the card frame with a strong border and a deep-blue bar on the left', async () => {
       const colors = Colors[scheme];
       await renderCard();
       expect(screen.getByTestId('event-item-card')).toHaveStyle({
@@ -55,7 +55,7 @@ describe('EventItemCard', () => {
         borderColor: colors.primaryDark,
         borderWidth: Layout.borderWidth,
         borderLeftWidth: Layout.accentBarWidth,
-        borderLeftColor: colors.primaryBlue,
+        borderLeftColor: colors.primaryBlueDeep,
         borderRadius: Radius.lg,
         padding: Spacing.lg,
         marginBottom: Spacing.lg,

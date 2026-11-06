@@ -15,9 +15,9 @@ generated:
 | Role (`theme.*`) | Light | Dark | Used by |
 | --- | --- | --- | --- |
 | `primaryDark` (strong ink) | `#0f172a` | `#e2e8f0` | title-field border at rest, avatar border, type select and text area borders, event card border, category suggestion and photo remove button borders |
-| `primaryBlue` | `#0084ff` | `#4da3ff` | FAB fill, menu glyph and border, focused field border, cursor, creation box dashed border, event card accent bar (decorative) |
+| `primaryBlue` | `#0084ff` | `#4da3ff` | FAB fill, menu glyph and border, focused field border, cursor, creation box dashed border |
 | `primaryBlueHover` | `#006fe6` | `#80bdff` | active tab background, Guardar and Crear buttons |
-| `primaryBlueDeep` | `#0058b8` | `#b3d7ff` | active tab border |
+| `primaryBlueDeep` | `#0058b8` | `#b3d7ff` | active tab border, event card accent bar |
 | `primaryShadow` | `rgba(0,132,255,0.3)` | `rgba(77,163,255,0.3)` | active tab and FAB shadow |
 | `onPrimary` | `#ffffff` | `#0f172a` | active tab label, FAB `+`, Guardar and Crear labels |
 | `backgroundMain` | `#faf9f6` | `#0b1120` | content, scenes, root view |
@@ -73,7 +73,7 @@ Checked pairs (light / dark):
 | Category suggestion border (`primaryDark` on `creationBg`) | 16.54 / 12.81 |
 | Photo remove button border (`primaryDark` on `surfaceMuted`) | 17.06 / 11.87 |
 
-The event card's accent bar (`primaryBlue` on `cardBg`, 3.66 / 6.80) is decorative: the card is identified by its heading. The event description uses the card text pair, and the limit message the creation box text pair.
+The event card's accent bar (`primaryBlueDeep` on `cardBg`, 6.80 / 11.97) sets event cards apart from other cards, so it is held to the 3:1 non-text minimum in the contrast tests. The user chose it over the sketch's `primary_blue` (3.66 in light). The event description uses the card text pair, and the limit message the creation box text pair.
 
 ## Dark palette logic
 

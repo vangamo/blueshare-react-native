@@ -44,6 +44,7 @@ const PAIRS: Pair[] = [
   { fg: 'textMain', bg: 'surfaceMuted', min: TEXT, use: 'category suggestion labels and photo remove glyph' },
   { fg: 'primaryDark', bg: 'creationBg', min: LARGE_OR_UI, use: 'category suggestion border' },
   { fg: 'primaryDark', bg: 'surfaceMuted', min: LARGE_OR_UI, use: 'photo remove button border' },
+  { fg: 'primaryBlueDeep', bg: 'cardBg', min: LARGE_OR_UI, use: 'event card accent bar' },
 ];
 
 describe('palettes', () => {

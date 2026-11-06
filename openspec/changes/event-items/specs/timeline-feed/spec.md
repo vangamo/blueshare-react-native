@@ -39,11 +39,11 @@ A change saved or an item deleted from the edit dialog SHALL be reflected in the
 ## ADDED Requirements
 
 ### Requirement: Event card appearance
-An event item SHALL be drawn as a card with the same background, corner radius, padding, shadow and spacing as a text card, but with a 2-point border in the strong ink color and a 6-point primary-blue accent bar along its left edge, following the event card sketch.
+An event item SHALL be drawn as a card with the same background, corner radius, padding, shadow and spacing as a text card, but with a 2-point border in the strong ink color and a 6-point deep-blue accent bar along its left edge that sets event cards apart from other cards, following the event card sketch.
 
 #### Scenario: Event card style
 - **WHEN** an event item is shown in light or dark mode
-- **THEN** its card uses the active palette's card background, a strong-ink border and a primary-blue bar on its left edge
+- **THEN** its card uses the active palette's card background, a strong-ink border and a deep-blue bar on its left edge
 
 ### Requirement: Event title and category
 The event card SHALL start with the title in bold, in the main text color, at the size set's event title size (17 points on phones), shown in full and wrapping onto several lines. The category SHALL be shown at the right of the title's first line as a rounded badge with the badge background and badge text color, in bold at the size set's badge size (14 points on phones), never truncated.

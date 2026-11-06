@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { PixelRatio, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EVENT_MAX_PHOTOS } from '@/constants/limits';
 import { FontWeight, Layout } from '@/constants/theme';
@@ -56,7 +56,12 @@ export function EventPhotoGrid({ photos, onRemove }: EventPhotoGridProps) {
   // Same inner width as `PhotoPreview`: the box's content.
   const innerWidth = columnWidth - 2 * (sizes.cardPadding + Layout.borderWidth);
   const columns = sizes.thumbColumns;
-  const side = (innerWidth - (columns - 1) * Layout.creationGap) / columns;
+  // A row that adds up to exactly the box's width wraps its last thumbnail on Android (seen
+  // on a 411-point phone, from float rounding in the layout). The row keeps one device pixel
+  // free, and the side is rounded down to whole device pixels.
+  const scale = PixelRatio.get();
+  const rowSpace = innerWidth - (columns - 1) * Layout.creationGap - 1 / scale;
+  const side = Math.floor((rowSpace / columns) * scale) / scale;
 
   return (
     <View style={styles.grid} testID="event-photo-grid">

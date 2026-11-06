@@ -61,7 +61,7 @@ Bar heights are added to the safe-area insets. `columnWidth` (from `useShellLayo
 
 `imageMaxHeight` (also from `useShellLayout()`) is the tallest photo box, so a whole image card fits below the header and tab bar: window height, minus the top and bottom insets, `headerHeight`, `tabBarHeight`, twice `contentPadding` and the card chrome (card padding and border, `photoGap`, one caption line of `captionText × 1.5`, and the action row), never less than `Layout.imageMinHeight` (120). On the test windows the floor wins in phone landscape (363 points high). Each photo box is then `min(width × h / w, width × imageMaxRatio, imageMaxHeight)` tall.
 
-`eventTileSize` (also from `useShellLayout()`) is the side of an event card's square photo tiles: `min((eventInnerWidth − 2 × eventTileGap) / eventTilePeek, imageMaxHeight)`, where `eventInnerWidth = columnWidth − 2 × cardPadding − borderWidth − accentBarWidth`. Two tiles and 40% of a third fit the card. That is about 118 points on a 375-point phone and about 133 on the 411-point test phone. In phone landscape the cap wins (120 on the test window). The event step and dialog thumbnails use `thumbColumns` per row instead, sized from the box's inner width.
+`eventTileSize` (also from `useShellLayout()`) is the side of an event card's square photo tiles: `(eventInnerWidth − 2 × eventTileGap) / eventTilePeek`, where `eventInnerWidth = columnWidth − 2 × cardPadding − borderWidth − accentBarWidth`. Two tiles and 40% of a third fit the card. That is about 118 points on a 375-point phone and about 133 on the 411-point test phone (180 and 221 on the tablet). When that side would pass `imageMaxHeight`, the row holds more whole tiles: `(eventInnerWidth − n × eventTileGap) / (n + 0.4)` for the smallest `n` that fits under the cap. In phone landscape that is four tiles of about 107 points and a peek; a plain cap (120) made exactly four tiles fill the row with nothing peeking out. The event step and dialog thumbnails use `thumbColumns` per row instead, sized from the box's inner width and rounded down to whole device pixels with one pixel free (a row of exactly the box's width wraps on Android).
 
 ## `Layout` (fixed values)
 
@@ -80,7 +80,7 @@ Bar heights are added to the safe-area insets. `columnWidth` (from `useShellLayo
 | `photoGap` | 8 | space between photo, caption and actions |
 | `imageMinHeight` | 120 | floor of the photo box height |
 | `imageMaxRatio` | 1.25 | tallest photo box, as a multiple of its width |
-| `accentBarWidth` | 6 | primary-blue bar on the event card's left edge |
+| `accentBarWidth` | 6 | deep-blue bar on the event card's left edge |
 | `eventTileGap` | 10 | space between event photo tiles |
 | `eventTilePeek` | 2.4 | tiles that fit the event card's width (two whole, 40% of the third) |
 | `badgePaddingH` / `badgePaddingV` | 10 / 4 | inner space of the category badge |

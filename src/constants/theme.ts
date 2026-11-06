@@ -93,11 +93,14 @@ export const Layout = {
   imageMinHeight: 120,
   /** Tallest photo box, as a multiple of its width. */
   imageMaxRatio: 1.25,
-  /** Width of the primary-blue bar on the left edge of an event card. */
+  /** Width of the deep-blue bar on the left edge of an event card. */
   accentBarWidth: 6,
   /** Space between the photo tiles of an event card. */
   eventTileGap: 10,
-  /** How many tiles fit the event card's width: two whole tiles and 40% of the third. */
+  /**
+   * How many tiles fit the event card's width: two whole tiles and 40% of the third. When the
+   * tiles would pass `imageMaxHeight`, more whole tiles fit and the 40% peek stays.
+   */
   eventTilePeek: 2.4,
   /** Inner space of a category badge. */
   badgePaddingH: 10,

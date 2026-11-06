@@ -114,20 +114,36 @@ describe('useShellLayout', () => {
       ['tabletLandscape', 'tablet'],
     ] as const;
 
-    test.each(WINDOWS)('%s fits two tiles and part of a third, capped by imageMaxHeight', async (window, device) => {
+    /** Whole tiles in the row, given that 40% of one more peeks out. */
+    function wholeTiles(inner: number, side: number): number {
+      const part = Layout.eventTilePeek % 1;
+      return Math.round((inner - part * side) / (side + Layout.eventTileGap));
+    }
+
+    test.each(WINDOWS)('%s fits whole tiles and 40%% of the next, capped by imageMaxHeight', async (window, device) => {
       setMockWindow(TEST_WINDOWS[window]);
       const { result } = await renderHook(() => useShellLayout());
       const { columnWidth, imageMaxHeight, eventTileSize } = result.current;
       const sizes = Sizes[device];
       const inner = columnWidth - 2 * sizes.cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+      const part = Layout.eventTilePeek % 1;
 
-      expect(eventTileSize).toBeCloseTo(
-        Math.min((inner - 2 * Layout.eventTileGap) / Layout.eventTilePeek, imageMaxHeight),
-      );
       expect(eventTileSize).toBeLessThanOrEqual(imageMaxHeight);
-      // Two whole tiles and their gaps fit, a third doesn't.
-      expect(2 * eventTileSize + 2 * Layout.eventTileGap).toBeLessThan(inner);
+      const whole = wholeTiles(inner, eventTileSize);
+      expect(whole).toBeGreaterThanOrEqual(Math.floor(Layout.eventTilePeek));
+      expect(whole * (eventTileSize + Layout.eventTileGap) + part * eventTileSize).toBeCloseTo(inner);
     });
+
+    test.each(WINDOWS.filter(([window]) => window !== 'phoneLandscape'))(
+      '%s shows two whole tiles, as the sketch',
+      async (window, device) => {
+        setMockWindow(TEST_WINDOWS[window]);
+        const { result } = await renderHook(() => useShellLayout());
+        const { columnWidth, eventTileSize } = result.current;
+        const inner = columnWidth - 2 * Sizes[device].cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+        expect(eventTileSize).toBeCloseTo((inner - 2 * Layout.eventTileGap) / Layout.eventTilePeek);
+      },
+    );
 
     test('is about 133 points on the 411-point test phone and about 118 on a 375-point phone', async () => {
       const { result } = await renderHook(() => useShellLayout());
@@ -138,10 +154,15 @@ describe('useShellLayout', () => {
       expect(result.current.eventTileSize).toBeLessThan(125);
     });
 
-    test('phone landscape is capped by imageMaxHeight', async () => {
+    test('phone landscape, where two tiles would pass imageMaxHeight, shows four smaller tiles and a peek', async () => {
       setMockWindow(TEST_WINDOWS.phoneLandscape);
       const { result } = await renderHook(() => useShellLayout());
-      expect(result.current.eventTileSize).toBe(result.current.imageMaxHeight);
+      const { columnWidth, imageMaxHeight, eventTileSize } = result.current;
+      const inner = columnWidth - 2 * Sizes.phone.cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+      // Four tiles of exactly imageMaxHeight would fill the row with nothing peeking out.
+      expect(4 * (imageMaxHeight + Layout.eventTileGap) - Layout.eventTileGap).toBeCloseTo(inner);
+      expect(eventTileSize).toBeLessThan(imageMaxHeight);
+      expect(wholeTiles(inner, eventTileSize)).toBe(4);
     });
 
     test('changes when the window changes', async () => {

@@ -18,7 +18,7 @@ generated:
 
 "Editar elemento de evento:" and the close button, then the shared [`EventFields`](event-fields.md): the thumbnails with their "Quitar foto N" buttons, "Añadir fotos" (or "Elegir fotos" once every photo is removed), the gallery and limit messages, "Título", "Categoría" with its suggestions and "Descripción". Then Cancelar and Guardar side by side, a divider and the full-width "Borrar este evento".
 
-The frame's `ScrollView` makes the dialog scroll inside, so Guardar and "Borrar este evento" can be reached with ten photos in phone landscape, with or without the keyboard. The thumbnail grid wraps instead of scrolling, so there is no nested scroll view.
+The frame's `ScrollView` makes the dialog scroll inside, so Guardar and "Borrar este evento" can be reached with ten photos in every layout, with or without the keyboard. The frame's `KeyboardAvoidingView` ends the scroll area above the keyboard (checked on the phone and tablet emulators). The thumbnail grid wraps instead of scrolling, so there is no nested scroll view.
 
 ## State and behavior
 

@@ -1,5 +1,23 @@
 # Log
 
+## 2026-11-06
+
+* **Update** TalkBack check of the OpenSpec change `event-items` (task 11.3): the user checked by ear the card heading, the badge and tile labels, reaching the off-screen tiles, the thumbnails and "Quitar foto N" buttons in the step and the dialog, the suggestions and the limit message, and found them all correct. Recorded in `development/device-testing.md`. Left: the visual review (11.4) and the final check (12.1).
+
+## 2026-11-05
+
+* **Update** Device checks of the OpenSpec change `event-items` (tasks 11.1 and 11.2, `run-on-emulator`), on the Galaxy Tab A9+ and Medium Phone emulators (Android 37, Expo Go 58):
+  * **Picker (11.1):** twelve test photos (portrait, landscape, very tall, two with EXIF orientation 6) were pushed to both emulators. The Android system photo picker numbers the photos as they are tapped and returns them in that order (3, 1, 6, 9, 2 came back as tapped), and it honors `selectionLimit`: with 5 slots left (tablet) or 7 (phone) it ignored the extra taps. The EXIF photos show upright in the picker, the thumbnails and the card.
+  * **Save time (11.1):** ten small photos saved in under 0.33 s; ten 4000×3000 JPEGs (4.9 MB each, 49 MB) in under 0.42 s from Crear to the card. The picker's own copy, before the step shows the ten large photos, took about 4 s.
+  * **Persistence and migration (11.1):** both emulators had v3 data (text and image items). It loaded under the new code (step 4 ran with nothing lost), and after a force-stop of Expo Go the event came back with its ten photos, title, category and description.
+  * **Layouts (11.2):** tiles are 133 points on the phone in portrait, 180 and 221 on the tablet, with 40% of the next tile showing; the row scrolls sideways to the last tile and a vertical swipe on it scrolls the feed; a long title wraps beside a 24-character category badge. The deep-blue bar (`#0058b8`, pixel-checked) follows the rounded corners.
+  * **Fix, keyboard:** with ten photos, the event dialog's Descripción, Guardar and "Borrar este evento" stayed behind the keyboard, and in the event step the focused Título did too (Android draws edge to edge, so the screen and a translucent modal do not shrink). `EditDialogFrame` now wraps its `ScrollView` and `TimelineFeed` its `FlatList` in a `KeyboardAvoidingView` (`behavior="padding"`, the feed with `keyboardVerticalOffset = insets.top + frame.headerHeight`), as the Expo keyboard guide advises. Checked in all four layouts: the focused field scrolls into view, and Guardar and Crear work on the first tap with the keyboard up. A hook based on `measureInWindow` was dropped: Expo Go measures it from below the status bar, 24 points off the keyboard's `screenY`. Tests in `edit-event-dialog-test.tsx` and `timeline-feed-test.tsx`; updated `components/edit-text-dialog.md`, `edit-event-dialog.md`, `timeline-feed.md` and `decisions/shared-edit-dialog-frame.md`.
+  * **Fix, thumbnail grid:** the phone showed 2 thumbnails per row instead of 3. The side made the row exactly as wide as the box (283 px × 3 plus the gaps), and float rounding wrapped the third. The side now keeps one device pixel free and is rounded down to whole pixels (`event-photo-grid.tsx`, test in `event-photo-grid-test.tsx`, `components/event-fields.md`).
+  * **Tuned, tile size:** in phone landscape the 120-point cap made exactly four tiles fill the row, so nothing peeked out. When the cap would apply, the row now holds one more whole tile at a smaller size and keeps the 40% peek (four tiles of about 107 points). `use-shell-layout.ts`, `use-shell-layout-test.tsx`, `design-system/layout-sizes.md`, `components/event-item-card.md` and design D11.
+  * **Accent bar color:** at the user's request the bar uses `primaryBlueDeep` (`#0058b8` / `#b3d7ff`) instead of `primaryBlue`, to set event cards apart. It contrasts 6.80 / 11.97 with the card and is now a tested 3:1 pair. Updated the change's proposal, design and delta specs (timeline-feed "Event card appearance", app-theming "Deep blue change propagates"), `design-system/color-palettes.md`, `design-tokens.md`, `layout-sizes.md` and `components/event-item-card.md`.
+  * The `android/` folder is a local build output that the user generates on demand to pack an APK. It is git-ignored and stays out of the repository, as Continuous Native Generation requires.
+  * Recorded the checks in `development/device-testing.md` and the tuned values in the change's `design.md`. Lint (0 warnings), typecheck and 659 tests in 54 suites pass. Left: TalkBack (11.3, the user), the visual review (11.4) and the final check (12.1).
+
 ## 2026-11-02
 
 * **Update** Implementing the OpenSpec change `event-items` (`/opsx:apply`):

@@ -28,7 +28,7 @@ Messages are bold `textMain` at `sizes.boxTitle` on `creationBg`.
 
 ## `EventPhotoGrid`
 
-`EventPhotoGrid({ photos, onRemove })`: square thumbnails in rows of `sizes.thumbColumns` (3 on phones, 4 on tablets) that wrap, so no nested scroll view is needed inside the dialog. The side is `(innerWidth − (columns − 1) × Layout.creationGap) / columns`, with the same inner width as the [photo preview](photo-preview.md) (about 107 points on the 411-point test phone).
+`EventPhotoGrid({ photos, onRemove })`: square thumbnails in rows of `sizes.thumbColumns` (3 on phones, 4 on tablets) that wrap, so no nested scroll view is needed inside the dialog. The side is `(innerWidth − (columns − 1) × Layout.creationGap − 1 device pixel) / columns`, rounded down to whole device pixels, with the same inner width as the [photo preview](photo-preview.md) (about 107 points on the 411-point test phone). The free pixel matters: on the emulator a row of exactly `innerWidth` wrapped its last thumbnail, showing 2 per row instead of 3.
 
 - Each thumbnail is an `expo-image` with `contentFit="cover"` on `imageBackdrop`, `Layout.photoRadius` corners, announced as the image "Foto N de M".
 - A sibling remove button sits `Layout.thumbRemoveInset` (4) inside the top right corner: a `controlHeight` square on `surfaceMuted` with a 2-point `primaryDark` border and a `textMain` "✕", named "Quitar foto N". It is a sibling, not a child, of the accessible thumbnail, so the screen reader reaches both.

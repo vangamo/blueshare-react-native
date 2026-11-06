@@ -1,5 +1,5 @@
-import { fireEvent, renderRouter, screen, waitFor } from 'expo-router/testing-library';
-import { FlatList } from 'react-native';
+import { act, fireEvent, renderRouter, screen, waitFor } from 'expo-router/testing-library';
+import { FlatList, Keyboard } from 'react-native';
 
 import { EMPTY_TIMELINE_MESSAGE, LOAD_ERROR_MESSAGE } from '@/components/timeline-feed';
 import { Colors, Frames, Sizes, Spacing } from '@/constants/theme';
@@ -159,6 +159,43 @@ describe('TimelineFeed', () => {
     await waitFor(() =>
       expect(scrollToOffset).toHaveBeenCalledWith(expect.objectContaining({ offset: 0 })),
     );
+  });
+
+  test('the list ends above the keyboard, measured from below the header', async () => {
+    // Captures every keyboard listener (the title field listens too) so the test can fire them.
+    const handlers: Record<string, ((event: unknown) => void)[]> = {};
+    jest.spyOn(Keyboard, 'addListener').mockImplementation(((event: string, handler: (e: unknown) => void) => {
+      (handlers[event] ??= []).push(handler);
+      return { remove: jest.fn() };
+    }) as unknown as typeof Keyboard.addListener);
+    const fire = (names: string[], event: unknown) =>
+      act(() => {
+        for (const name of names) for (const handler of handlers[name] ?? []) handler(event);
+      });
+    const window = TEST_WINDOWS.phonePortrait;
+    const screenTop = TEST_INSETS.top + Frames['phone-portrait'].headerHeight;
+    const areaHeight = window.height - screenTop - Frames['phone-portrait'].tabBarHeight;
+    const keyboardHeight = window.height / 2;
+    const keyboardTop = window.height - keyboardHeight;
+
+    await renderRouter('./src/app');
+    await journey.startEvent();
+    const area = screen.getByTestId('timeline-keyboard-area');
+    expect(area).toContainElement(screen.getByTestId('timeline-feed'));
+    await fireEvent(area, 'layout', {
+      persist: jest.fn(),
+      nativeEvent: { layout: { x: 0, y: 0, width: window.width, height: areaHeight } },
+    });
+
+    await fire(['keyboardDidShow', 'keyboardWillShow'], {
+      duration: 0,
+      easing: 'keyboard',
+      endCoordinates: { screenX: 0, screenY: keyboardTop, width: window.width, height: keyboardHeight },
+    });
+    await waitFor(() => expect(area).toHaveStyle({ paddingBottom: screenTop + areaHeight - keyboardTop }));
+
+    await fire(['keyboardDidHide', 'keyboardWillHide'], null);
+    await waitFor(() => expect(area).toHaveStyle({ paddingBottom: 0 }));
   });
 
   describe('Editar', () => {

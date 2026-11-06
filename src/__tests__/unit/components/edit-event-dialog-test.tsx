@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { launchImageLibraryAsync } from 'expo-image-picker';
 import { Keyboard } from 'react-native';
 
@@ -238,6 +238,38 @@ describe('EditEventDialog, edit step', () => {
       'button Guardar',
       'button Borrar este evento',
     ]);
+  });
+
+  test('the scroll area shrinks above the keyboard, so Guardar and Borrar este evento stay reachable', async () => {
+    // Captures the keyboard listeners so the test can show and hide the keyboard.
+    const handlers: Record<string, (event: unknown) => void> = {};
+    jest.spyOn(Keyboard, 'addListener').mockImplementation(((event: string, handler: (e: unknown) => void) => {
+      handlers[event] = handler;
+      return { remove: jest.fn() };
+    }) as unknown as typeof Keyboard.addListener);
+    const window = TEST_WINDOWS.phonePortrait;
+    const keyboardHeight = window.height / 2;
+    const keyboard = {
+      duration: 0,
+      easing: 'keyboard',
+      endCoordinates: { screenX: 0, screenY: window.height - keyboardHeight, width: window.width, height: keyboardHeight },
+    };
+    const fire = (names: string[], event: unknown) =>
+      act(() => {
+        for (const name of names) handlers[name]?.(event);
+      });
+
+    await openDialog();
+    const area = screen.getByTestId('edit-dialog-keyboard-area');
+    expect(area).toContainElement(button('Guardar'));
+    expect(area).toContainElement(button('Borrar este evento'));
+    await fireEvent(area, 'layout', { persist: jest.fn(), nativeEvent: { layout: { x: 0, y: 0, ...window } } });
+
+    await fire(['keyboardDidShow', 'keyboardWillShow'], keyboard);
+    await waitFor(() => expect(area).toHaveStyle({ paddingBottom: keyboardHeight }));
+
+    await fire(['keyboardDidHide', 'keyboardWillHide'], null);
+    await waitFor(() => expect(area).toHaveStyle({ paddingBottom: 0 }));
   });
 });
 

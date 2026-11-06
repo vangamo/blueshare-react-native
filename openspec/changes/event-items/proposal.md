@@ -20,7 +20,7 @@ The event's location was discussed together with this change and moved to the se
 - **Editing:** "Editar" on an event card opens an **event edit dialog** ("Editar elemento de evento:") with the same fields as the event step, prefilled: the photo grid (remove any photo, "Añadir fotos" to add more), title, category with its chips, description, "Cancelar", "Guardar" and "Borrar este evento". It follows the shared dialog rules: Guardar only for a real change, an in-dialog confirmation ("¿Borrar este evento?"), error messages, and scrolling inside the dialog.
 - **History:** editing or deleting an event first archives its previous version, including its whole photo list, in new history tables, in the same transaction. Photo files are never overwritten or removed, as for image items.
 - **Limits:** title 120, category 24, description 2000 characters, and 1 to 10 photos, enforced in the domain like the other limits.
-- **No new colors:** the card uses the existing `badge_bg`, `badge_text`, `primary_blue`, `primary_dark` and `image_backdrop` roles. The badge pair is added to the contrast tests.
+- **No new colors:** the card uses the existing `badge_bg`, `badge_text`, `primary_blue_deep` (the accent bar, chosen by the user over the sketch's `primary_blue`), `primary_dark` and `image_backdrop` roles. The badge and accent bar pairs are added to the contrast tests.
 
 ## Capabilities
 

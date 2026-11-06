@@ -73,7 +73,11 @@ Every color in the shell, the placeholder screens, the creation box, the edit di
 
 #### Scenario: Palette change propagates
 - **WHEN** a developer changes the primary blue value in the light palette
-- **THEN** the create button, menu button, focused title border, creation box border, edit dialog border and event card accent bar all show the new value with no other code change
+- **THEN** the create button, menu button, focused title border, creation box border and edit dialog border all show the new value with no other code change
+
+#### Scenario: Deep blue change propagates
+- **WHEN** a developer changes the deep primary blue value in a palette
+- **THEN** the active tab border and the event card accent bar both show the new value with no other code change
 
 #### Scenario: Danger color propagates
 - **WHEN** a developer changes the danger value in a palette

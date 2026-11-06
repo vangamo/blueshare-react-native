@@ -43,7 +43,7 @@ export function CardActions({ onEdit }: { onEdit: () => void }) {
 type ItemCardFrameProps = {
   testID: string;
   /**
-   * The event card's look: a strong-ink border and a primary-blue bar along the left edge
+   * The event card's look: a strong-ink border and a deep-blue bar along the left edge
    * (`Layout.accentBarWidth`), drawn as a wider left border inside the rounded corners.
    */
   accent?: boolean;
@@ -70,7 +70,7 @@ export function ItemCardFrame({ testID, accent = false, children }: ItemCardFram
         accent && {
           borderColor: theme.primaryDark,
           borderLeftWidth: Layout.accentBarWidth,
-          borderLeftColor: theme.primaryBlue,
+          borderLeftColor: theme.primaryBlueDeep,
         },
       ]}>
       {children}

@@ -5,10 +5,12 @@ import {
   BackHandler,
   FlatList,
   Keyboard,
+  KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CreationBox } from '@/components/creation-box';
 import { EditEventDialog } from '@/components/edit-event-dialog';
@@ -20,6 +22,7 @@ import { TextItemCard } from '@/components/text-item-card';
 import { FontSize } from '@/constants/theme';
 import { useCreationBox } from '@/hooks/use-creation-box';
 import { useContentStyle } from '@/hooks/use-content-style';
+import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useTheme } from '@/hooks/use-theme';
 import { useTimeline, type TimelineItem } from '@/hooks/use-timeline';
 
@@ -37,6 +40,8 @@ export function TimelineFeed() {
   const { box, openCount, dispatch } = useCreationBox();
   const focused = useIsFocused();
   const listRef = useRef<FlatList<TimelineItem>>(null);
+  const insets = useSafeAreaInsets();
+  const { frame } = useShellLayout();
   const boxOpen = box.step !== 'closed';
   // Only the id is kept: the item is derived, so a deleted item closes the dialog by itself.
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -80,25 +85,34 @@ export function TimelineFeed() {
 
   return (
     <>
-      <FlatList
-        ref={listRef}
-        testID="timeline-feed"
-        data={status === 'error' ? [] : items}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const onEdit = () => setEditingId(item.id);
-          if (item.type === 'text') return <TextItemCard item={item} onEdit={onEdit} />;
-          if (item.type === 'image') return <ImageItemCard item={item} onEdit={onEdit} />;
-          return <EventItemCard item={item} onEdit={onEdit} />;
-        }}
-        // Always the same component type, so the text area never remounts (and loses
-        // focus) while typing. It renders nothing while the box is closed.
-        ListHeaderComponent={<CreationBox />}
-        ListEmptyComponent={empty ?? undefined}
-        keyboardShouldPersistTaps="handled"
+      {/* Android draws edge to edge, so the screen does not shrink for the keyboard. The list
+          ends above it instead, so every field of the creation box can scroll into view. The
+          offset is where the screen starts: below the status bar and the header. */}
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={insets.top + frame.headerHeight}
         style={[styles.list, { backgroundColor: theme.backgroundMain }]}
-        contentContainerStyle={contentStyle}
-      />
+        testID="timeline-keyboard-area">
+        <FlatList
+          ref={listRef}
+          testID="timeline-feed"
+          data={status === 'error' ? [] : items}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            const onEdit = () => setEditingId(item.id);
+            if (item.type === 'text') return <TextItemCard item={item} onEdit={onEdit} />;
+            if (item.type === 'image') return <ImageItemCard item={item} onEdit={onEdit} />;
+            return <EventItemCard item={item} onEdit={onEdit} />;
+          }}
+          // Always the same component type, so the text area never remounts (and loses
+          // focus) while typing. It renders nothing while the box is closed.
+          ListHeaderComponent={<CreationBox />}
+          ListEmptyComponent={empty ?? undefined}
+          keyboardShouldPersistTaps="handled"
+          style={[styles.list, { backgroundColor: theme.backgroundMain }]}
+          contentContainerStyle={contentStyle}
+        />
+      </KeyboardAvoidingView>
       {editing?.type === 'text' ? (
         <EditTextDialog key={editing.id} item={editing} onClose={() => setEditingId(null)} />
       ) : null}
