@@ -34,6 +34,21 @@ Added with the image items (`add-image-items`), approved by the user, phone port
 
 They change only with new approval. Phone landscape, tablet and the keyboard-open states have no image references yet.
 
+## Event item references
+
+Added with the event items (`event-items`), approved by the user, phone portrait (Medium Phone, 1080×2400, density 420), in `-light` and `-dark` (18 images). They were taken in Expo Go with demo mode on, from an empty database, with the numbered test photos in `Pictures/events` (text typed without accents, since `adb shell input text` can't send them):
+
+- `event-card-five`: "Tarde de juegos y cafe", category "Encuentro", five photos with the third tile peeking, and a three-line description (the event of `sketches/mobile-portrait-event-item.png`)
+- `event-card-one`: "Cumple de la abuela", "Familia", one photo with EXIF orientation 6 shown upright, and a short description
+- `event-card-plain`: "Bingo en el centro", "Amigos", three photos and no description
+- `event-card-missing`: the same feed with every tile showing "⚠️ Imagen no disponible" (taken by pointing `uriFor` at missing file names, reverted afterwards)
+- `event-step-empty`, `event-step-photos` (three thumbnails per row) and `event-step-limit` (ten photos, "Añadir fotos" disabled and the limit message)
+- `event-dialog-edit` (the one-photo event, Guardar disabled) and `event-dialog-confirm`
+
+Sampled against the tokens: the accent bar is 16 px (6 points) of `primaryBlueDeep`, the border is `primaryDark`, the badge uses `badgeBg` and `badgeText`, and tiles are 133 points. They change only with new approval. Other layouts have no event references yet.
+
+Photos decode with small color differences from run to run, so image and event shots compared with the references show a few thousand differing pixels inside the photos. Check that the differences stay inside the photo boxes.
+
 ## Layouts and references
 
 The references above are **phone portrait**. The adaptive layout adds phone landscape, tablet portrait and tablet landscape. Phone portrait must stay pixel-identical (apart from a blinking cursor), and that is checked with every visual change. The new layouts are reviewed against `sketches/mobile-landscape.png` and `sketches/tablet-portrait.png`: tablet landscape has no sketch and combines the tablet sizes with the landscape structure. Their references, approved by the user, are `timeline-cards`, `circles`, `box-write` and `edit-open`, each as `<shot>-<layout>-<mode>.png` with `<layout>` = `phone-landscape` (Medium Phone), `tablet-portrait` or `tablet-landscape` (Galaxy Tab A9+, 1200×1920 and 1920×1200 px at density 240), in light and dark: 24 images. The tablet ones were taken with `-gpu swiftshader_indirect`. They change only with new approval.

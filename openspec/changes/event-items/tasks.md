@@ -152,11 +152,11 @@ No new `eslint-disable`, `.only` or `.skip`. Tests go in `src/__tests__/unit/<ar
 - [x] 11.1 With the `run-on-emulator` skill, push about twelve photos to the emulator (portrait, landscape, very tall, EXIF orientation 6). Create an event with several photos in one pick. Record whether the Android picker keeps the tapped order and honors `selectionLimit` (design Risks), and how long a 10-photo save takes. Force-stop Expo Go, reopen it, and check that the event is still there (the migration ran on the existing v3 database). Write the results in `docs/log.md`.
 - [x] 11.2 Check all four layouts (phone and tablet emulators, both orientations): the tile size with the next tile peeking, sideways scrolling of the row inside the vertical feed, long titles with a 24-character category, and the event dialog with 10 photos scrolling to Guardar and "Borrar este evento" with and without the keyboard. Record any value tuned in design.md.
 - [x] 11.3 Check with TalkBack: the card heading, badge and tile labels, reaching the off-screen tiles, the thumbnails and "Quitar foto N" buttons in the step and the dialog, the suggestions, and the limit message announcement.
-- [ ] 11.4 Run the `visual-review` skill in light and dark for the event card (one photo, five photos, no description, a missing photo), the event step (empty, with photos, at the limit) and the event dialog (edit and confirm steps). Compare with `sketches/mobile-portrait-event-item.png` and the approved references. Settle the accent bar rendering and the values in design Open Questions. With the user's approval, add the new references to `src/__tests__/e2e/screenshots/` and update `docs/development/visual-review.md`.
+- [x] 11.4 Run the `visual-review` skill in light and dark for the event card (one photo, five photos, no description, a missing photo), the event step (empty, with photos, at the limit) and the event dialog (edit and confirm steps). Compare with `sketches/mobile-portrait-event-item.png` and the approved references. Settle the accent bar rendering and the values in design Open Questions. With the user's approval, add the new references to `src/__tests__/e2e/screenshots/` and update `docs/development/visual-review.md`.
 
 ## 12. Final integration check
 
-- [ ] 12.1 Run the full check:
+- [x] 12.1 Run the full check:
   - `npx expo lint --max-warnings 0`, `npx tsc --noEmit` and `npm test` pass
   - `grep -rnE "#[0-9a-fA-F]{3,8}\b|rgba?\(" src --include=*.tsx` finds nothing
   - `grep -rn "expo-file-system\|expo-image-picker" src` finds them only in `expo-photo-store.ts`, the two picker hooks and tests
