@@ -7,7 +7,7 @@ resource: ../../openspec/specs/app-shell/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T18:00:00Z
+  at: 2026-11-15T19:00:00Z
 ---
 
 # app-shell (implemented)
@@ -24,7 +24,7 @@ Full text: `openspec/specs/app-shell/spec.md`. From `basic-app-layout`, changed 
 | Title field at rest | 42 tall, 2-point strong-ink border, radius 12, muted background, "BlueShare" centered in 16-point bold. | [Title search field](../components/title-search-field.md) |
 | Title field on focus | Blue border, card background, left-aligned. "BlueShare" is cleared to show "Buscar...". | same |
 | Title field on blur | Blank → "BlueShare" again. Other text is kept. Submit does nothing. A rotation does not blur it. | same |
-| Avatar | 42×42 circle, strong-ink border, `avatarBg`, `👵`, label "Profile", display only. | [App header](../components/app-header.md) |
+| Avatar | 42×42 circle, strong-ink border, `avatarBg`, the saved profile photo or `👵`, label "Profile". A button (44×44 touch area) that opens the [profile dialog](user-profile.md). | [App header](../components/app-header.md) |
 | Tab bar | `cardBg`, 2-point border on the side facing the content, 10-point padding, three tabs (equal on phone portrait, 120 or 150 wide and centered elsewhere; 44 tall on phones, margin 4, radius 10, 14-point bold). | [Tab bar](../components/tab-bar.md) |
 | Active tab indication | Hover-blue background, deep-blue border, on-primary label (≥ 4.5:1), shadow. Selected state for assistive technologies. | same |
 | Tab switching | A press shows that section, also from the top tab bar. Pressing the active tab keeps it. | same |

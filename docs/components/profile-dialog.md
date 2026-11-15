@@ -4,7 +4,7 @@ title: Profile dialog
 description: Dialog over the whole app, opened from the header avatar, to change the user's name and avatar photo. Built on the shared edit dialog frame with a discard confirmation and a Bluetooth placeholder button.
 tags: [component, profile, dialog, accessibility]
 resource: ../../src/components/profile-dialog.tsx
-status: draft
+status: stable
 generated:
   by: claude-code/claude-sonnet-5-5
   at: 2026-11-15T12:00:00Z

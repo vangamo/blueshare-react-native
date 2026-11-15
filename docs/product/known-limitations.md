@@ -6,12 +6,12 @@ tags: [limitations, open-questions, tech-debt]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-06T12:00:00Z
+  at: 2026-11-15T19:00:00Z
 ---
 
 # Known limitations
 
-- **Controls that do nothing yet:** the menu button, the avatar, search submit, the `+` button on Circles and Events, "Compartir" on text, image and event cards, and tapping an event's photo tile. The specs require this until their features land.
+- **Controls that do nothing yet:** the menu button, search submit, "Compartir por Bluetooth" in the profile dialog, the `+` button on Circles and Events, "Compartir" on text, image and event cards, and tapping an event's photo tile. The specs require this until their features land.
 - **Keyboard on Android:** with the title field focused, the keyboard covers the footer and the `+` button. Nothing is pushed up. This is accepted for the skeleton, and hiding the bar while the keyboard is open is a follow-up.
 - **iOS not verified on a device:** the checks so far ran on Android only, see [Device testing](../development/device-testing.md).
 - **Mixed UI languages:** the creation box, cards and timeline messages are Spanish, with accessibility labels equal to the visible text, while the tab labels and the shell's accessibility labels ("Create", "Menu", "Search") are English (as the brief asks). One app language and i18n are still to be decided. See [Spanish copy and labels](../decisions/spanish-copy-labels.md).
@@ -27,3 +27,6 @@ generated:
 - **iOS and iPad unverified:** the adaptive layouts (`orientation: "default"`, `supportsTablet: true`) were checked in Jest and on Android emulators (a phone and a tablet), with TalkBack by the user. Whether iOS fires `keyboardDidShow` after a rotation is unknown, so the title field also compares the window size ([Title search field](../components/title-search-field.md)).
 - **Little content in phone landscape:** with the header and the tab bar on top, about 250 points of content remain, less with keyboards that do not go full screen (some Samsung keyboards). Android's full-screen editor is accepted on phones in landscape.
 - **Expo Go's dev bubble overlaps differently per layout:** the "Tools" bubble covers other areas in each layout, which matters for screenshots and taps ([Visual review](../development/visual-review.md)).
+- **The profile shares the items storage code:** `src/profile/` reuses the items ports and migrations, and `ItemsProvider` builds both modules. Moving the database, migrations and adapters to a neutral `src/storage/` is a follow-up. See [Profile dialog and module](../decisions/profile-dialog.md).
+- **The profile history is write-only:** `people_history` keeps every earlier name and photo, but no screen reads it. Profile photos are kept for it and never removed, like item photos.
+- **Profile dialog in phone landscape:** the dialog is taller than the screen, so it scrolls and Guardar sits below the fold. The name field uses Android's full-screen editor there, as the other fields do.

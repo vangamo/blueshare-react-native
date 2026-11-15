@@ -4,7 +4,7 @@ title: Profile module
 description: How the user's own profile (a stable UUID, a name and an avatar photo) is stored and read. A hexagonal module in src/profile that shares the items module's SQLite database, migrations and photo store, with a people table and a history table.
 tags: [profile, architecture, sqlite, hexagonal, persistence]
 resource: ../../src/profile/
-status: draft
+status: stable
 generated:
   by: claude-code/claude-sonnet-5-5
   at: 2026-11-15T12:00:00Z
@@ -12,7 +12,7 @@ generated:
 
 # Profile module
 
-The profile is the user's own identity on the phone: a UUID created once, a name and an avatar photo. Requirements: the `user-profile` and `profile-storage` specs of the OpenSpec change `user-profile`. Local rules: [`src/profile/CLAUDE.md`](../../src/profile/CLAUDE.md).
+The profile is the user's own identity on the phone: a UUID created once, a name and an avatar photo. Requirements: the [profile-storage](../specs/profile-storage.md) and [user-profile](../specs/user-profile.md) specs (change `user-profile`, archived 2026-11-15). Decision: [Profile dialog and module](../decisions/profile-dialog.md). Local rules: [`src/profile/CLAUDE.md`](../../src/profile/CLAUDE.md).
 
 ## Layout and dependency rule
 

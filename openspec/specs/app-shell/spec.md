@@ -107,11 +107,23 @@ When the title field loses focus and holds only whitespace or nothing, it SHALL 
 - **THEN** the field keeps its focus, its focused style and "nieta", and the keyboard is open again after the rotation
 
 ### Requirement: Avatar
-The header SHALL show a 42×42 circular avatar with a 2-point strong-ink border, the avatar background color and a centered `👵` emoji. It SHALL be exposed to assistive technologies with the label "Profile". It SHALL be display-only and not respond to taps.
+The header SHALL show a 42×42 circular avatar with a 2-point strong-ink border. It SHALL show the saved profile photo filling the circle, or the avatar background color and a centered `👵` emoji when there is none. It SHALL be a button, announced to assistive technologies with the label "Profile", with a touch target of at least 44×44 points. Tapping it SHALL open the profile dialog (see the user-profile capability).
 
 #### Scenario: Avatar display
-- **WHEN** the header is shown
-- **THEN** the avatar circle shows the `👵` emoji centered, and tapping it does nothing
+- **WHEN** the header is shown and the profile has no photo
+- **THEN** the avatar circle shows the `👵` emoji centered
+
+#### Scenario: Avatar with a photo
+- **WHEN** the header is shown and the profile has a saved photo
+- **THEN** the avatar circle shows the photo, cropped to the circle, inside its border
+
+#### Scenario: Tapping the avatar
+- **WHEN** the user taps the avatar on any section
+- **THEN** the button shows press feedback and the profile dialog opens
+
+#### Scenario: Screen reader
+- **WHEN** a screen reader focuses the avatar
+- **THEN** it is announced as a button named "Profile"
 
 ### Requirement: Tab bar
 The tab bar SHALL have the card background color, a 2-point border in the border color on the side facing the content, and 10 points of horizontal padding. It SHALL hold three buttons labeled Timeline, Circles and Events, in that order, of equal width. In the phone portrait layout they SHALL share the bar's width; in other layouts they SHALL have the layout's tab width and be centered. Each SHALL be as tall as the size set's tab height (44 points on phones), with 4 points of horizontal margin, a 10-point corner radius, a 2-point border and bold labels of the size set's tab label size (14 points on phones).
@@ -169,7 +181,7 @@ On every main section, except Timeline while the creation box is open, the app S
 Every interactive control in the shell SHALL have a touch target of at least 44×44 points. The one exception is the title field: it follows the 42-point height of the design and is much wider than 44 points.
 
 #### Scenario: Footer and header buttons
-- **WHEN** the touch targets of the menu button, the footer buttons and the create button are measured
+- **WHEN** the touch targets of the menu button, the avatar, the footer buttons and the create button are measured
 - **THEN** each is at least 44 points wide and 44 points tall
 
 ### Requirement: Create button action per section

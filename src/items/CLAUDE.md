@@ -8,3 +8,4 @@ Before changing anything here, read [Items module](../../docs/architecture/items
 - Editing or deleting an item first archives it in the `*_history` tables, in one transaction (`archive()` in the repository). A new item type needs its own history tables, an `archive()` case, its tables in `TYPE_TABLES` (children first) and a case in `toTimelineItem`. One-to-many content (event photos) is read with its own query, not a join.
 - SQL uses positional `?` parameters only, and features both `node:sqlite` and `expo-sqlite` support.
 - Tests run the real SQL on `NodeSqlDatabase` (`src/test-utils/`), never a fake repository. See [Testing](../../docs/development/testing.md).
+- `src/profile/` reuses this module's ports and its `MIGRATIONS` list (step 5 holds the profile tables). This module never imports `profile/`. `ItemsProvider` builds both modules with one shared `prepare` promise, so migrations run once. See [Profile module](../../docs/architecture/profile-module.md).

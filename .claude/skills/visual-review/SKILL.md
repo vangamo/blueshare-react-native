@@ -20,6 +20,8 @@ adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 120
 adb shell am broadcast -a com.android.systemui.demo -e command network -e mobile hide
 ```
 
+The profile dialog has its own references (`profile-open-<mode>`, `profile-discard-light`); see `docs/development/visual-review.md`. A header change also affects every shot that shows the avatar.
+
 **Phone portrait must not change.** The existing references in `src/__tests__/e2e/screenshots/` (no layout suffix) are phone portrait. This change keeps them: every comparison must give 0 differing pixels, apart from a blinking text cursor (a few hundred pixels in the `box-write` and `edit-changed` shots).
 
 ## 2. Capture the set (into the scratchpad, not the repo)

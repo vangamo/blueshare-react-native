@@ -6,7 +6,7 @@ tags: [openspec, workflow, specs, process]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-06T12:00:00Z
+  at: 2026-11-15T19:00:00Z
 ---
 
 # OpenSpec workflow
@@ -71,3 +71,5 @@ No change is active. Archived changes:
 - `event-items` (branch `04-event-items`, 28/28 tasks), archived 2026-11-06 to `openspec/changes/archive/2026-11-06-event-items/`. Its delta specs were synced: item-creation, item-editing, item-storage, timeline-feed, adaptive-layout and app-theming changed (no new capability).
 
 The main specs in `openspec/specs/` are adaptive-layout, app-platform, app-shell, app-theming, item-creation, item-editing, item-storage and timeline-feed. The next change is locations for image and event items (`add-item-locations`), see the [roadmap](../product/roadmap.md).
+
+- `user-profile` (branch `05-bluetooth-sharing`, 22/22 tasks), archived 2026-11-15 to `openspec/changes/archive/2026-11-15-user-profile/`. Its delta specs were synced with `openspec archive`: user-profile and profile-storage are new, and app-shell, app-theming and adaptive-layout changed.

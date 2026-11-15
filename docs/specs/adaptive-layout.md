@@ -7,7 +7,7 @@ resource: ../../openspec/specs/adaptive-layout/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-06T12:00:00Z
+  at: 2026-11-15T19:00:00Z
 ---
 
 # adaptive-layout (implemented)
@@ -17,16 +17,16 @@ Full text: `openspec/specs/adaptive-layout/spec.md`. From the change `adaptive-l
 | Requirement | Summary | Implemented in |
 | --- | --- | --- |
 | Layout chosen from the window size | Wider than tall is landscape, a short side of 600 points or more is a tablet. It follows the window live (rotation, split screen). | `layoutFor()` in `src/constants/theme.ts`, `useShellLayout()` |
-| Phone and tablet size sets | Component and font sizes depend only on phone or tablet, never on orientation. The phone set is the old phone portrait look. Includes the event title (17 / 19), badge (14 / 15) and thumbnail columns (3 / 4). | `Sizes` in `theme.ts`, [Sizes and typography](../design-system/layout-sizes.md) |
+| Phone and tablet size sets | Component and font sizes depend only on phone or tablet, never on orientation. The phone set is the old phone portrait look. Includes the profile avatar (112 / 136) and its emoji (56 / 64), the event title (17 / 19), badge (14 / 15) and thumbnail columns (3 / 4). | `Sizes` in `theme.ts`, [Sizes and typography](../design-system/layout-sizes.md) |
 | Frame of each layout | Header and tab bar heights, tab bar position, tab width and title field maximum width per layout. | `Frames` in `theme.ts` |
 | Tab bar position | At the bottom (top border) in portrait, below the header (bottom border) in landscape, with the same tabs and behavior. | [Tab bar](../components/tab-bar.md), [Tab bar stays in one slot](../decisions/tab-bar-single-slot.md) |
 | Header horizontal padding on tablets | 24 points plus the side insets. | [App header](../components/app-header.md) |
 | Create button position per layout | 20 (phone) or 28 (tablet) from the right, 10 or 16 above the tab bar in portrait, 16 above the bottom inset in landscape. | [Create button](../components/create-button.md) |
-| Centered content column | Outside phone portrait the feed, cards, creation box, type list and edit dialog sit in a column of at most 550, 500 or 600 points. | `useContentStyle()`, [Timeline feed](../components/timeline-feed.md) |
+| Centered content column | Outside phone portrait the feed, cards, creation box, type list and edit and profile dialogs sit in a column of at most 550, 500 or 600 points. | `useContentStyle()`, [Timeline feed](../components/timeline-feed.md) |
 | Maximum image height follows the layout | A photo never grows taller than `imageMaxHeight` (5:4 cap in portrait, shorter in landscape), also in the creation box and the edit dialog, and it follows a rotation. | `useShellLayout()`, [Layout sizes](../design-system/layout-sizes.md) |
 | Event photo tile size follows the layout | Square tiles sized so two and part of a third fit the card. Never taller than the maximum image height: where two tiles would be (phone landscape), the row holds one more whole tile at a smaller size so a tile still peeks out. Follows a rotation. | `eventTileSize` in `useShellLayout()`, [Event item card](../components/event-item-card.md) |
 | Safe areas on every side | Header, tab bar, create button and content clear the side insets, and in landscape the bottom inset too. | [Shell layout](../architecture/shell-layout.md) |
-| Rotation keeps the user's place | The section, scroll position, creation box (including an event's photos, title, category and description), edit dialog (including added or removed event photos) and the focused field with its keyboard survive a rotation. | `src/__tests__/e2e/rotation-test.tsx`, [Title search field](../components/title-search-field.md) |
+| Rotation keeps the user's place | The section, scroll position, creation box (including an event's photos, title, category and description), edit dialog (including added or removed event photos), profile dialog (name and chosen photo) and the focused field with its keyboard survive a rotation. | `src/__tests__/e2e/rotation-test.tsx`, [Title search field](../components/title-search-field.md) |
 | Landscape keyboard on phones | Android's full-screen editor is allowed, and closing it keeps the text and the focus. | [Adaptive layout](../decisions/adaptive-layout.md) |
 
 The requirement sentence of "Event photo tile size follows the layout" still says the side becomes the maximum image height; its scenario and the code keep it *at most* that height, using the extra-tile rule tuned on the device (event-items design D11).

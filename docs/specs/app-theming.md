@@ -7,7 +7,7 @@ resource: ../../openspec/specs/app-theming/spec.md
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-06T12:00:00Z
+  at: 2026-11-15T19:00:00Z
 ---
 
 # app-theming (implemented)
@@ -18,8 +18,8 @@ Full text: `openspec/specs/app-theming/spec.md`. From `basic-app-layout`, extend
 | --- | --- | --- |
 | Light palette matches the design tokens | Colors from `design_system.json`, and the HTML wins where they disagree. Header and footer `#ffffff`, content `#faf9f6`, borders `#e2e8f0`, FAB `#0084ff`. The exceptions are the active tab and the main buttons of the creation box and the edit dialog (`#006fe6`). | [Design tokens](../design-system/design-tokens.md) |
 | Dark palette | Same roles, dark backgrounds, light text, and blue stays blue. | [Color palettes](../design-system/color-palettes.md) |
-| Text contrast | Every text pair in the shell, creation box (text, image and event steps), type list, edit dialogs, cards (captions, event titles, category badges, descriptions, missing-photo messages) and timeline messages is ≥ 4.5:1 (large text ≥ 3:1) in both palettes. Disabled button labels are exempt. | `theme-test.ts` |
-| Contrast of icons and control boundaries | Menu glyph, `+`, select chevron, the dialog's close glyph, the photo remove `✕`, and the borders of the menu, title field, type select, text areas, caption, event title and category fields, photo buttons, remove buttons, category suggestions and deletion buttons are ≥ 3:1. | `theme-test.ts` |
+| Text contrast | Every text pair in the shell, the profile dialog, creation box (text, image and event steps), type list, edit dialogs, cards (captions, event titles, category badges, descriptions, missing-photo messages) and timeline messages is ≥ 4.5:1 (large text ≥ 3:1) in both palettes. Disabled button labels are exempt. | `theme-test.ts` |
+| Contrast of icons and control boundaries | Menu glyph, `+`, select chevron, the dialog's close glyph, the profile avatar border, the photo remove `✕`, and the borders of the menu, title field, type select, text areas, caption, event title and category fields, photo buttons, remove buttons, category suggestions and deletion buttons are ≥ 3:1. | `theme-test.ts` |
 | Follows the system color scheme live | Switching with the app open re-themes everything at once and keeps the section and the title text. A launch in dark mode starts dark. | [Theme module](../design-system/theme-module.md) |
 | Screen backgrounds match the theme | Navigation containers use `backgroundMain`. No white flash between tabs. | `NavigationThemes`, root `View` |
 | Status bar follows the scheme | Dark icons in light mode, light icons in dark mode. | `<StatusBar style="auto" />` |

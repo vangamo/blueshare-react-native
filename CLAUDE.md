@@ -2,7 +2,7 @@
 
 BlueShare is an accessible, intergenerational social app that connects older adults with young people. Users share events, short texts and photos with their family and close circles. It is an **Expo / React Native** app for **Android and iOS phones and tablets, in any orientation, running in Expo Go** (no web). The audience includes seniors, so high contrast and large touch targets are requirements, not extras.
 
-**Current state:** Phase 1 has delivered the app shell (a fixed header with menu, a title that doubles as search and avatar; tabs Timeline, Circles, Events, at the bottom in portrait and under the header in landscape; a floating `+` button; light and dark themes from JSON design tokens), an adaptive layout (four layouts, phone or tablet and portrait or landscape, chosen from the window size, with rotation keeping the user's place), and text, image and event items. On Timeline, `+` opens a creation box to write a text, pick a photo with an optional alternative text and caption, or make an event (1 to 10 photos, a title, a category and an optional description), saved in a local SQLite database (photos are copied into app storage) and listed newest first as cards, and "Editar" on a card opens a dialog to change or delete it (every earlier version goes to history tables). Circles and Events show placeholders. Locations for image and event items (`add-item-locations`) are next.
+**Current state:** Phase 1 has delivered the app shell (a fixed header with menu, a title that doubles as search, and a round avatar that opens the profile; tabs Timeline, Circles, Events, at the bottom in portrait and under the header in landscape; a floating `+` button; light and dark themes from JSON design tokens), an adaptive layout (four layouts, phone or tablet and portrait or landscape, chosen from the window size, with rotation keeping the user's place), and text, image and event items. On Timeline, `+` opens a creation box to write a text, pick a photo with an optional alternative text and caption, or make an event (1 to 10 photos, a title, a category and an optional description), saved in a local SQLite database (photos are copied into app storage) and listed newest first as cards, and "Editar" on a card opens a dialog to change or delete it (every earlier version goes to history tables). Tapping the avatar opens a profile dialog to change the user's name and avatar photo (saved on the phone with a stable user UUID; its "Compartir por Bluetooth" button does nothing yet). Circles and Events show placeholders. Locations for image and event items (`add-item-locations`) are next.
 
 Detailed knowledge lives in [`docs/`](docs/index.md) (Open Knowledge Format, one topic per file). Open only the files the task needs, using the index below.
 
@@ -46,6 +46,7 @@ A task is finished only when **lint (0 warnings), typecheck and tests pass**, wi
 - **Accessibility:** touch targets ≥ 44×44 pt, `accessibilityRole` and `accessibilityLabel` on every control, WCAG AA contrast in both palettes (tested).
 - **React Compiler:** no manual `useMemo` or `useCallback`, and no `setState` inside effects. Compute derived values during render.
 - **Expo Go only:** no native modules beyond those bundled in Expo Go. A library with other native code needs a development build (`npx expo run:android|ios` or `eas build --profile development`), so propose a spec change first. Prefer Expo modules, and check the available skills before adding dependencies.
+- **Profile module:** the user's own profile lives in `src/profile/` (same hexagonal rules, shares the items database and migrations; `items/` never imports `profile/`). Local rules in `src/profile/CLAUDE.md`.
 - **Items module:** storage and domain code lives in `src/items/` (hexagonal: `domain/` ← `application/` ← `infrastructure/`). UI reaches it only through `ItemsProvider` and the hooks. Migrations are append-only. Local rules in `src/items/CLAUDE.md`.
 - **Continuous Native Generation:** never create or edit `ios/` or `android/`. Configure native behavior in `app.json` and config plugins.
 - **Never edit `sketches/`.** They are design references. The HTML mock wins over `sketches/design_system.json`.
@@ -53,7 +54,7 @@ A task is finished only when **lint (0 warnings), typecheck and tests pass**, wi
 
 ## When to read what
 
-Read the listed files **before** starting that kind of work. Folders `src/app/`, `src/components/`, `src/constants/`, `src/items/` and `src/__tests__/` have their own `CLAUDE.md` with local rules.
+Read the listed files **before** starting that kind of work. Folders `src/app/`, `src/components/`, `src/constants/`, `src/items/`, `src/profile/` and `src/__tests__/` have their own `CLAUDE.md` with local rules.
 
 | When you… | Read or use |
 | --- | --- |
@@ -65,6 +66,7 @@ Read the listed files **before** starting that kind of work. Folders `src/app/`,
 | add a tab or main section | skill `add-main-section` |
 | store, read or migrate items, or add an item type | [items module](docs/architecture/items-module.md), [items schema](docs/decisions/items-schema.md) (live and history tables), [event items](docs/decisions/event-items.md) |
 | touch the creation box, the edit dialog, the timeline feed or cards | the pages in [docs/components/](docs/components/index.md), [specs](docs/specs/index.md) (item-creation, item-editing, item-storage, timeline-feed, adaptive-layout) |
+| touch the profile dialog, the header avatar or the user profile data | [profile module](docs/architecture/profile-module.md), [profile dialog and module](docs/decisions/profile-dialog.md), [shared edit dialog frame](docs/decisions/shared-edit-dialog-frame.md), the pages in [docs/components/](docs/components/index.md), specs user-profile and profile-storage |
 | style a component or use colors and sizes | [theme module](docs/design-system/theme-module.md), [sizes and typography](docs/design-system/layout-sizes.md) |
 | change a layout, a size that varies by device or orientation, rotation or the tab bar position | [layout sizes](docs/design-system/layout-sizes.md), [shell layout](docs/architecture/shell-layout.md), [adaptive layout](docs/decisions/adaptive-layout.md), [tab bar in one slot](docs/decisions/tab-bar-single-slot.md), [spec](docs/specs/adaptive-layout.md) |
 | add or change a color or token | [design tokens](docs/design-system/design-tokens.md), [color palettes](docs/design-system/color-palettes.md) |

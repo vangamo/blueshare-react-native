@@ -55,3 +55,9 @@ From the `add-image-items` change (its `design.md`). D1 and D4 are described in 
 From the `event-items` change (its `design.md`, now in `openspec/changes/archive/2026-11-06-event-items/`). D2 and D3 (event and photo tables) are in [Items schema](items-schema.md), D10's keyboard handling in [Shared edit dialog frame](shared-edit-dialog-frame.md), and D7, D8, D12 and D13 in the event component and design-system pages.
 
 * [Event items](event-items.md) - D1, D6, D11: a separate event type with an ordered photo list, picking several photos at once, and the card's sideways row of square tiles with a peeking tile.
+
+## user-profile
+
+From the `user-profile` change (its `design.md`, now in `openspec/changes/archive/2026-11-15-user-profile/`). D3 (schema step 5) is in [Items schema](items-schema.md), D7 in [Shared edit dialog frame](shared-edit-dialog-frame.md), and D4 to D6, D8 and D9 in the profile pages of architecture and components.
+
+* [Profile dialog and module](profile-dialog.md) - D1, D2: a `Modal` owned by the header instead of a route, and a separate `src/profile/` module sharing the items database and migrations.

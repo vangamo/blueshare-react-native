@@ -4,7 +4,7 @@ title: Avatar image
 description: The round avatar, a circle with a strong-ink border showing the profile photo cropped to fill it, or the 👵 emoji when there is no photo or it can't be read. Used by the header avatar and the profile dialog's preview.
 tags: [component, avatar, profile]
 resource: ../../src/components/avatar-image.tsx
-status: draft
+status: stable
 generated:
   by: claude-code/claude-sonnet-5-5
   at: 2026-11-15T12:00:00Z

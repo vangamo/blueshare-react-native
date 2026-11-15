@@ -34,7 +34,7 @@ The app SHALL use one of four layouts: phone portrait, phone landscape, tablet p
 - **THEN** the shell switches to the phone landscape layout without restarting the app
 
 ### Requirement: Phone and tablet size sets
-Component sizes and font sizes SHALL depend only on whether the layout is a phone or a tablet layout, never on the orientation. The sizes stated in the app-shell, timeline-feed, item-creation and item-editing capabilities SHALL be the phone set. Tablet layouts SHALL use the tablet set, which replaces each phone value listed in the scenarios below.
+Component sizes and font sizes SHALL depend only on whether the layout is a phone or a tablet layout, never on the orientation. The sizes stated in the app-shell, timeline-feed, item-creation, item-editing and user-profile capabilities SHALL be the phone set. Tablet layouts SHALL use the tablet set, which replaces each phone value listed in the scenarios below.
 
 #### Scenario: Shell controls on a tablet
 - **WHEN** a tablet layout is used
@@ -55,6 +55,14 @@ Component sizes and font sizes SHALL depend only on whether the layout is a phon
 #### Scenario: Event items on a tablet
 - **WHEN** a tablet layout is used
 - **THEN** event titles are 19 points, category badges are 15 points, the event title and category fields are at least 48 points tall with 17-point text, the category suggestions and photo remove buttons are at least 48 points tall, and the event step and dialog show four thumbnails per row instead of three
+
+#### Scenario: Profile dialog on a phone
+- **WHEN** a phone layout is used
+- **THEN** the profile dialog's avatar preview is a 112-point circle with a 56-point `👵`, and the name field is at least 44 points tall with 16-point text
+
+#### Scenario: Profile dialog on a tablet
+- **WHEN** a tablet layout is used
+- **THEN** the profile dialog's avatar preview is a 136-point circle with a 64-point `👵`, the name field is at least 48 points tall with 17-point text, and the field label and hint are 15 points
 
 #### Scenario: Same sizes in both orientations
 - **WHEN** the user rotates a phone, or a tablet
@@ -112,7 +120,7 @@ The create button SHALL sit 20 points from the right edge on phones and 28 point
 - **THEN** the create button is 60 points, 28 points from the right edge plus the right inset, and 16 points above the tab bar
 
 ### Requirement: Centered content column
-Outside phone portrait, the Timeline feed, its cards and creation box, the type list and the edit dialog SHALL be centered in a column at most 550 points wide on phone landscape, 500 on tablet portrait and 600 on tablet landscape, never wider than the screen minus the content padding. On phone portrait they SHALL span the screen minus the content padding, as today.
+Outside phone portrait, the Timeline feed, its cards and creation box, the type list, the edit dialog and the profile dialog SHALL be centered in a column at most 550 points wide on phone landscape, 500 on tablet portrait and 600 on tablet landscape, never wider than the screen minus the content padding. On phone portrait they SHALL span the screen minus the content padding, as today.
 
 #### Scenario: Cards on a tablet in portrait
 - **WHEN** the Timeline shows cards on an 800-point-wide tablet in portrait
@@ -121,6 +129,10 @@ Outside phone portrait, the Timeline feed, its cards and creation box, the type 
 #### Scenario: Edit dialog on a phone in landscape
 - **WHEN** the edit dialog is open in the phone landscape layout
 - **THEN** the dialog is at most 550 points wide and centered
+
+#### Scenario: Profile dialog on a tablet in portrait
+- **WHEN** the profile dialog is open on an 800-point-wide tablet in portrait
+- **THEN** the dialog is 500 points wide and centered, not full width
 
 ### Requirement: Safe areas on every side
 The header, the tab bar, the create button and the section content SHALL stay clear of the left and right safe-area insets. In landscape layouts, where no bar sits at the bottom, the section content and the create button SHALL stay clear of the bottom inset.
@@ -134,7 +146,7 @@ The header, the tab bar, the create button and the section content SHALL stay cl
 - **THEN** its "Cancelar" and "Crear" buttons can be scrolled fully above the gesture bar
 
 ### Requirement: Rotation keeps the user's place
-Rotating the device, or any other change of the window size, SHALL NOT reset what the user is doing. The current section, the feed's scroll position, the creation box with its step, type, text, chosen photos, alternative text, caption, title, category and description, the open edit dialog with its edited content and any newly picked or removed photos, and the focused text field with its open keyboard SHALL be kept. Focus SHALL NOT move to another field.
+Rotating the device, or any other change of the window size, SHALL NOT reset what the user is doing. The current section, the feed's scroll position, the creation box with its step, type, text, chosen photos, alternative text, caption, title, category and description, the open edit dialog with its edited content and any newly picked or removed photos, the open profile dialog with its step, edited name and picked or removed photo, and the focused text field with its open keyboard SHALL be kept. Focus SHALL NOT move to another field.
 
 #### Scenario: Typing in the creation box
 - **WHEN** the user is typing "Hola" in the creation box with the keyboard open and rotates the phone, then rotates it back
@@ -160,6 +172,10 @@ Rotating the device, or any other change of the window size, SHALL NOT reset wha
 - **WHEN** the event dialog shows an event with one photo removed and one added, not yet saved, and the user rotates the device
 - **THEN** the dialog still shows the same photos in the same order and the edited fields, in its current step
 
+#### Scenario: Profile dialog with unsaved changes
+- **WHEN** the profile dialog shows a newly picked photo and a changed name, not yet saved, and the user rotates the device
+- **THEN** the dialog is still open with the same photo and name, in its current step, and the section under it is the same
+
 #### Scenario: Draft on another section
 - **WHEN** a draft is pending on Timeline, the user rotates the device on Circles and returns to Timeline
 - **THEN** the creation box shows the draft in the same step
@@ -169,11 +185,15 @@ Rotating the device, or any other change of the window size, SHALL NOT reset wha
 - **THEN** the feed is not scrolled back to the top
 
 ### Requirement: Landscape keyboard on phones
-In the phone landscape layout, the app SHALL let the system show its full-screen text editor while the user types in the title field, the creation box or the edit dialog. Text typed there SHALL appear in the field. Closing the editor SHALL keep the text and the field's focus.
+In the phone landscape layout, the app SHALL let the system show its full-screen text editor while the user types in the title field, the creation box, the edit dialog or the profile dialog. Text typed there SHALL appear in the field. Closing the editor SHALL keep the text and the field's focus.
 
 #### Scenario: Typing in the full-screen editor
 - **WHEN** the user types "nunca" in the creation box through the full-screen editor in phone landscape and presses the editor's done key
 - **THEN** the editor closes, the creation box shows the text with "nunca", and the text area keeps its focus
+
+#### Scenario: Typing the profile name in the full-screen editor
+- **WHEN** the user types "Carmen" in the profile dialog's name field through the full-screen editor in phone landscape and presses the editor's done key
+- **THEN** the editor closes and the name field shows "Carmen"
 
 ### Requirement: Maximum image height follows the layout
 The maximum height of a photo on a card or in a preview SHALL be computed for the current layout and window, and SHALL be updated as soon as the layout or the window size changes, without changing which photo or item is shown.

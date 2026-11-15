@@ -6,14 +6,14 @@ tags: [product, roadmap, planning]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-06T12:00:00Z
+  at: 2026-11-15T19:00:00Z
 ---
 
 # Roadmap
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 1 | Core layout and main feed | Shell, text, image and event items and Editar done. Item locations next. Compartir waits for Phase 4. |
+| 1 | Core layout and main feed | Shell, text, image and event items, Editar and the user profile done. Item locations next. Compartir waits for Phase 4. |
 | 2 | Circles (contacts management) | Not started |
 | 3 | User events management | Not started |
 | 4 | Bluetooth sharing | Not started |
@@ -60,10 +60,18 @@ The OpenSpec change `event-items` (branch `04-event-items`, 28/28 tasks, archive
 
 Specs: changes to [item-creation](../specs/item-creation.md), [item-editing](../specs/item-editing.md), [item-storage](../specs/item-storage.md), [timeline-feed](../specs/timeline-feed.md), [adaptive-layout](../specs/adaptive-layout.md) and [app-theming](../specs/app-theming.md). Decision: [Event items](../decisions/event-items.md).
 
+The OpenSpec change `user-profile` (branch `05-bluetooth-sharing`, 22/22 tasks, archived 2026-11-15 in `openspec/changes/archive/2026-11-15-user-profile/`):
+- the header avatar opens a profile dialog to change the user's name and avatar photo, with a confirmation before discarding changes and a "Compartir por Bluetooth" button that does nothing yet
+- a stable user UUID, created on the first read, and the profile saved in SQLite (schema v5: `people` and `people_history`)
+- the hexagonal `src/profile/` module and the generalized `EditDialogFrame`
+
+Specs: [user-profile](../specs/user-profile.md) and [profile-storage](../specs/profile-storage.md) (new), and changes to [app-shell](../specs/app-shell.md), [app-theming](../specs/app-theming.md) and [adaptive-layout](../specs/adaptive-layout.md). Decision: [Profile dialog and module](../decisions/profile-dialog.md).
+
 ## Next in Phase 1
 
 - Locations for image and event items: the next change, `add-item-locations` (nullable location columns added to `image_items` and `event_items`).
 - "Compartir" on text, image and event cards waits for Phase 4.
+- Sharing the profile by Bluetooth (the dialog's button) belongs to Phase 4.
 - The side menu ([app header](../components/app-header.md)) and search ([title search field](../components/title-search-field.md)).
 
 ## Workflow follow-ups
