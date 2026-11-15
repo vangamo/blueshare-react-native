@@ -30,11 +30,13 @@ export function EditTextDialog({ item, onClose }: EditTextDialogProps) {
     <EditDialogFrame
       testID="edit-text-dialog"
       title="Editar elemento de texto:"
-      deleteLabel="Borrar este texto"
-      confirmTitle="¿Borrar este texto?"
       canSave={canSave}
       onSave={() => updateText(item.id, text)}
-      onDelete={() => deleteItem(item.id)}
+      deletion={{
+        label: 'Borrar este texto',
+        confirmTitle: '¿Borrar este texto?',
+        onDelete: () => deleteItem(item.id),
+      }}
       onClose={onClose}>
       {({ clearError }) => (
         <BoxTextArea

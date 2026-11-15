@@ -22,3 +22,5 @@ All components are in `src/components/`. Each is a named export that reads its c
 * [Field components](field-components.md) - `BoxTextField` and `FieldLabel`, the single-line field and labeled hint of the image fields.
 * [Event fields](event-fields.md) - `EventFields`, `EventPhotoGrid` and `CategorySuggestions`: thumbnails, the multi-select photo button, title, category with suggestions and description.
 * [Image item card](image-item-card.md) - An image item: the photo whole on its backdrop, an italic caption, and the Editar and Compartir actions.
+* [Avatar image](avatar-image.md) - The round avatar: the profile photo cropped to a circle, or the emoji when there is none.
+* [Profile dialog](profile-dialog.md) - The dialog opened by the header avatar: avatar photo, name, Guardar and a discard confirmation, plus a Bluetooth placeholder.

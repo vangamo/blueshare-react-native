@@ -1,9 +1,15 @@
+import { launchImageLibraryAsync } from 'expo-image-picker';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { StyleSheet } from 'react-native';
 
+import { DISCARD_TITLE } from '@/components/edit-dialog-frame';
 import { Frames, Sizes } from '@/constants/theme';
+import { pickedResult } from '@/test-utils/picker-assets';
 import { TEST_WINDOWS, setMockWindow } from '@/test-utils/test-values';
 import { journey } from '@/test-utils/timeline-journey';
+
+jest.mock('expo-image-picker', () => ({ launchImageLibraryAsync: jest.fn() }));
+const launch = jest.mocked(launchImageLibraryAsync);
 
 const { button, textArea } = journey;
 const rotate = (window: (typeof TEST_WINDOWS)[keyof typeof TEST_WINDOWS]) =>
@@ -37,6 +43,35 @@ describe('rotating mid-task', () => {
     expect(screen.getByLabelText('Editar elemento de texto')).toBe(input);
     expect(input).toHaveProp('value', 'Cambiado');
     expect(screen.getByText('Editar elemento de texto:')).toBeOnTheScreen();
+  });
+
+  test('an open profile dialog keeps its changed name, picked photo and step, and the section under it', async () => {
+    launch.mockReset();
+    launch.mockResolvedValueOnce(pickedResult(1));
+    await renderRouter('./src/app', { initialUrl: '/circles' });
+    await fireEvent.press(await screen.findByRole('button', { name: 'Profile' }));
+    await screen.findByText('Editar perfil:');
+    await fireEvent.press(button('Elegir foto'));
+    await screen.findByRole('image', { name: 'Foto de perfil' });
+    await fireEvent.changeText(screen.getByLabelText('Nombre'), 'Carmen');
+    const input = screen.getByLabelText('Nombre');
+
+    await rotate(TEST_WINDOWS.phoneLandscape);
+    expect(screen.getByLabelText('Nombre')).toBe(input);
+    expect(input).toHaveProp('value', 'Carmen');
+    expect(screen.getByRole('image', { name: 'Foto de perfil' })).toBeOnTheScreen();
+    expect(screen).toHavePathname('/circles');
+
+    // The discard step survives a rotation too.
+    await fireEvent.press(button('Cancelar'));
+    expect(screen.getByText(DISCARD_TITLE)).toBeOnTheScreen();
+    await rotate(TEST_WINDOWS.tabletPortrait);
+    expect(screen.getByText(DISCARD_TITLE)).toBeOnTheScreen();
+    await rotate(TEST_WINDOWS.phonePortrait);
+    await fireEvent.press(button('No, volver'));
+    expect(screen.getByLabelText('Nombre')).toHaveProp('value', 'Carmen');
+    expect(screen.getByRole('image', { name: 'Foto de perfil' })).toBeOnTheScreen();
+    expect(screen.getByRole('tab', { name: 'Circles' })).toBeSelected();
   });
 
   test('a draft left while on Circles is shown in the same step after rotating and returning', async () => {

@@ -35,3 +35,7 @@ generated:
 - Event photos as child image items with a `parent_id`: they would need filtering out of the feed, and their history would be split from the event's.
 
 See [Items module](../architecture/items-module.md).
+
+## People and the own profile (user-profile D3)
+
+Schema v5 adds `people` with an `is_me` flag instead of a one-row `profile` table, so contacts (Phase 2) and profiles received over Bluetooth (Phase 4) become more rows and the user's own row never moves. A partial unique index keeps one own profile. `people_history` archives each earlier version like the item history tables, with no foreign key. See [Profile module](../architecture/profile-module.md).

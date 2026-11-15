@@ -1,5 +1,14 @@
 # Log
 
+## 2026-11-15
+
+* **Update** Started the OpenSpec change `user-profile` (branch `05-bluetooth-sharing`). Group 1: `PROFILE_NAME_MAX_LENGTH = 60` in `src/constants/limits.ts`; `profileAvatar` (112 / 136) and `profileAvatarEmoji` (56 / 64) in both size sets; two profile contrast pairs in `theme-test.ts` (no change to `design-system.json`). Docs: `design-system/layout-sizes.md`, `color-palettes.md`.
+  * Groups 2 to 4: `src/profile/domain/` (`Profile`, name and avatar rules, errors, `ProfileRepository`), migration step 5 (`people`, `people_one_me`, `people_history`), `SqliteProfileRepository`, and `EditDialogFrame` generalized (`deletion`, `confirmDiscard`, `saveErrorMessage`, `footer`, `editable`) with the three edit dialogs passing `deletion` and their tests unchanged. Docs: `architecture/profile-module.md`, `items-module.md`, `decisions/items-schema.md`, `decisions/shared-edit-dialog-frame.md`, `src/profile/CLAUDE.md`.
+  * Group 5: `loadProfile`, `updateProfile`, the profile store and module; `ItemsProvider` now builds both modules from one adapter set with one shared migration (`ProfileContext`), `createItemsModule` takes an optional `prepare`, and `useProfile()`. Tests in `unit/profile/application/` and `items-provider-test.tsx`.
+  * Groups 6 and 7: `AvatarImage`, the header avatar as a "Profile" button that opens `ProfileDialog` (owned by `AppHeader`), `ProfileDialog` on the generalized frame, `autoCapitalize` on `BoxTextField`, and the profile dialog harness. Docs: `components/avatar-image.md`, `profile-dialog.md`, `app-header.md`, `development/accessibility.md`.
+  * Group 8: `e2e/profile-test.tsx` (six journeys) and a profile case in `rotation-test.tsx`. With the machine's load average above 60 the first test of many suites timed out at 5 s; `npm test -- --maxWorkers=2` passes all 777 tests (noted in `development/testing.md`).
+  * Final check (10.1) run before the device tasks: lint (0 warnings), typecheck and 777 tests pass; the color grep finds only the existing comment in `box-button.tsx`; `items/` never imports `profile/`; `src/profile` has no `expo` import; `package.json` unchanged; no `ios/`, `android/` or `sketches/` changes; no `eslint-disable`, `.only` or `.skip`; `openspec validate user-profile --strict` passes. Tasks 9.1 (device check) and 9.2 (visual review) are still open.
+
 ## 2026-11-06
 
 * **Update** Archived the OpenSpec change `event-items` to `openspec/changes/archive/2026-11-06-event-items/` with `/opsx:archive`, after syncing its delta specs into `openspec/specs/` (no new capability): item-creation (event step, 14 added, 1 removed: "Guardar with Evento does nothing yet"), item-editing (event dialog, 7 added), item-storage (event content and photo order, 6 added), timeline-feed (event card, 8 added), adaptive-layout (event tile size) and app-theming (new contrast pairs). `openspec validate --specs` passes. Context updated to match:

@@ -26,3 +26,13 @@ generated:
 **Guard:** `edit-text-dialog-test.tsx`, `edit-text-item-test.tsx` and `timeline-back-button-test.tsx` passed unchanged after the move, before the image dialog was added.
 
 See [Edit dialog](edit-dialog.md) (the original modal and in-dialog confirmation decisions), [Edit text dialog](../components/edit-text-dialog.md), [Edit image dialog](../components/edit-image-dialog.md) and [Edit event dialog](../components/edit-event-dialog.md).
+
+## The profile dialog and the generalized frame (user-profile D7)
+
+The profile dialog is the first user of the frame that is not an item edit, so the frame stopped assuming a deletion:
+- `deletion?: { label, confirmTitle, onDelete }` replaces `deleteLabel`, `confirmTitle` and `onDelete`. Without it there is no deletion button. The three edit dialogs pass it explicitly and behave as before.
+- `confirmDiscard` makes Cancelar, Cerrar and Android back ask "¿Descartar los cambios?" ("No, volver" / "Sí, descartar") while `canSave` is true. `canSave` ("there is a real change") doubles as the dirty flag. Off by default, so the edit dialogs still close at once.
+- `saveErrorMessage(error)` replaces the default save message, `footer` is drawn under a divider after Cancelar and Guardar, and `editable={false}` shows only the body and Cancelar.
+- The reducer's steps are `edit`, `confirmDelete` and `confirmDiscard`, and its error is the message itself.
+
+A lower-level `DialogFrame` with `EditDialogFrame` as a wrapper was rejected as a bigger diff for the same result. Tests: `edit-dialog-frame-test.tsx`.

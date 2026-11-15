@@ -23,3 +23,6 @@ export const EVENT_DESCRIPTION_MAX_LENGTH = 2000;
 
 /** Most photos one event can hold (at least one is required). */
 export const EVENT_MAX_PHOTOS = 10;
+
+/** Maximum profile name (a full name or a nickname), in UTF-16 code units. */
+export const PROFILE_NAME_MAX_LENGTH = 60;

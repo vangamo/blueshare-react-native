@@ -74,8 +74,11 @@ generated:
 | `e2e/edit-image-item-test.tsx` | Edit with history, deletion keeping the photo file, rotation with the dialog open |
 | `e2e/create-event-item-test.tsx` | An event after a text with its photo files stored, the draft kept across Circles and rotation, Cancelar and Android back copying nothing |
 | `e2e/edit-event-item-test.tsx` | Remove, add and recategorize with the old photo list in the history, deletion keeping every file, rotation with the dialog open |
-| `e2e/rotation-test.tsx` | Rotation keeps the section, scroll position, drafts, dialogs and focus |
+| `e2e/rotation-test.tsx` | Rotation keeps the section, scroll position, drafts, dialogs (the profile dialog included) and focus |
+| `e2e/profile-test.tsx` | The profile journey: save a name and photo and return to the same tab, cancel with the draft kept, discard confirmation, the empty-name message, restart with the same UUID, the dialog's width on a tablet |
 
 Helpers for Timeline tests: `journey` (`src/test-utils/timeline-journey.ts`) drives the box through the whole app; `CreationBoxHarness` renders the box outside the router; `spyOnBackHandler()` simulates Android back. `EditDialogHarness` and `seededAdapters` (`src/test-utils/edit-dialog-harness.tsx`) render the edit dialog over a database holding given texts.
 
 Jest cannot see real rendering (shadows, device insets, keyboard, focus, fonts). The [visual review](visual-review.md) covers those.
+
+If many first tests in a suite time out at 5 seconds, the machine is probably loaded (the app transform is cold): rerun with `npm test -- --maxWorkers=2`.

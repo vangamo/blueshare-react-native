@@ -45,6 +45,9 @@ const PAIRS: Pair[] = [
   { fg: 'primaryDark', bg: 'creationBg', min: LARGE_OR_UI, use: 'category suggestion border' },
   { fg: 'primaryDark', bg: 'surfaceMuted', min: LARGE_OR_UI, use: 'photo remove button border' },
   { fg: 'primaryBlueDeep', bg: 'cardBg', min: LARGE_OR_UI, use: 'event card accent bar' },
+  // Profile dialog (user-profile design D9).
+  { fg: 'primaryDark', bg: 'creationBg', min: LARGE_OR_UI, use: 'profile avatar preview border and name field border' },
+  { fg: 'textMuted', bg: 'creationBg', min: TEXT, use: 'profile name hint' },
 ];
 
 describe('palettes', () => {
@@ -125,6 +128,8 @@ describe('Sizes', () => {
       eventTitle: 17,
       badgeText: 14,
       thumbColumns: 3,
+      profileAvatar: 112,
+      profileAvatarEmoji: 56,
     });
     expect(Layout).toMatchObject({
       photoRadius: 12,
@@ -149,6 +154,10 @@ describe('Sizes', () => {
 
   test('tablets get larger event titles and badges and four thumbnails per row', () => {
     expect(Sizes.tablet).toMatchObject({ eventTitle: 19, badgeText: 15, thumbColumns: 4 });
+  });
+
+  test('the profile avatar preview is larger on tablets', () => {
+    expect(Sizes.tablet).toMatchObject({ profileAvatar: 136, profileAvatarEmoji: 64 });
   });
 
   test('every tablet size is at least its phone size', () => {

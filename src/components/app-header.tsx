@@ -1,16 +1,38 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AvatarImage } from '@/components/avatar-image';
+import { ProfileDialog } from '@/components/profile-dialog';
 import { TitleSearchField } from '@/components/title-search-field';
 import { FontWeight, Layout, Spacing } from '@/constants/theme';
+import { usePhotoUriFor } from '@/hooks/use-photo-uri';
+import { useProfile } from '@/hooks/use-profile';
 import { useShellLayout } from '@/hooks/use-shell-layout';
 import { useTheme } from '@/hooks/use-theme';
 
-/** Fixed header: menu button, title/search field and avatar. Rendered once by the root layout. */
+/**
+ * Fixed header: menu button, title/search field and avatar. Rendered once by the root layout.
+ * The avatar opens the profile dialog, whose open state lives here: the header never
+ * remounts, so the dialog survives a rotation.
+ */
 export function AppHeader() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { frame, sizes } = useShellLayout();
+  const { status, profile } = useProfile();
+  const uriFor = usePhotoUriFor();
+  // A new key on every open, so the dialog starts from the saved profile.
+  const [profileOpens, setProfileOpens] = useState(0);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const openProfile = () => {
+    // Until the profile is read there is nothing to edit (it takes milliseconds at start).
+    if (status === 'loading') return;
+    Keyboard.dismiss();
+    setProfileOpens((count) => count + 1);
+    setProfileOpen(true);
+  };
 
   return (
     <View
@@ -53,21 +75,25 @@ export function AppHeader() {
         ]}
       />
 
-      <View
-        accessible
+      <Pressable
+        accessibilityRole="button"
         accessibilityLabel="Profile"
-        style={[
-          styles.avatar,
-          {
-            width: sizes.avatar,
-            height: sizes.avatar,
-            borderRadius: sizes.avatar / 2,
-            backgroundColor: theme.avatarBg,
-            borderColor: theme.primaryDark,
-          },
+        onPress={openProfile}
+        style={({ pressed }) => [
+          styles.avatarButton,
+          { minWidth: Layout.touchTarget, minHeight: Layout.touchTarget },
+          pressed && styles.pressed,
         ]}>
-        <Text style={{ fontSize: sizes.avatarEmoji }}>👵</Text>
-      </View>
+        <AvatarImage
+          uri={profile?.avatar ? uriFor(profile.avatar.file) : null}
+          size={sizes.avatar}
+          emojiSize={sizes.avatarEmoji}
+        />
+      </Pressable>
+
+      {profileOpen ? (
+        <ProfileDialog key={profileOpens} onClose={() => setProfileOpen(false)} />
+      ) : null}
     </View>
   );
 }
@@ -91,8 +117,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: Spacing.md,
   },
-  avatar: {
-    borderWidth: Layout.borderWidth,
+  avatarButton: {
     alignItems: 'center',
     justifyContent: 'center',
   },

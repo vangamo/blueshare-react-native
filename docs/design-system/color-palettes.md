@@ -14,7 +14,7 @@ generated:
 
 | Role (`theme.*`) | Light | Dark | Used by |
 | --- | --- | --- | --- |
-| `primaryDark` (strong ink) | `#0f172a` | `#e2e8f0` | title-field border at rest, avatar border, type select and text area borders, event card border, category suggestion and photo remove button borders |
+| `primaryDark` (strong ink) | `#0f172a` | `#e2e8f0` | title-field border at rest, avatar border (header and profile preview), type select and text area borders, event card border, category suggestion and photo remove button borders |
 | `primaryBlue` | `#0084ff` | `#4da3ff` | FAB fill, menu glyph and border, focused field border, cursor, creation box dashed border |
 | `primaryBlueHover` | `#006fe6` | `#80bdff` | active tab background, Guardar and Crear buttons |
 | `primaryBlueDeep` | `#0058b8` | `#b3d7ff` | active tab border, event card accent bar |
@@ -72,6 +72,8 @@ Checked pairs (light / dark):
 | Category suggestion labels and photo remove `✕` (`textMain` on `surfaceMuted`) | 17.06 / 13.35 |
 | Category suggestion border (`primaryDark` on `creationBg`) | 16.54 / 12.81 |
 | Photo remove button border (`primaryDark` on `surfaceMuted`) | 17.06 / 11.87 |
+| Profile avatar preview and name field border (`primaryDark` on `creationBg`) | 16.54 / 12.81 |
+| Profile name hint (`textMuted` on `creationBg`) | same pair as the alternative text hint |
 
 The event card's accent bar (`primaryBlueDeep` on `cardBg`, 6.80 / 11.97) sets event cards apart from other cards, so it is held to the 3:1 non-text minimum in the contrast tests. The user chose it over the sketch's `primary_blue` (3.66 in light). The event description uses the card text pair, and the limit message the creation box text pair.
 

@@ -5,6 +5,7 @@ import {
   EVENT_DESCRIPTION_MAX_LENGTH,
   EVENT_MAX_PHOTOS,
   EVENT_TITLE_MAX_LENGTH,
+  PROFILE_NAME_MAX_LENGTH,
   TEXT_MAX_LENGTH,
 } from '@/constants/limits';
 
@@ -26,5 +27,9 @@ describe('limits', () => {
 
   test('an event holds at most 10 photos', () => {
     expect(EVENT_MAX_PHOTOS).toBe(10);
+  });
+
+  test('a profile name holds at most 60 characters', () => {
+    expect(PROFILE_NAME_MAX_LENGTH).toBe(60);
   });
 });

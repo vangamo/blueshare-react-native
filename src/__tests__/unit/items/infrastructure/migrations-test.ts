@@ -23,8 +23,8 @@ describe('migrate', () => {
     await migrate(db);
 
     expect(await schemaVersion(db)).toBe(MIGRATIONS.length);
-    expect(MIGRATIONS).toHaveLength(4);
-    expect(await schemaVersion(db)).toBe(4);
+    expect(MIGRATIONS).toHaveLength(5);
+    expect(await schemaVersion(db)).toBe(5);
     const objects = await db.getAll<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type IN ('table', 'index') AND name NOT LIKE 'sqlite_%' ORDER BY name",
     );
@@ -38,6 +38,9 @@ describe('migrate', () => {
       'items',
       'items_history',
       'items_timeline',
+      'people',
+      'people_history',
+      'people_one_me',
       'text_items',
       'text_items_history',
     ]);
@@ -141,7 +144,7 @@ describe('migrate', () => {
 
     await migrate(db);
 
-    expect(await schemaVersion(db)).toBe(4);
+    expect(await schemaVersion(db)).toBe(MIGRATIONS.length);
     expect(await bodies(db)).toEqual(['Uno']);
     expect(await db.getAll('SELECT item_id, photo_file, caption FROM image_items')).toEqual([
       { item_id: 'i', photo_file: 'p2.jpg', caption: 'Verano' },
@@ -226,5 +229,48 @@ describe('migrate', () => {
     await expect(
       db.run('INSERT INTO text_items_history (item_id, counter, body) VALUES (?, ?, ?)', ['a', 1, 'x']),
     ).rejects.toThrow(/FOREIGN KEY/i);
+  });
+});
+
+describe('schema v5 (people)', () => {
+  const PERSON = 'INSERT INTO people (id, is_me, display_name, avatar_file, avatar_width, avatar_height, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 1, 1)';
+
+  test('a v4 database with items upgrades and keeps every item', async () => {
+    const db = new NodeSqlDatabase();
+    await migrate(db, MIGRATIONS.slice(0, 4));
+    await insertText(db, 'a', 'Uno');
+    await db.run(
+      'INSERT INTO items (id, type, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?)',
+      ['i', 'image', 2, 2, null],
+    );
+    await db.run(
+      'INSERT INTO image_items (item_id, photo_file, photo_width, photo_height, alt_text, caption) VALUES (?, ?, ?, ?, ?, ?)',
+      ['i', 'x.jpg', 10, 20, null, 'pie'],
+    );
+
+    await migrate(db);
+
+    expect(await schemaVersion(db)).toBe(5);
+    expect(await bodies(db)).toEqual(['Uno']);
+    expect(await db.getAll('SELECT caption FROM image_items')).toEqual([{ caption: 'pie' }]);
+    expect(await db.getAll('SELECT id FROM people')).toEqual([]);
+  });
+
+  test('a second own profile is rejected, other people are not', async () => {
+    const db = new NodeSqlDatabase();
+    await migrate(db);
+    await db.run(PERSON, ['me', 1, null, null, null, null]);
+    await expect(db.run(PERSON, ['me2', 1, null, null, null, null])).rejects.toThrow();
+    await db.run(PERSON, ['p1', 0, 'Ana', null, null, null]);
+    await db.run(PERSON, ['p2', 0, 'Luis', null, null, null]);
+    expect(await db.getAll('SELECT id FROM people')).toHaveLength(3);
+  });
+
+  test('an avatar file without a width is rejected', async () => {
+    const db = new NodeSqlDatabase();
+    await migrate(db);
+    await expect(db.run(PERSON, ['me', 1, 'Ana', 'a.jpg', null, 10])).rejects.toThrow();
+    await expect(db.run(PERSON, ['me', 1, 'Ana', null, 10, 10])).rejects.toThrow();
+    await db.run(PERSON, ['me', 1, 'Ana', 'a.jpg', 10, 10]);
   });
 });

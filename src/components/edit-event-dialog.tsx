@@ -50,11 +50,13 @@ export function EditEventDialog({ item, onClose }: EditEventDialogProps) {
     <EditDialogFrame
       testID="edit-event-dialog"
       title="Editar elemento de evento:"
-      deleteLabel="Borrar este evento"
-      confirmTitle="¿Borrar este evento?"
       canSave={valid && changed}
       onSave={() => updateEvent(item.id, { photos: inputs(), title, category, description })}
-      onDelete={() => deleteItem(item.id)}
+      deletion={{
+        label: 'Borrar este evento',
+        confirmTitle: '¿Borrar este evento?',
+        onDelete: () => deleteItem(item.id),
+      }}
       onClose={onClose}>
       {({ clearError }) => {
         // Any edit hides the gallery and save messages.

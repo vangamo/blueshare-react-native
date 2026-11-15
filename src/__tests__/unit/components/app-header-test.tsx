@@ -33,11 +33,29 @@ describe('AppHeader', () => {
     expect(screen.getByRole('tab', { name: 'Timeline' })).toBeSelected();
   });
 
-  test('avatar is labeled "Profile" and has no press handler', async () => {
+  test('avatar is a button named "Profile" showing the emoji while there is no photo', async () => {
     await renderRouter('./src/app');
-    const avatar = screen.getByLabelText('Profile');
-    expect(avatar.props.onPress).toBeUndefined();
-    expect(screen.getByText('👵')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Profile' })).toBeOnTheScreen();
+    expect(screen.getByText('👵', { includeHiddenElements: true })).toBeOnTheScreen();
+  });
+
+  test('tapping the avatar opens the profile dialog and keeps the section', async () => {
+    await renderRouter('./src/app');
+    expect(screen.queryByTestId('profile-dialog')).toBeNull();
+
+    await fireEvent.press(await screen.findByRole('button', { name: 'Profile' }));
+
+    expect(await screen.findByTestId('profile-dialog')).toBeOnTheScreen();
+    expect(screen.getByText('Editar perfil:')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/');
+  });
+
+  test.each(Object.entries(TEST_WINDOWS))('avatar touch target is at least 44×44 (%s)', async (_name, window) => {
+    setMockWindow(window);
+    await renderRouter('./src/app');
+    const style = StyleSheet.flatten(screen.getByRole('button', { name: 'Profile' }).props.style);
+    expect(style.minWidth).toBeGreaterThanOrEqual(Layout.touchTarget);
+    expect(style.minHeight).toBeGreaterThanOrEqual(Layout.touchTarget);
   });
 
   test('header is the shell height plus the top inset', async () => {
@@ -65,7 +83,7 @@ describe('AppHeader', () => {
     });
     expect(screen.getByText('≡')).toHaveStyle({ color: colors.primaryBlue });
     expect(screen.getByLabelText('Search')).toHaveStyle({ borderColor: colors.primaryDark });
-    expect(screen.getByLabelText('Profile')).toHaveStyle({
+    expect(screen.getByTestId('avatar-image', { includeHiddenElements: true })).toHaveStyle({
       backgroundColor: colors.avatarBg,
       borderColor: colors.primaryDark,
     });
@@ -98,10 +116,10 @@ describe('AppHeader', () => {
       height: Sizes.tablet.fieldHeight,
       maxWidth: Frames['tablet-portrait'].titleMaxWidth,
     });
-    expect(screen.getByLabelText('Profile')).toHaveStyle({
+    expect(screen.getByTestId('avatar-image', { includeHiddenElements: true })).toHaveStyle({
       width: Sizes.tablet.avatar,
       height: Sizes.tablet.avatar,
     });
-    expect(screen.getByText('👵')).toHaveStyle({ fontSize: Sizes.tablet.avatarEmoji });
+    expect(screen.getByText('👵', { includeHiddenElements: true })).toHaveStyle({ fontSize: Sizes.tablet.avatarEmoji });
   });
 });

@@ -101,6 +101,34 @@ export const MIGRATIONS: readonly string[] = [
     FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
   );
   `,
+  // 5. The user's own profile, in a table that Phase 2 contacts and Phase 4 received
+  // profiles will share (openspec user-profile design D3). One `is_me = 1` row at most.
+  `
+  CREATE TABLE people (
+    id            TEXT PRIMARY KEY NOT NULL,
+    is_me         INTEGER NOT NULL DEFAULT 0 CHECK (is_me IN (0, 1)),
+    display_name  TEXT,
+    avatar_file   TEXT,
+    avatar_width  INTEGER CHECK (avatar_width > 0),
+    avatar_height INTEGER CHECK (avatar_height > 0),
+    created_at    INTEGER NOT NULL,
+    updated_at    INTEGER NOT NULL,
+    CHECK ((avatar_file IS NULL) = (avatar_width IS NULL)
+       AND (avatar_file IS NULL) = (avatar_height IS NULL))
+  );
+  CREATE UNIQUE INDEX people_one_me ON people (is_me) WHERE is_me = 1;
+  CREATE TABLE people_history (
+    person_id     TEXT NOT NULL,
+    counter       INTEGER NOT NULL CHECK (counter >= 1),
+    display_name  TEXT,
+    avatar_file   TEXT,
+    avatar_width  INTEGER,
+    avatar_height INTEGER,
+    created_at    INTEGER NOT NULL,
+    updated_at    INTEGER NOT NULL,
+    PRIMARY KEY (person_id, counter)
+  );
+  `,
 ];
 
 /** The schema version recorded in the database (0 for a new file). */

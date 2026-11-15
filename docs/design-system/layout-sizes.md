@@ -31,6 +31,7 @@ Components read `Sizes` and `Frames` through `useShellLayout()` and pass them in
 | `menuButton` / `menuGlyph` | 44 / 18 | 48 / 20 | header menu button |
 | `fieldHeight` / `fieldFont` | 42 / 16 | 46 / 17 | title field (a spec exception to 44 on phones) |
 | `avatar` / `avatarEmoji` | 42 / 20 | 46 / 22 | avatar circle and emoji |
+| `profileAvatar` / `profileAvatarEmoji` | 112 / 56 | 136 / 64 | avatar preview circle and emoji in the profile dialog |
 | `tabHeight` / `tabLabel` | 44 / 14 | 48 / 15 | tabs |
 | `fab` / `fabFont` / `fabRight` | 56 / 28 / 20 | 60 / 30 / 28 | create button |
 | `cardPadding` / `cardRadius` / `itemGap` | 16 / 16 / 16 | 20 / 18 / 20 | card, creation box, dialog |

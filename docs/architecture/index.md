@@ -5,3 +5,4 @@
 * [Shell layout](shell-layout.md) - How the root layout composes the header, tab navigator, footer and create button.
 * [Routing](routing.md) - Expo Router file routes, JS tabs, typed routes, deep links, and how to add a section.
 * [Items module](items-module.md) - How items are stored: the hexagonal src/items module, the injected SQLite driver (expo-sqlite in the app, node:sqlite in Jest), schema v2 (live and history tables) and append-only migrations.
+* [Profile module](profile-module.md) - How the user's own profile (stable UUID, name, avatar) is stored: the hexagonal src/profile module sharing the items database, schema v5 (people and people_history).

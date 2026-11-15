@@ -174,6 +174,10 @@ CREATE TABLE event_item_photos (
 - `archive()` copies the `event_items` row and every photo row into the history tables with the same counter, so each version keeps its whole photo list in order.
 - The text limits and the photo count (1 to `EVENT_MAX_PHOTOS`) are domain rules, not SQL CHECKs. An old build that opens a v4 database returns `null` for event rows, so they are hidden there, not lost.
 
+## Schema v5: people (the profile)
+
+Step 5 adds `people` (with the partial unique index `people_one_me`, so at most one `is_me = 1` row) and `people_history`. They belong to the [profile module](profile-module.md), but live in this list because the database file has one `user_version`. Items are untouched.
+
 ## Migrations
 
 - `MIGRATIONS` in `migrations.ts` is a list of SQL steps; step N brings `PRAGMA user_version` to N.
@@ -183,7 +187,7 @@ CREATE TABLE event_item_photos (
 
 ## Future tables (not built yet)
 
-- `owner_id` on `items`, with `people (id, display_name, original_name, is_me)`. Names live on `people`, so a rename leaves no stale copies.
+- `owner_id` on `items`. The `people` table exists since schema v5 (`id`, `is_me`, `display_name`, avatar columns, times), without `original_name`: a later step adds it for contacts. Names live on `people`, so a rename leaves no stale copies.
 - `item_shares (item_id, person_id, shared_at)`.
 - Nullable location columns on `image_items` and `event_items` and their history tables (`add-item-locations`).
 

@@ -1,7 +1,7 @@
 ---
 type: Component
 title: Items provider
-description: Creates the items module once per app session and shares its timeline store with useTimeline(). Takes optional adapters so tests can inject a failing database.
+description: Creates the items and profile modules once per app session, from one set of adapters and one shared migration, and shares their stores with useTimeline() and useProfile(). Takes optional adapters so tests can inject a failing database.
 tags: [component, provider, items, state]
 resource: ../../src/components/items-provider.tsx
 status: stable
@@ -16,7 +16,8 @@ generated:
 
 ## Behavior
 
-- Creates the module with a lazy initializer: `useState(() => createItemsModule(adapters ?? createAppAdapters()))`. No effect is involved, and the module lives for the whole session.
+- Creates both modules with one lazy initializer from a single `adapters ?? createAppAdapters()`: `createItemsModule(app, { prepare })` and `createProfileModule({ ...app, prepare })`. `prepare` is one shared promise around `migrate(db)`, so the timeline and the profile never run the migrations twice. No effect is involved, and the modules live for the whole session.
+- It provides two contexts, `ItemsContext` and `ProfileContext`. In Jest the default adapters are one fresh in-memory database per provider, shared by both modules.
 - `adapters` is dependency injection: the app uses the default (expo-sqlite, expo-crypto, `Date.now`), and tests pass a `FailingSqlDatabase` to check error states. In Jest the default is already swapped for an in-memory `node:sqlite` database.
 - In development React may run the initializer twice. That opens a second connection to the same file and keeps one module, which is harmless.
 
@@ -29,6 +30,12 @@ generated:
 
 The store contract is in [Items module](../architecture/items-module.md).
 
+## `useProfile()` (`src/hooks/use-profile.ts`)
+
+Reads the profile store with `useSyncExternalStore` and returns `{ status, profile, updateProfile }`. `profile` is `null` while loading or when it could not be read. `updateProfile(input)` rejects with `InvalidProfileError` (re-exported) or the storage error. The store contract is in [Profile module](../architecture/profile-module.md).
+
 ## Tests
+
+`src/__tests__/unit/components/items-provider-test.tsx`: both stores reach `ready` on a fresh database and the migrations run once.
 
 `src/__tests__/unit/hooks/use-timeline-test.tsx`: the status goes from `loading` to `ready` with no items, created items show newest first, and the hook throws without a provider.

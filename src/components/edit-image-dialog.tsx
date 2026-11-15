@@ -34,11 +34,13 @@ export function EditImageDialog({ item, onClose }: EditImageDialogProps) {
     <EditDialogFrame
       testID="edit-image-dialog"
       title="Editar elemento de imagen:"
-      deleteLabel="Borrar esta imagen"
-      confirmTitle="¿Borrar esta imagen?"
       canSave={canSave}
       onSave={() => updateImage(item.id, { newPhoto, altText, caption })}
-      onDelete={() => deleteItem(item.id)}
+      deletion={{
+        label: 'Borrar esta imagen',
+        confirmTitle: '¿Borrar esta imagen?',
+        onDelete: () => deleteItem(item.id),
+      }}
       onClose={onClose}>
       {({ clearError }) => (
         <ImageFields

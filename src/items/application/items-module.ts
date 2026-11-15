@@ -30,10 +30,21 @@ export type ItemsModule = {
   photos: PhotoStore;
 };
 
-export function createItemsModule({ db, ids, clock, photos }: ItemsAdapters): ItemsModule {
+export type ItemsModuleOptions = {
+  /**
+   * Gets storage ready. Defaults to running the migrations. `ItemsProvider` passes one shared
+   * promise so the items and profile stores migrate the database once.
+   */
+  prepare?: () => Promise<void>;
+};
+
+export function createItemsModule(
+  { db, ids, clock, photos }: ItemsAdapters,
+  { prepare = () => migrate(db) }: ItemsModuleOptions = {},
+): ItemsModule {
   const deps = { repository: new SqliteItemRepository(db), clock, ids, photos };
   const store = createTimelineStore({
-    prepare: () => migrate(db),
+    prepare,
     listTimeline: listTimeline(deps),
     createText: createTextItem(deps),
     updateText: updateTextItem(deps),

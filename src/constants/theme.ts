@@ -125,6 +125,9 @@ export type SizeSet = {
   fieldFont: number;
   avatar: number;
   avatarEmoji: number;
+  /** Diameter and emoji size of the avatar preview in the profile dialog. */
+  profileAvatar: number;
+  profileAvatarEmoji: number;
   tabHeight: number;
   tabLabel: number;
   fab: number;
@@ -166,6 +169,8 @@ export const Sizes: Record<DeviceKind, SizeSet> = {
     fieldFont: 16,
     avatar: 42,
     avatarEmoji: 20,
+    profileAvatar: 112,
+    profileAvatarEmoji: 56,
     tabHeight: 44,
     tabLabel: 14,
     fab: 56,
@@ -205,6 +210,8 @@ export const Sizes: Record<DeviceKind, SizeSet> = {
     fieldFont: 17,
     avatar: 46,
     avatarEmoji: 22,
+    profileAvatar: 136,
+    profileAvatarEmoji: 64,
     tabHeight: 48,
     tabLabel: 15,
     fab: 60,
