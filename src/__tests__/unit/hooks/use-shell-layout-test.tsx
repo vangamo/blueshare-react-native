@@ -105,4 +105,71 @@ describe('useShellLayout', () => {
       expect(result.current.imageMaxHeight).not.toBe(portrait);
     });
   });
+
+  describe('eventTileSize', () => {
+    const WINDOWS = [
+      ['phonePortrait', 'phone'],
+      ['phoneLandscape', 'phone'],
+      ['tabletPortrait', 'tablet'],
+      ['tabletLandscape', 'tablet'],
+    ] as const;
+
+    /** Whole tiles in the row, given that 40% of one more peeks out. */
+    function wholeTiles(inner: number, side: number): number {
+      const part = Layout.eventTilePeek % 1;
+      return Math.round((inner - part * side) / (side + Layout.eventTileGap));
+    }
+
+    test.each(WINDOWS)('%s fits whole tiles and 40%% of the next, capped by imageMaxHeight', async (window, device) => {
+      setMockWindow(TEST_WINDOWS[window]);
+      const { result } = await renderHook(() => useShellLayout());
+      const { columnWidth, imageMaxHeight, eventTileSize } = result.current;
+      const sizes = Sizes[device];
+      const inner = columnWidth - 2 * sizes.cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+      const part = Layout.eventTilePeek % 1;
+
+      expect(eventTileSize).toBeLessThanOrEqual(imageMaxHeight);
+      const whole = wholeTiles(inner, eventTileSize);
+      expect(whole).toBeGreaterThanOrEqual(Math.floor(Layout.eventTilePeek));
+      expect(whole * (eventTileSize + Layout.eventTileGap) + part * eventTileSize).toBeCloseTo(inner);
+    });
+
+    test.each(WINDOWS.filter(([window]) => window !== 'phoneLandscape'))(
+      '%s shows two whole tiles, as the sketch',
+      async (window, device) => {
+        setMockWindow(TEST_WINDOWS[window]);
+        const { result } = await renderHook(() => useShellLayout());
+        const { columnWidth, eventTileSize } = result.current;
+        const inner = columnWidth - 2 * Sizes[device].cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+        expect(eventTileSize).toBeCloseTo((inner - 2 * Layout.eventTileGap) / Layout.eventTilePeek);
+      },
+    );
+
+    test('is about 133 points on the 411-point test phone and about 118 on a 375-point phone', async () => {
+      const { result } = await renderHook(() => useShellLayout());
+      expect(result.current.eventTileSize).toBeCloseTo(132.9, 0);
+
+      await act(async () => setMockWindow({ width: 375, height: 812 }));
+      expect(result.current.eventTileSize).toBeGreaterThan(110);
+      expect(result.current.eventTileSize).toBeLessThan(125);
+    });
+
+    test('phone landscape, where two tiles would pass imageMaxHeight, shows four smaller tiles and a peek', async () => {
+      setMockWindow(TEST_WINDOWS.phoneLandscape);
+      const { result } = await renderHook(() => useShellLayout());
+      const { columnWidth, imageMaxHeight, eventTileSize } = result.current;
+      const inner = columnWidth - 2 * Sizes.phone.cardPadding - Layout.borderWidth - Layout.accentBarWidth;
+      // Four tiles of exactly imageMaxHeight would fill the row with nothing peeking out.
+      expect(4 * (imageMaxHeight + Layout.eventTileGap) - Layout.eventTileGap).toBeCloseTo(inner);
+      expect(eventTileSize).toBeLessThan(imageMaxHeight);
+      expect(wholeTiles(inner, eventTileSize)).toBe(4);
+    });
+
+    test('changes when the window changes', async () => {
+      const { result } = await renderHook(() => useShellLayout());
+      const portrait = result.current.eventTileSize;
+      await act(async () => setMockWindow(TEST_WINDOWS.phoneLandscape));
+      expect(result.current.eventTileSize).not.toBe(portrait);
+    });
+  });
 });

@@ -64,6 +64,43 @@ export const MIGRATIONS: readonly string[] = [
     FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
   );
   `,
+  // 4. Event items, one row per photo, and their history (openspec event-items design D2).
+  // `position` is 0-based and dense. Text limits and the photo count are domain rules.
+  `
+  CREATE TABLE event_items (
+    item_id     TEXT PRIMARY KEY NOT NULL REFERENCES items (id) ON DELETE CASCADE,
+    title       TEXT NOT NULL,
+    category    TEXT NOT NULL,
+    description TEXT
+  );
+  CREATE TABLE event_item_photos (
+    item_id      TEXT NOT NULL REFERENCES event_items (item_id) ON DELETE CASCADE,
+    position     INTEGER NOT NULL CHECK (position >= 0),
+    photo_file   TEXT NOT NULL,
+    photo_width  INTEGER NOT NULL CHECK (photo_width > 0),
+    photo_height INTEGER NOT NULL CHECK (photo_height > 0),
+    PRIMARY KEY (item_id, position)
+  );
+  CREATE TABLE event_items_history (
+    item_id     TEXT NOT NULL,
+    counter     INTEGER NOT NULL,
+    title       TEXT NOT NULL,
+    category    TEXT NOT NULL,
+    description TEXT,
+    PRIMARY KEY (item_id, counter),
+    FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
+  );
+  CREATE TABLE event_item_photos_history (
+    item_id      TEXT NOT NULL,
+    counter      INTEGER NOT NULL,
+    position     INTEGER NOT NULL,
+    photo_file   TEXT NOT NULL,
+    photo_width  INTEGER NOT NULL,
+    photo_height INTEGER NOT NULL,
+    PRIMARY KEY (item_id, counter, position),
+    FOREIGN KEY (item_id, counter) REFERENCES items_history (item_id, counter) ON DELETE CASCADE
+  );
+  `,
 ];
 
 /** The schema version recorded in the database (0 for a new file). */

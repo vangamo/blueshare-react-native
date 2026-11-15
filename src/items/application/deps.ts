@@ -7,5 +7,5 @@ export type UseCaseDeps = {
   ids: IdGenerator;
 };
 
-/** What the image use cases need on top: the photo files. */
+/** What the image and event use cases need on top: the photo files. */
 export type ImageUseCaseDeps = UseCaseDeps & { photos: PhotoStore };

@@ -6,7 +6,7 @@ tags: [testing, jest, rntl]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-02T12:00:00Z
+  at: 2026-11-06T12:00:00Z
 ---
 
 # Testing
@@ -68,8 +68,13 @@ generated:
 | `unit/components/creation-box-provider-test.ts` | Every reducer transition and `openCount` |
 | `unit/components/{box-button,type-select,creation-box,edit-text-dialog,text-item-card,timeline-feed,timeline-back-button}-test.tsx` | See each [component page](../components/index.md) |
 | `e2e/navigation-test.tsx` | Opens on Timeline (the feed, no placeholder). `/circles` and `/events` deep links work. `/explore` shows no starter content. |
-| `e2e/create-text-item-test.tsx` | Create a text, Cancelar, a tab switch keeping the draft, Evento doing nothing |
+| `e2e/create-text-item-test.tsx` | Create a text, Cancelar, a tab switch keeping the draft |
 | `e2e/edit-text-item-test.tsx` | Edit keeping the place, Cancelar, No, volver then Guardar, delete, a creation draft surviving an edit |
+| `e2e/create-image-item-test.tsx` | Create an image after a text, the draft kept across Circles and rotation (picker mocked) |
+| `e2e/edit-image-item-test.tsx` | Edit with history, deletion keeping the photo file, rotation with the dialog open |
+| `e2e/create-event-item-test.tsx` | An event after a text with its photo files stored, the draft kept across Circles and rotation, Cancelar and Android back copying nothing |
+| `e2e/edit-event-item-test.tsx` | Remove, add and recategorize with the old photo list in the history, deletion keeping every file, rotation with the dialog open |
+| `e2e/rotation-test.tsx` | Rotation keeps the section, scroll position, drafts, dialogs and focus |
 
 Helpers for Timeline tests: `journey` (`src/test-utils/timeline-journey.ts`) drives the box through the whole app; `CreationBoxHarness` renders the box outside the router; `spyOnBackHandler()` simulates Android back. `EditDialogHarness` and `seededAdapters` (`src/test-utils/edit-dialog-harness.tsx`) render the edit dialog over a database holding given texts.
 

@@ -23,6 +23,7 @@ generated:
 
 - A React Native `Modal` (`transparent`, `fade`, translucent status and navigation bars, like the [type select](type-select.md)) over an `overlay`-colored `View`. The overlay is **not** pressable: tapping outside does nothing.
 - A `ScrollView` (`keyboardShouldPersistTaps="handled"`) puts the box at `insets.top + Spacing.lg` from the top, so the keyboard, which rises from the bottom, doesn't cover it. "Borrar este texto" can be reached by scrolling.
+- The `ScrollView` sits in a `KeyboardAvoidingView` (`behavior="padding"`, test ID `edit-dialog-keyboard-area`). Android draws edge to edge, so the modal does not shrink for the keyboard; the padding ends the scroll area above it, and every field and button of a long dialog (the event dialog with ten photos) stays reachable.
 - Box: `creationBg`, a 2-point **solid** `primaryBlue` border (the creation box's is dashed), `Radius.lg`, `Spacing.lg` padding, `Layout.creationGap` between children, `accessibilityViewIsModal`.
 - Header: the title (14-point bold `textMain`, role `header`) and the close button, a 44x44 `Pressable` with a "✕" glyph, labeled "Cerrar".
 - **Edit step:** "Editar elemento de texto:", the shared `BoxTextArea` (label "Editar elemento de texto", no `autoFocus`), "Cancelar" and "Guardar", a `divider` line and a full-width "Borrar este texto" (`dangerOutline` [box button](box-button.md)).

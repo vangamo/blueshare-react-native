@@ -1,8 +1,11 @@
+import type { EventItem } from '@/items/domain/event-item';
 import type { ImageItem } from '@/items/domain/image-item';
 import type { TextItem } from '@/items/domain/text-item';
 import type { TimelineItem } from '@/items/domain/timeline-item';
 
+import type { CreateEventInput } from './create-event-item';
 import type { CreateImageInput } from './create-image-item';
+import type { UpdateEventInput } from './update-event-item';
 import type { UpdateImageInput } from './update-image-item';
 
 export type TimelineStatus = 'loading' | 'ready' | 'error';
@@ -32,6 +35,13 @@ export type TimelineStore = {
    * leaves the snapshot as it is. Rejects on failure.
    */
   updateImage(id: string, input: UpdateImageInput): Promise<ImageItem>;
+  /** Waits for the first load, copies the photos, saves and puts the new item first. Rejects on failure. */
+  createEvent(input: CreateEventInput): Promise<EventItem>;
+  /**
+   * Like `updateImage` for an event item: replaces it in place, and an unchanged edit
+   * leaves the snapshot as it is. Rejects on failure.
+   */
+  updateEvent(id: string, input: UpdateEventInput): Promise<EventItem>;
   /** Waits for the first load, deletes the item and removes it from the list. Rejects on failure. */
   deleteItem(id: string): Promise<void>;
 };
@@ -44,8 +54,12 @@ type TimelineStoreDeps = {
   updateText: (id: string, rawText: string) => Promise<TextItem>;
   createImage: (input: CreateImageInput) => Promise<ImageItem>;
   updateImage: (id: string, input: UpdateImageInput) => Promise<ImageItem>;
+  createEvent: (input: CreateEventInput) => Promise<EventItem>;
+  updateEvent: (id: string, input: UpdateEventInput) => Promise<EventItem>;
   deleteItem: (id: string) => Promise<void>;
 };
+
+const photoFiles = (item: EventItem) => item.photos.map((photo) => photo.file).join('\n');
 
 /** Whether `next` differs from the `shown` item in anything the UI draws. */
 function differs(shown: TimelineItem, next: TimelineItem): boolean {
@@ -56,6 +70,14 @@ function differs(shown: TimelineItem, next: TimelineItem): boolean {
       shown.photo.file !== next.photo.file ||
       shown.altText !== next.altText ||
       shown.caption !== next.caption
+    );
+  }
+  if (shown.type === 'event' && next.type === 'event') {
+    return (
+      shown.title !== next.title ||
+      shown.category !== next.category ||
+      shown.description !== next.description ||
+      photoFiles(shown) !== photoFiles(next)
     );
   }
   return false;
@@ -69,6 +91,20 @@ export function createTimelineStore(deps: TimelineStoreDeps): TimelineStore {
   function update(next: TimelineSnapshot) {
     snapshot = next;
     for (const listener of listeners) listener();
+  }
+
+  /** Puts a created item first. */
+  function prepend(item: TimelineItem) {
+    update({ status: snapshot.status, items: [item, ...snapshot.items] });
+  }
+
+  /** Replaces a shown item in place, only when it differs, so a no-op keeps the snapshot. */
+  function replace(item: TimelineItem) {
+    const shown = snapshot.items.find((existing) => existing.id === item.id);
+    if (shown && differs(shown, item)) {
+      const items = snapshot.items.map((existing) => (existing.id === item.id ? item : existing));
+      update({ status: snapshot.status, items });
+    }
   }
 
   function load(): Promise<void> {
@@ -97,37 +133,43 @@ export function createTimelineStore(deps: TimelineStoreDeps): TimelineStore {
     async createText(rawText) {
       await load();
       const item = await deps.createText(rawText);
-      update({ status: snapshot.status, items: [item, ...snapshot.items] });
+      prepend(item);
       return item;
     },
 
     async updateText(id, rawText) {
       await load();
       const item = await deps.updateText(id, rawText);
-      const shown = snapshot.items.find((existing) => existing.id === id);
       // An unchanged text comes back with the same body and update time: nothing to re-render.
-      if (shown && differs(shown, item)) {
-        const items = snapshot.items.map((existing) => (existing.id === id ? item : existing));
-        update({ status: snapshot.status, items });
-      }
+      replace(item);
       return item;
     },
 
     async createImage(input) {
       await load();
       const item = await deps.createImage(input);
-      update({ status: snapshot.status, items: [item, ...snapshot.items] });
+      prepend(item);
       return item;
     },
 
     async updateImage(id, input) {
       await load();
       const item = await deps.updateImage(id, input);
-      const shown = snapshot.items.find((existing) => existing.id === id);
-      if (shown && differs(shown, item)) {
-        const items = snapshot.items.map((existing) => (existing.id === id ? item : existing));
-        update({ status: snapshot.status, items });
-      }
+      replace(item);
+      return item;
+    },
+
+    async createEvent(input) {
+      await load();
+      const item = await deps.createEvent(input);
+      prepend(item);
+      return item;
+    },
+
+    async updateEvent(id, input) {
+      await load();
+      const item = await deps.updateEvent(id, input);
+      replace(item);
       return item;
     },
 
