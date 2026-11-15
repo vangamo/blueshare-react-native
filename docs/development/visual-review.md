@@ -21,6 +21,10 @@ The sketches are an HTML mock (380×780, browser fonts and emoji), so a pixel di
 
 `src/__tests__/e2e/screenshots/`: `timeline` (empty timeline), `circles`, `events`, `title-focused`, and for the creation box and feed `box-choose` (placeholder, Guardar disabled), `box-list` (type list open), `box-texto` (Texto chosen), `box-write` (text step with two lines, keyboard closed) and `timeline-cards` (two text cards), and for the edit dialog `edit-open` ("Hola a todos." unchanged, Guardar disabled), `edit-changed` (" Nos vemos el domingo." added, keyboard closed), `edit-confirm` (deletion confirmation) and `timeline-edited` (the edited card in its place), each in `-light` and `-dark` (taken on an Android emulator with the reference device profile from [Device testing](device-testing.md): 1080×2400, density 420). The user approved them, and they change only with new approval. They are also the future references for Maestro `assertScreenshot` flows. Metro does not bundle them.
 
+## Profile references
+
+`profile-open` (the profile dialog opened from the header avatar, no photo, "Abuela Lola" saved so Guardar is disabled) in `-light` and `-dark`, and `profile-discard-light` (the "¿Descartar los cambios?" step after Android back with an unsaved change). Phone portrait only, taken on the reference device profile. They change only with new approval. The photo, error and landscape states have no references yet.
+
 ## Image item references
 
 Added with the image items (`add-image-items`), approved by the user, phone portrait (Medium Phone, 1080×2400, density 420), in `-light` and `-dark` (16 images). They were taken in Expo Go with demo mode on, from an empty database with test photos (a 4:3 landscape photo, a tall 1:4 one, and a 4:3.37 photo of a drawing):

@@ -113,14 +113,14 @@ No new `eslint-disable`, `.only` or `.skip`. Tests go in `src/__tests__/unit/<ar
 
 ## 9. Device check and visual review
 
-- [ ] 9.1 With the `run-on-emulator` skill:
+- [x] 9.1 With the `run-on-emulator` skill:
   - open the profile from each tab, pick a photo, save, and check the header avatar;
   - force-stop Expo Go, reopen it, and check that the name and photo are still there and that the existing items survived the v4 to v5 migration;
   - check Android back in both steps, and TalkBack on the header avatar ("Profile, button") and through the dialog (nothing behind it is reachable);
   - type the name through the full-screen editor in phone landscape.
 
   Write the results in `docs/log.md`.
-- [ ] 9.2 Run the `visual-review` skill in light and dark, in all four layouts, for the header avatar with and without a photo and for the profile dialog (empty, with a photo, with each error, and the discard step). Check that the dialog matches the edit dialogs' box and never spans a tablet's full width. With the user's approval, add the new references to `src/__tests__/e2e/screenshots/` and update `docs/development/visual-review.md`.
+- [x] 9.2 Run the `visual-review` skill in light and dark, in all four layouts, for the header avatar with and without a photo and for the profile dialog (empty, with a photo, with each error, and the discard step). Check that the dialog matches the edit dialogs' box and never spans a tablet's full width. With the user's approval, add the new references to `src/__tests__/e2e/screenshots/` and update `docs/development/visual-review.md`.
 
 ## 10. Final integration check
 
